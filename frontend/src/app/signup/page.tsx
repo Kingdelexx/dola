@@ -35,12 +35,17 @@ export default function SignUpPage() {
           }
         })
       });
-      const data = await res.json();
-      if (res.ok) {
-        login(data.token, data.user);
-        router.push('/dashboard');
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        if (res.ok) {
+          login(data.token, data.user);
+          router.push('/dashboard');
+        } else {
+          setError(Object.values(data).flat().join(', ') || 'Registration failed');
+        }
       } else {
-        setError(Object.values(data).flat().join(', ') || 'Registration failed');
+        setError('Registration failed. Please try again.');
       }
     } catch (err) {
       setError('Registration failed. Please try again.');

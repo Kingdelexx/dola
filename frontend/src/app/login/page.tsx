@@ -28,12 +28,17 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
-      if (res.ok) {
-        login(data.token, data.user);
-        router.push('/dashboard');
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        if (res.ok) {
+          login(data.token, data.user);
+          router.push('/dashboard');
+        } else {
+          setError(data.non_field_errors?.[0] || 'Invalid email or password.');
+        }
       } else {
-        setError(data.non_field_errors?.[0] || 'Invalid email or password.');
+        setError('Login failed. Please try again.');
       }
     } catch (err) {
       setError('Login failed. Please try again.');

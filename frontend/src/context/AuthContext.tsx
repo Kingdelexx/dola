@@ -68,7 +68,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .then(res => {
         if (!res.ok) throw new Error("Auth failed");
-        return res.json();
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        throw new Error("Response is not JSON");
       })
       .then(data => {
         if (data.id) {

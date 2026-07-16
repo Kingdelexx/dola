@@ -38,7 +38,10 @@ export default function Stage2Page() {
     setMaxUnlockedLevel(savedLevel);
     // Load Lottie animation
     fetch('/assets/success.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch success lottie");
+        return res.json();
+      })
       .then(data => setAnimationData(data))
       .catch(e => console.error("Could not load lottie json", e));
   }, [user]);
@@ -72,7 +75,14 @@ export default function Stage2Page() {
                   progress: nextLevel
                 })
               })
-              .then(res => res.json())
+              .then(res => {
+                if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                  return res.json();
+                }
+                throw new Error("Response is not JSON");
+              })
               .then(data => {
                 if (data.success) {
                   updateUser(data.user);

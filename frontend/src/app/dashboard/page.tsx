@@ -38,7 +38,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/badges/`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        throw new Error("Response is not JSON");
+      })
       .then(data => {
         if (data.badges) {
           setAllBadges(data.badges);
@@ -227,7 +234,7 @@ export default function DashboardPage() {
                   <span className="text-3xl">📱</span>
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-800">World 3</h3>
-                <p className="text-sky-600 font-bold bg-sky-50 px-3 py-0.5 rounded-full mb-3 text-sm">App Lab</p>
+                <p className="text-sky-600 font-bold bg-sky-50 px-3 py-0.5 rounded-full mb-3 text-sm">App Studio</p>
                 <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Design user interfaces, add buttons and sliders, and write code to build real apps.</p>
                 <div className="mt-4 bg-sky-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#0284c7] group-hover:bg-sky-400 transition-colors">Play Now</div>
               </Link>
@@ -238,7 +245,7 @@ export default function DashboardPage() {
                   <span className="text-3xl">📱</span>
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-600">World 3</h3>
-                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">App Lab</p>
+                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">App Studio</p>
                 <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 2: Block Coding to unlock your App Designer studio!</p>
                 <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
               </div>
@@ -266,7 +273,7 @@ export default function DashboardPage() {
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-600">World 4</h3>
                 <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">Python Pro</p>
-                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 3: App Lab to collaborate with a Python AI helper.</p>
+                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 3: App Studio to collaborate with a Python AI helper.</p>
                 <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
               </div>
             )}

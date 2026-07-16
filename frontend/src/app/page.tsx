@@ -113,7 +113,7 @@ export default function Home() {
   const faqs = [
     {
       question: "What age is this platform designed for?",
-      answer: "DolaCode is built specifically for kids and teens aged 5 to 16. Our new DolaCode Numeracy (Stage 1) is perfect for younger kids to build coding readiness. Stage 2 (Block Coding) and Stage 3 (Python Coding) are perfect for starting visual coding and transitioning to real typed code, while Stage 4 (AI Co-pilot) offers assistance for older or more advanced developers."
+      answer: "DolaCode is built specifically for kids and teens aged 5 to 16. Our new DolaCode Numeracy (Stage 1) is perfect for younger kids to build coding readiness. Stage 2 (Block Coding) and Stage 3 (App Studio) are perfect for starting visual coding and building apps, while Stage 4 (Python Pro) offers real-world text-based programming with an AI sidekick."
     },
     {
       question: "Do I need prior coding experience?",
@@ -237,18 +237,18 @@ export default function Home() {
             {/* Card 3 */}
             <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-sky-200 hover:border-sky-400 shadow-[0_15px_30px_-5px_rgba(56,189,248,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-8">
               <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white">
-                <Terminal className="text-white" size={32} />
+                <LayoutGrid className="text-white" size={32} />
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-sky-500 transition-colors">3. Python Pro</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Transition cleanly into typing actual industry-standard Python code inside our interactive web app editor.</p>
+              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-sky-500 transition-colors">3. App Studio</h3>
+              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Design beautiful user interfaces, add buttons and sliders, and write JavaScript to build your own real-time apps.</p>
             </div>
             {/* Card 4 */}
             <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-12">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white">
-                <Bot className="text-white" size={32} />
+                <Terminal className="text-white" size={32} />
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-purple-500 transition-colors">4. AI Co-pilot</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Collaborate with our intelligent Robo-Tutor sidekick to get context-aware hints and learn coding practices.</p>
+              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-purple-500 transition-colors">4. Python Pro</h3>
+              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Write real text-based Python code and build advanced programs with a helpful AI tutor sidekick.</p>
             </div>
           </div>
         </div>
@@ -268,8 +268,8 @@ export default function Home() {
             {[
               { step: 1, title: "1. Numeracy (8 Parts)", desc: "Number sense, operations, logic, measurement, fractions, data, and algorithms.", icon: Star, color: "indigo" },
               { step: 2, title: "2. Block Coding", desc: "Snap Blockly code cards to control robots.", icon: Blocks, color: "pink" },
-              { step: 3, title: "3. Python Coding", desc: "Type real script files to solve tasks.", icon: Terminal, color: "sky" },
-              { step: 4, title: "4. AI Co-pilot", desc: "Co-author apps with a helpful AI tutor.", icon: Bot, color: "purple" }
+              { step: 3, title: "3. App Studio", desc: "Design interfaces and code custom app behaviors.", icon: LayoutGrid, color: "sky" },
+              { step: 4, title: "4. Python Pro", desc: "Write real text-based Python code with an AI sidekick.", icon: Terminal, color: "purple" }
             ].map((item, i) => (
               <div key={i} className={`step-${item.step} bg-white p-6 rounded-[2rem] border-4 border-slate-100 relative z-10 text-center flex flex-col items-center shadow-xl`}>
                 <div className={`step-icon w-16 h-16 bg-indigo-500 rounded-[1.5rem] rotate-3 flex items-center justify-center mb-4 border-4 border-white shadow-lg`}>
@@ -459,8 +459,8 @@ export default function Home() {
             <ul className="space-y-4 font-bold">
               <li><Link href="/stage1" className="hover:text-pink-400 hover:pl-2 transition-all block">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-pink-400 hover:pl-2 transition-all block">2. Block Coding</Link></li>
-              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Coding</Link></li>
-              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">4. AI Co-pilot</Link></li>
+              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">3. App Studio</Link></li>
+              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Python Pro</Link></li>
             </ul>
           </div>
 

@@ -179,7 +179,10 @@ export default function Stage1Page() {
     }
     // Load success lottie
     fetch('/assets/success.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch success lottie");
+        return res.json();
+      })
       .then(data => setAnimationData(data))
       .catch(e => console.error("Could not load success lottie", e));
   }, [user]);
@@ -394,7 +397,14 @@ export default function Stage1Page() {
           progress: nextGlobalLevel
         })
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        throw new Error("Response is not JSON");
+      })
       .then(data => {
         if (data.success) {
           updateUser(data.user);

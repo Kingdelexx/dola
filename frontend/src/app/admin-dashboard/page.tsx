@@ -28,7 +28,11 @@ export default function AdminDashboardPage() {
         })
         .then(res => {
           if (!res.ok) throw new Error('Failed to fetch stats');
-          return res.json();
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            return res.json();
+          }
+          throw new Error("Response is not JSON");
         })
         .then(data => setStats(data))
         .catch(err => setError(err.message));
