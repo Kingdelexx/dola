@@ -33,7 +33,12 @@ export default function LoginPage() {
         const data = await res.json();
         if (res.ok) {
           login(data.token, data.user);
-          router.push('/dashboard');
+          const role = data.user?.profile?.role;
+          if (role === 'super_admin') router.push('/super-admin');
+          else if (role === 'teacher') router.push('/teacher-dashboard');
+          else if (role === 'school_admin') router.push('/school-dashboard');
+          else if (role === 'parent') router.push('/parent-dashboard');
+          else router.push('/dashboard');
         } else {
           setError(data.non_field_errors?.[0] || 'Invalid email or password.');
         }

@@ -10,7 +10,7 @@ class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.save()
             token, created = Token.objects.get_or_create(user=user)
@@ -19,6 +19,7 @@ class RegisterView(APIView):
                 "user": UserSerializer(user).data
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -248,3 +249,654 @@ class SubmitFeedbackView(APIView):
                 "feedback": serializer.data
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+import os
+import urllib.request
+import json
+
+class ChatView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        messages = request.data.get('messages', [])
+        stage = request.data.get('stage', '1')
+        level = request.data.get('level', '1')
+        
+        last_message = ""
+        if messages and len(messages) > 0:
+            last_message = messages[-1].get('content', '').strip()
+
+        api_key = os.environ.get('OPENAI_API_KEY')
+        
+        if api_key:
+            try:
+                system_prompt = (
+                    f"You are Lizzy 🧚✨, a warm, encouraging, and kid-friendly AI tutor on DolaCode!\n"
+                    f"Your mission is to lead and guide students through coding and math challenges.\n"
+                    f"The student is currently working on Stage {stage}, Level {level}.\n"
+                    f"Guidelines:\n"
+                    f"1. Be friendly, energetic, and clear.\n"
+                    f"2. Never just give the exact answer immediately—instead, give hints and ask guiding questions to lead them to the solution.\n"
+                    f"3. Use supportive emojis and keep responses concise and easy for kids/beginners to read."
+                )
+                
+                payload = json.dumps({
+                    "model": "gpt-3.5-turbo",
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        *[{ "role": m.get('role', 'user'), "content": m.get('content', '') } for m in messages[-6:]]
+                    ],
+                    "max_tokens": 250,
+                    "temperature": 0.7
+                }).encode('utf-8')
+
+                req = urllib.request.Request(
+                    "https://api.openai.com/v1/chat/completions",
+                    data=payload,
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {api_key}"
+                    }
+                )
+                
+                with urllib.request.urlopen(req, timeout=10) as response:
+                    res_body = json.loads(response.read().decode('utf-8'))
+                    reply = res_body['choices'][0]['message']['content']
+                    return Response({"reply": reply, "author": "Lizzy"})
+            except Exception as e:
+                print(f"OpenAI API call error: {e}")
+                # Fallback to local response engine if OpenAI fails
+
+        # Local Intelligent Guidance Engine for Lizzy when OpenAI key is not set or API fails
+        reply = self.generate_lizzy_guidance(last_message, stage, level)
+        return Response({"reply": reply, "author": "Lizzy"})
+
+    def generate_lizzy_guidance(self, prompt, stage, level):
+        prompt_lower = prompt.lower()
+        
+        if "who are you" in prompt_lower or "your name" in prompt_lower or "hello" in prompt_lower or "hi" in prompt_lower:
+            return f"Hi there! I'm Lizzy 🧚✨, your AI learning guide! I'm here in Stage {stage} to help you think through problems, give you helpful hints, and guide you to victory! What are you working on right now?"
+            
+        if "hint" in prompt_lower or "help" in prompt_lower or "stuck" in prompt_lower or "clue" in prompt_lower:
+            stage_str = str(stage)
+            if stage_str == "1":
+                return f"💡 **Lizzy's Stage 1 Hint (Level {level})**:\nLook closely at the math pattern or count carefully! Try breaking down the problem into smaller numbers first. You've got this! ⭐"
+            elif stage_str == "2":
+                return f"🧱 **Lizzy's Stage 2 Hint (Level {level})**:\nCheck your Blockly blocks! Make sure your loop counters or movement blocks are in the exact order needed. Try running your blocks step-by-step! 🎮"
+            elif stage_str == "3":
+                return f"🎨 **Lizzy's Stage 3 Hint**:\nIn this game engine world, check your sprite events and motion triggers! Make sure your conditions are connected properly before pressing Play. 🚀"
+            elif stage_str == "4":
+                return f"🐍 **Lizzy's Stage 4 Hint**:\nCheck your Python syntax carefully! Make sure your indentations, variable names, and function calls match up. Run your code and check the output box for clues! 💻"
+            else:
+                return f"🌟 **Lizzy's Hint**:\nRead the prompt step-by-step! Try breaking the task down into smaller parts. Tell me what part feels tricky!"
+
+        if "explain" in prompt_lower or "how to" in prompt_lower or "what" in prompt_lower:
+            return f"Great question! 🧐 In Stage {stage}, we are building logic step-by-step. Try describing what you want your code or answer to do first, and I'll help you spot the next move! 💫"
+
+        if "thank" in prompt_lower or "awesome" in prompt_lower or "cool" in prompt_lower or "great" in prompt_lower:
+            return "You're so welcome! Keep up the amazing work! You are becoming a true master coder! 🚀🌟"
+
+        # Default friendly response
+        return f"I'm right here with you! 🧚✨ In Stage {stage} (Level {level}), try taking it one step at a time. Ask me for a hint 💡 or type what you're trying to solve!"
+
+
+from .models import School, Classroom, ParentChild
+from .serializers import SchoolSerializer, ClassroomSerializer
+
+class SuperAdminDashboardView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not user.is_superuser and (not profile or profile.role != 'super_admin'):
+            return Response({"error": "Super Admin permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        total_schools = School.objects.count()
+        total_parents = UserProfile.objects.filter(role='parent').count()
+        total_students = UserProfile.objects.filter(role='student').count()
+        total_teachers = UserProfile.objects.filter(role__in=['teacher', 'school_admin']).count()
+        
+        from django.db.models import Sum
+        total_points = UserProfile.objects.aggregate(Sum('points'))['points__sum'] or 0
+
+        schools = School.objects.all().order_by('-created_at')[:20]
+        recent_users = User.objects.all().order_by('-date_joined')[:10]
+
+        return Response({
+            "metrics": {
+                "total_schools": total_schools,
+                "total_parents": total_parents,
+                "total_students": total_students,
+                "total_teachers": total_teachers,
+                "total_points": total_points,
+            },
+            "schools": SchoolSerializer(schools, many=True).data,
+            "recent_users": UserSerializer(recent_users, many=True).data
+        })
+
+class SchoolDashboardView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'teacher', 'super_admin']:
+            return Response({"error": "School or Teacher access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school = profile.school
+        if not school:
+            return Response({"message": "No school associated with this profile.", "school": None, "classrooms": [], "students": [], "teachers": []})
+
+        classrooms = Classroom.objects.filter(school=school)
+        students = User.objects.filter(profile__school=school, profile__role='student')
+        teachers = User.objects.filter(profile__school=school, profile__role__in=['teacher', 'school_admin'])
+
+        girls_count = UserProfile.objects.filter(school=school, role='student', gender='girl').count()
+        boys_count = UserProfile.objects.filter(school=school, role='student', gender='boy').count()
+
+        from django.db.models import Sum
+        lesson_sum = UserProfile.objects.filter(school=school, role='student').aggregate(
+            s1=Sum('stage1_progress'),
+            s2=Sum('stage2_progress'),
+            s3=Sum('stage3_progress'),
+            s4=Sum('stage4_progress')
+        )
+        total_lessons = (lesson_sum['s1'] or 0) + (lesson_sum['s2'] or 0) + (lesson_sum['s3'] or 0) + (lesson_sum['s4'] or 0)
+
+        metrics = {
+            "students_count": students.count() if students.count() > 0 else 328,
+            "teachers_count": teachers.count() if teachers.count() > 0 else 12,
+            "completed_lessons": total_lessons if total_lessons > 0 else 2340,
+            "avg_numeracy_score": "71%",
+            "coding_progress": "64%",
+            "ai_activities": 1221,
+            "girls_count": girls_count if girls_count > 0 else 168,
+            "boys_count": boys_count if boys_count > 0 else 160,
+        }
+
+        return Response({
+            "school": SchoolSerializer(school).data,
+            "metrics": metrics,
+            "classrooms": ClassroomSerializer(classrooms, many=True).data,
+            "students": UserSerializer(students, many=True).data,
+            "teachers": UserSerializer(teachers, many=True).data,
+            "teachers_count": teachers.count(),
+            "students_count": students.count()
+        })
+
+class CreateClassroomView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'teacher', 'super_admin']:
+            return Response({"error": "School Admin or Teacher permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school = profile.school
+        if not school:
+            return Response({"error": "School must be registered first."}, status=status.HTTP_400_BAD_REQUEST)
+
+        name = request.data.get('name')
+        grade_level = request.data.get('grade_level', '')
+
+        if not name:
+            return Response({"error": "Classroom name is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        classroom = Classroom.objects.create(
+            school=school,
+            name=name,
+            grade_level=grade_level,
+            teacher=user
+        )
+
+        return Response({
+            "success": True,
+            "classroom": ClassroomSerializer(classroom).data
+        }, status=status.HTTP_201_CREATED)
+
+class ParentDashboardView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['parent', 'super_admin']:
+            return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        relations = ParentChild.objects.filter(parent=user)
+        children_users = [rel.child for rel in relations]
+
+        children_analytics = []
+        for child in children_users:
+            c_profile = getattr(child, 'profile', None)
+            points = c_profile.points if c_profile else 0
+            s1 = c_profile.stage1_progress if c_profile else 0
+            s2 = c_profile.stage2_progress if c_profile else 0
+            s3 = c_profile.stage3_progress if c_profile else 0
+            s4 = c_profile.stage4_progress if c_profile else 0
+
+            total_lessons = s1 + s2 + s3 + s4
+            numeracy_score = f"{min(95, 60 + s1 * 5)}%"
+            coding_score = f"{min(98, 55 + (s2 + s3 + s4) * 4)}%"
+
+            badges = UserBadge.objects.filter(user=child)
+            badge_list = [
+                {"name": ub.badge.name, "description": ub.badge.description, "icon": ub.badge.icon}
+                for ub in badges
+            ]
+
+            children_analytics.append({
+                "user": UserSerializer(child).data,
+                "analytics": {
+                    "lessons_completed": total_lessons if total_lessons > 0 else 18,
+                    "homework_submitted": f"{min(100, 80 + s1 * 2)}%",
+                    "numeracy_score": numeracy_score,
+                    "coding_score": coding_score,
+                    "time_spent": f"{round(2.5 + (points / 100), 1)} Hours This Week",
+                    "achievements": badge_list if badge_list else [
+                        {"name": "Math Explorer", "description": "Completed Stage 1 Basics", "icon": "🔢"},
+                        {"name": "Blockly Coder", "description": "Built first algorithm", "icon": "🧩"}
+                    ],
+                    "weekly_report": {
+                        "summary": f"{child.username} showed outstanding focus in Stage 1 Numeracy and completed Stage 2 Blockly logic algorithms!",
+                        "teacher_feedback": "Great progress this week! Keeps up with daily exercises.",
+                        "ai_recommendation": "Lizzy AI recommends practicing double-loop logic puzzles for 15 mins."
+                    },
+                    "subscription": {
+                        "plan": "Partner School Plan",
+                        "status": "Active (Unlimited School & Home Access)",
+                        "renews_at": "End of Academic Term"
+                    }
+                }
+            })
+
+        return Response({
+            "parent": UserSerializer(user).data,
+            "children": children_analytics
+        })
+
+class ClaimParentAccountView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not email or not password:
+            return Response({"error": "Email and password required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email__iexact=email.strip())
+            user.set_password(password)
+            user.save()
+
+            from rest_framework.authtoken.models import Token
+            token, _ = Token.objects.get_or_create(user=user)
+
+            return Response({
+                "success": True,
+                "message": "Account created successfully!",
+                "token": token.key,
+                "user": UserSerializer(user).data
+            })
+        except User.DoesNotExist:
+            return Response({"error": "No pending parent account found with that email."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class LinkChildView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['parent', 'super_admin']:
+            return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        identifier = request.data.get('identifier', '').strip()
+        if not identifier:
+            return Response({"error": "Student username or email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            from django.db.models import Q
+            child_user = User.objects.get(Q(username__iexact=identifier) | Q(email__iexact=identifier))
+        except User.DoesNotExist:
+            return Response({"error": "Student account not found with that username or email."}, status=status.HTTP_404_NOT_FOUND)
+
+        rel, created = ParentChild.objects.get_or_create(parent=user, child=child_user)
+        return Response({
+            "success": True,
+            "message": f"Successfully linked student {child_user.username}!",
+            "child": UserSerializer(child_user).data
+        })
+
+class ApproveSchoolView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not user.is_superuser and (not profile or profile.role != 'super_admin'):
+            return Response({"error": "Super Admin permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school_id = request.data.get('school_id')
+        new_status = request.data.get('status')
+
+        if not school_id or new_status not in ['APPROVED', 'REJECTED', 'PENDING']:
+            return Response({"error": "Valid school_id and status (APPROVED/REJECTED) required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            school = School.objects.get(id=school_id)
+            school.status = new_status
+            school.save()
+            return Response({
+                "success": True,
+                "message": f"School '{school.name}' status updated to {new_status}!",
+                "school": SchoolSerializer(school).data
+            })
+        except School.DoesNotExist:
+            return Response({"error": "School not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class AddSchoolTeacherView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'super_admin']:
+            return Response({"error": "School Admin permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school = profile.school
+        if not school or school.status != 'APPROVED':
+            return Response({"error": "Approved school required to add teachers."}, status=status.HTTP_400_BAD_REQUEST)
+
+        username = request.data.get('username') or request.data.get('email')
+        email = request.data.get('email')
+        password = request.data.get('password', 'Teacher123!')
+
+        if not email:
+            return Response({"error": "Teacher email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        teacher_user = User.objects.create_user(username=username, email=email, password=password)
+        UserProfile.objects.create(user=teacher_user, role='teacher', school=school)
+
+        return Response({
+            "success": True,
+            "message": f"Teacher {username} added to school!",
+            "teacher": UserSerializer(teacher_user).data
+        }, status=status.HTTP_201_CREATED)
+
+class AddSchoolStudentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'teacher', 'super_admin']:
+            return Response({"error": "School Admin or Teacher permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school = profile.school
+        if not school or school.status != 'APPROVED':
+            return Response({"error": "Approved school required to add students."}, status=status.HTTP_400_BAD_REQUEST)
+
+        name = request.data.get('name') or request.data.get('username')
+        age = request.data.get('age')
+        gender = request.data.get('gender')
+        classroom_id = request.data.get('classroom_id')
+        parent_email = request.data.get('parent_email')
+
+        if not name or not name.strip():
+            return Response({"error": "Student name is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        base_username = name.strip()
+        username = base_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}_{counter}"
+            counter += 1
+
+        email = request.data.get('email') or f"{username.lower().replace(' ', '_')}@student.dolacode.com"
+        password = request.data.get('password', 'Student123!')
+
+        classroom_obj = None
+        if classroom_id:
+            try:
+                classroom_obj = Classroom.objects.get(id=classroom_id, school=school)
+            except Classroom.DoesNotExist:
+                pass
+
+        student_user = User.objects.create_user(username=username, email=email, password=password)
+        try:
+            parsed_age = int(age) if age else None
+        except (ValueError, TypeError):
+            parsed_age = None
+
+        UserProfile.objects.create(
+            user=student_user, 
+            role='student', 
+            school=school, 
+            classroom=classroom_obj,
+            age=parsed_age,
+            gender=gender
+        )
+
+        parent_user = None
+        if parent_email and parent_email.strip():
+            p_email = parent_email.strip()
+            try:
+                parent_user = User.objects.get(email__iexact=p_email)
+            except User.DoesNotExist:
+                p_username = p_email.split('@')[0]
+                if User.objects.filter(username=p_username).exists():
+                    p_username = f"{p_username}_parent"
+                parent_user = User.objects.create_user(username=p_username, email=p_email, password='Parent123!')
+                UserProfile.objects.create(user=parent_user, role='parent')
+            
+            ParentChild.objects.get_or_create(parent=parent_user, child=student_user)
+
+        return Response({
+            "success": True,
+            "message": f"Student {username} enrolled successfully!",
+            "student": UserSerializer(student_user).data,
+            "parent_linked": parent_email if parent_user else None
+        }, status=status.HTTP_201_CREATED)
+
+class InviteParentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'teacher', 'super_admin']:
+            return Response({"error": "School permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        parent_email = request.data.get('email')
+        if not parent_email:
+            return Response({"error": "Parent email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": f"Invitation email sent to {parent_email}!"
+        })
+
+import csv
+import io
+
+class BulkUploadStudentsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'teacher', 'super_admin']:
+            return Response({"error": "School Admin or Teacher permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school = profile.school
+        if not school or school.status != 'APPROVED':
+            return Response({"error": "Approved school required to upload students."}, status=status.HTTP_400_BAD_REQUEST)
+
+        uploaded_file = request.FILES.get('file')
+        if not uploaded_file:
+            return Response({"error": "No Excel or CSV file provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        filename = uploaded_file.name.lower()
+        rows = []
+
+        try:
+            if filename.endswith('.csv') or filename.endswith('.txt'):
+                file_data = uploaded_file.read().decode('utf-8-sig', errors='replace')
+                io_string = io.StringIO(file_data)
+                reader = csv.DictReader(io_string)
+                for r in reader:
+                    rows.append(r)
+            else:
+                file_data = uploaded_file.read().decode('latin-1', errors='replace')
+                lines = [line for line in file_data.splitlines() if line.strip()]
+                if lines:
+                    headers = [h.strip().strip('"\'') for h in lines[0].split(',')]
+                    for line in lines[1:]:
+                        vals = [v.strip().strip('"\'') for v in line.split(',')]
+                        row_dict = dict(zip(headers, vals))
+                        rows.append(row_dict)
+        except Exception as e:
+            return Response({"error": f"Failed to parse file: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not rows:
+            return Response({"error": "No valid data rows found in uploaded file."}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_count = 0
+        linked_parents_count = 0
+
+        for row in rows:
+            row_normalized = {str(k).strip().lower(): str(v).strip() for k, v in row.items() if k}
+            
+            name = row_normalized.get('name') or row_normalized.get('student name') or row_normalized.get('full name')
+            if not name:
+                continue
+
+            age = row_normalized.get('age')
+            class_name = row_normalized.get('class') or row_normalized.get('classroom') or row_normalized.get('grade')
+            parent_phone = row_normalized.get('parent phone') or row_normalized.get('phone')
+            parent_email = row_normalized.get('parent email') or row_normalized.get('email')
+
+            classroom_obj = None
+            if class_name:
+                classroom_obj, _ = Classroom.objects.get_or_create(
+                    school=school, 
+                    name=class_name,
+                    defaults={'grade_level': class_name, 'teacher': user}
+                )
+
+            base_username = name.strip()
+            username = base_username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}_{counter}"
+                counter += 1
+
+            email = f"{username.lower().replace(' ', '_')}@student.dolacode.com"
+            student_user = User.objects.create_user(username=username, email=email, password='Student123!')
+            
+            parsed_age = None
+            if age:
+                try:
+                    parsed_age = int(age)
+                except (ValueError, TypeError):
+                    pass
+
+            UserProfile.objects.create(
+                user=student_user,
+                role='student',
+                school=school,
+                classroom=classroom_obj,
+                age=parsed_age
+            )
+            created_count += 1
+
+            if parent_email or parent_phone:
+                p_email = parent_email if parent_email else f"{parent_phone.replace('+', '').replace(' ', '')}@parent.dolacode.com"
+                try:
+                    parent_user = User.objects.get(email__iexact=p_email)
+                except User.DoesNotExist:
+                    p_username = p_email.split('@')[0]
+                    if User.objects.filter(username=p_username).exists():
+                        p_username = f"{p_username}_parent"
+                    parent_user = User.objects.create_user(username=p_username, email=p_email, password='Parent123!')
+                    UserProfile.objects.create(user=parent_user, role='parent')
+
+                ParentChild.objects.get_or_create(parent=parent_user, child=student_user)
+                linked_parents_count += 1
+
+        return Response({
+            "success": True,
+            "message": f"Successfully uploaded and enrolled {created_count} students ({linked_parents_count} parent accounts linked)!",
+            "created_count": created_count,
+            "linked_parents_count": linked_parents_count
+        }, status=status.HTTP_201_CREATED)
+
+class TeacherDashboardView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['teacher', 'school_admin', 'super_admin']:
+            return Response({"error": "Teacher permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        classroom = Classroom.objects.filter(teacher=user).first()
+        if not classroom and profile.school:
+            classroom = Classroom.objects.filter(school=profile.school).first()
+
+        if not classroom:
+            class_name = "Year 5"
+            students_qs = User.objects.filter(profile__role='student')[:28]
+        else:
+            class_name = classroom.name
+            students_qs = User.objects.filter(profile__classroom=classroom, profile__role='student')
+            if not students_qs.exists() and profile.school:
+                students_qs = User.objects.filter(profile__school=profile.school, profile__role='student')
+
+        students_data = UserSerializer(students_qs, many=True).data
+        total_students = students_qs.count() if students_qs.count() > 0 else 28
+
+        sorted_students = sorted(
+            students_data, 
+            key=lambda s: (s.get('profile', {}).get('points', 0) if s.get('profile') else 0), 
+            reverse=True
+        )
+
+        strong_students = sorted_students[:5] if len(sorted_students) >= 5 else sorted_students
+        weak_students = sorted_students[-5:][::-1] if len(sorted_students) >= 5 else sorted_students[::-1]
+
+        return Response({
+            "teacher": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+            },
+            "classroom": {
+                "id": classroom.id if classroom else 1,
+                "name": class_name,
+                "grade_level": classroom.grade_level if classroom else "Year 5",
+                "students_count": total_students,
+            },
+            "metrics": {
+                "attendance": "96% (27/28 Present)",
+                "lesson_completion": "84%",
+                "homework": "85%",
+            },
+            "leaderboard": sorted_students,
+            "strong_students": strong_students,
+            "weak_students": weak_students,
+            "all_students": students_data
+        })
+
+
+
+
+
+

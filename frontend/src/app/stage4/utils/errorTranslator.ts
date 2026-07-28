@@ -48,7 +48,7 @@ export function translatePythonError(rawError: string): { message: string; line:
   // 4. Type Errors
   else if (errorStr.includes("TypeError")) {
     if (errorStr.includes("not callable")) {
-      friendlyMessage = `💡 Spell / Function Call Error: You tried to call something that isn't a function on line ${lineNum || 'X'}. Check if you added extra parentheses by mistake!`;
+      friendlyMessage = `💡 Code / Function Call Error: You tried to call something that isn't a function on line ${lineNum || 'X'}. Check if you added extra parentheses by mistake!`;
     } else {
       friendlyMessage = `💡 Mixing Types: Python got confused about data types on line ${lineNum || 'X'}. Make sure you aren't trying to mix text (strings) and numbers in math equations!`;
     }
@@ -65,7 +65,7 @@ export function translatePythonError(rawError: string): { message: string; line:
   }
   // 6. ZeroDivisionError
   else if (errorStr.includes("ZeroDivisionError")) {
-    friendlyMessage = `💡 Division by Zero: You tried to divide by zero on line ${lineNum || 'X'}. Math wizardry doesn't allow dividing by 0!`;
+    friendlyMessage = `💡 Division by Zero: You tried to divide by zero on line ${lineNum || 'X'}. Calculators and code can't divide by 0!`;
   }
   // Fallback
   else {

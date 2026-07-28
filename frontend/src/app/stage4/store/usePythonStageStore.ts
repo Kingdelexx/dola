@@ -23,8 +23,8 @@ interface PythonStageState {
 }
 
 export const usePythonStageStore = create<PythonStageState>((set, get) => ({
-  currentChapterId: 1,
-  currentLevelId: 'ch1_l1',
+  currentChapterId: 0,
+  currentLevelId: 'ch0_l1',
   xp: 0,
   hintTokens: 3, // Start with 3 hint keys
   unlockedHints: {},
@@ -45,7 +45,7 @@ export const usePythonStageStore = create<PythonStageState>((set, get) => ({
       const completed = savedCompleted ? JSON.parse(savedCompleted) : [];
       const code = savedCode ? JSON.parse(savedCode) : {};
       const hints = savedHints ? JSON.parse(savedHints) : {};
-      const currentLevelId = savedCurrentLevel || 'ch1_l1';
+      const currentLevelId = savedCurrentLevel || 'ch0_l1';
       const activeLevel = getLevelById(currentLevelId) || pythonLevels[0];
 
       set({
@@ -178,8 +178,8 @@ export const usePythonStageStore = create<PythonStageState>((set, get) => ({
 
   resetProgress: () => {
     set({
-      currentChapterId: 1,
-      currentLevelId: 'ch1_l1',
+      currentChapterId: 0,
+      currentLevelId: 'ch0_l1',
       xp: 0,
       hintTokens: 3,
       unlockedHints: {},

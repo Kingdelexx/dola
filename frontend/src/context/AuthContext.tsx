@@ -23,6 +23,7 @@ export type User = {
   email: string;
   is_superuser?: boolean;
   profile?: {
+    role?: string;
     age: number;
     coding_experience: string;
     points: number;

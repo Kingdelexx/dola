@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default function AIChat() {
   const [messages, setMessages] = useState<{ role: string, content: string }[]>([
-    { role: 'assistant', content: 'Hi there! I am Robo-Tutor. I can help you with your coding challenges. What are we working on today?' }
+    { role: 'assistant', content: "Hi there! I'm Lizzy 🧚✨, your AI learning tutor. Ask me anything about your code or level puzzles!" }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +31,8 @@ export default function AIChat() {
 
   return (
     <div className="flex flex-col h-[500px] border border-purple-200 rounded-xl shadow-lg bg-white overflow-hidden">
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-3 font-bold text-center text-lg shadow-md z-10">
-        🤖 Robo-Tutor AI
+      <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-500 text-white p-3 font-bold text-center text-lg shadow-md z-10 flex items-center justify-center gap-2">
+        🧚✨ Lizzy AI Tutor
       </div>
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-slate-50">
         {messages.map((msg, i) => (

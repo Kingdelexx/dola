@@ -55,8 +55,18 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
+    if (!loading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.profile?.role === 'parent') {
+        router.push('/parent-dashboard');
+      } else if (user.profile?.role === 'teacher') {
+        router.push('/teacher-dashboard');
+      } else if (user.profile?.role === 'school_admin') {
+        router.push('/school-dashboard');
+      } else if (user.profile?.role === 'super_admin' || user.is_superuser) {
+        router.push('/super-admin');
+      }
     }
   }, [user, loading, router]);
 

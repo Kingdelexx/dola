@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import FeedbackModal from '@/components/FeedbackModal';
+import LizzyChat from '@/components/LizzyChat';
 import { useAuth } from '@/context/AuthContext';
 import { STAGE1_NUMERACY_PARTS, NumeracyLevel, NumeracyPart } from '@/data/stage1NumeracyLevels';
 import { STAGE1_HELP_DATA } from '@/data/stage1HelpData';
@@ -33,7 +34,17 @@ export default function Stage1Page() {
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0); // 0 to 9
   const [maxUnlockedLevel, setMaxUnlockedLevel] = useState(0); // 0 to 40 global level index
   const [showModal, setShowModal] = useState(false);
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.profile?.role === 'parent') {
+        router.push('/parent-dashboard');
+      }
+    }
+  }, [user, loading, router]);
   const [newlyUnlockedBadges, setNewlyUnlockedBadges] = useState<any[]>([]);
   const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
@@ -5368,6 +5379,9 @@ export default function Stage1Page() {
         part={currentPartIndex + 1} 
         onClose={handleFeedbackClose} 
       />
+
+      {/* Lizzy AI Tutor Floating Chatbox */}
+      <LizzyChat stage={1} level={currentLevelIndex + 1} />
     </div>
   );
 }

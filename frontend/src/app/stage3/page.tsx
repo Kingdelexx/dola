@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import FeedbackModal from '@/components/FeedbackModal';
+import LizzyChat from '@/components/LizzyChat';
 
 import TopNav from './components/TopNav';
 import LeftSidebar from './components/LeftSidebar';
@@ -19,7 +20,17 @@ import { Smartphone, Code, Library, Layers } from 'lucide-react';
 
 export default function Stage3Page() {
   const router = useRouter();
-  const { updateUser } = useAuth();
+  const { user, updateUser, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.profile?.role === 'parent') {
+        router.push('/parent-dashboard');
+      }
+    }
+  }, [user, loading, router]);
   
   const {
     activeTab,
@@ -214,6 +225,9 @@ export default function Stage3Page() {
         part={1}
         onClose={handleFeedbackClose}
       />
+
+      {/* Lizzy AI Tutor Floating Chatbox */}
+      <LizzyChat stage={3} />
     </div>
   );
 }

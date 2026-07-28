@@ -14,13 +14,36 @@ class UserBadgeSerializer(serializers.ModelSerializer):
         model = UserBadge
         fields = ('badge', 'earned_at')
 
+from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild
+
+class SchoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = School
+        fields = (
+            'id', 'name', 'code', 'status', 'address', 'contact_person', 
+            'contact_email', 'principal_email', 'number_of_pupils', 
+            'phone_number', 'expected_classes', 'created_at'
+        )
+
+class ClassroomSerializer(serializers.ModelSerializer):
+    school_name = serializers.ReadOnlyField(source='school.name')
+    teacher_name = serializers.ReadOnlyField(source='teacher.username')
+
+    class Meta:
+        model = Classroom
+        fields = ('id', 'school', 'school_name', 'name', 'grade_level', 'teacher', 'teacher_name', 'created_at')
+
 class UserProfileSerializer(serializers.ModelSerializer):
+    school_details = SchoolSerializer(source='school', read_only=True)
+    classroom_details = ClassroomSerializer(source='classroom', read_only=True)
+
     class Meta:
         model = UserProfile
         fields = (
-            'age', 'coding_experience', 'points', 
+            'role', 'age', 'gender', 'coding_experience', 'points', 
             'current_streak', 'longest_streak', 'last_active_date',
-            'stage1_progress', 'stage2_progress', 'stage3_progress', 'stage4_progress'
+            'stage1_progress', 'stage2_progress', 'stage3_progress', 'stage4_progress',
+            'school', 'school_details', 'classroom', 'classroom_details'
         )
 
 class UserSerializer(serializers.ModelSerializer):
@@ -46,19 +69,62 @@ class UserSerializer(serializers.ModelSerializer):
         return UserBadgeSerializer(badges, many=True).data
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile', {})
-        # Use email as username if username is not provided, or just use email prefix
+        request = self.context.get('request')
+        role = 'student'
+        school_obj = None
+        
+        if request and request.data:
+            role = request.data.get('role', 'student')
+            school_code = request.data.get('school_code')
+            school_name = request.data.get('school_name')
+
+            if school_code:
+                try:
+                    school_obj = School.objects.get(code=school_code.strip())
+                except School.DoesNotExist:
+                    pass
+
+            if not school_obj and school_name and role == 'school_admin':
+                import random, string
+                code = f"SCH-{''.join(random.choices(string.ascii_uppercase + string.digits, k=6))}"
+                num_pupils = request.data.get('number_of_pupils')
+                try:
+                    num_pupils = int(num_pupils) if num_pupils else None
+                except (ValueError, TypeError):
+                    num_pupils = None
+
+                school_obj = School.objects.create(
+                    name=school_name,
+                    code=code,
+                    status='PENDING',
+                    address=request.data.get('address', ''),
+                    contact_person=request.data.get('contact_person', ''),
+                    contact_email=validated_data.get('email'),
+                    principal_email=request.data.get('principal_email', ''),
+                    number_of_pupils=num_pupils,
+                    phone_number=request.data.get('phone_number', ''),
+                    expected_classes=request.data.get('expected_classes', '')
+                )
+
+
+        username = validated_data.get('username') or validated_data.get('email')
         user = User.objects.create_user(
-            username=validated_data.get('username', validated_data.get('email')),
+            username=username,
             email=validated_data.get('email'),
             password=validated_data.get('password')
         )
+        
+        # If superuser or requested super_admin
+        if validated_data.get('email', '').endswith('@devnaija.com'):
+            role = 'super_admin'
+
         UserProfile.objects.create(
             user=user,
-            age=profile_data.get('age'),
-            coding_experience=profile_data.get('coding_experience')
+            role=role,
+            school=school_obj
         )
         return user
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
