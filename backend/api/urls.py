@@ -5,12 +5,13 @@ from .views import (
     SuperAdminDashboardView, SchoolDashboardView, CreateClassroomView,
     ParentDashboardView, LinkChildView, ApproveSchoolView, AddSchoolTeacherView,
     AddSchoolStudentView, InviteParentView, BulkUploadStudentsView, TeacherDashboardView,
-    ClaimParentAccountView
+    ClaimParentAccountView, GoogleAuthView
 )
 
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),
+    path('auth/google/', GoogleAuthView.as_view(), name='google_auth'),
     path('auth/user/', UserDataView.as_view(), name='user_data'),
     path('admin-stats/', AdminDashboardStatsView.as_view(), name='admin_stats'),
     path('user/progress/', UpdateProgressView.as_view(), name='update_progress'),

@@ -35,6 +35,88 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GoogleAuthView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        credential = request.data.get('credential') or request.data.get('id_token')
+        email = request.data.get('email')
+        name = request.data.get('name') or request.data.get('username')
+        role = request.data.get('role', 'student')
+        school_name = request.data.get('school_name')
+        school_code = request.data.get('school_code')
+
+        if credential:
+            try:
+                import json, base64
+                parts = credential.split('.')
+                if len(parts) >= 2:
+                    padding = '=' * (4 - len(parts[1]) % 4)
+                    payload_b64 = parts[1] + padding
+                    payload_bytes = base64.b64decode(payload_b64)
+                    payload = json.loads(payload_bytes)
+                    email = payload.get('email') or email
+                    name = payload.get('name') or payload.get('given_name') or name
+            except Exception as e:
+                print("Error decoding Google credential:", e)
+
+        if not email:
+            return Response({"error": "Google email or credential is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = email.strip().lower()
+        user = User.objects.filter(email__iexact=email).first()
+
+        if not user:
+            base_username = (name or email.split('@')[0]).strip()
+            username = base_username
+            counter = 1
+            while User.objects.filter(username__iexact=username).exists():
+                username = f"{base_username}_{counter}"
+                counter += 1
+
+            import uuid
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=str(uuid.uuid4())
+            )
+
+            school_obj = None
+            if school_code:
+                from .models import School
+                school_obj = School.objects.filter(code__iexact=school_code.strip()).first()
+
+            if not school_obj and school_name and role == 'school_admin':
+                import random, string
+                from .models import School
+                code = f"SCH-{''.join(random.choices(string.ascii_uppercase + string.digits, k=6))}"
+                school_obj = School.objects.create(
+                    name=school_name,
+                    code=code,
+                    status='PENDING',
+                    contact_email=email
+                )
+
+            if email.endswith('@devnaija.com'):
+                role = 'super_admin'
+                user.is_superuser = True
+                user.is_staff = True
+                user.save()
+
+            UserProfile.objects.create(
+                user=user,
+                role=role,
+                school=school_obj
+            )
+
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            "token": token.key,
+            "user": UserSerializer(user).data
+        }, status=status.HTTP_200_OK)
+
+
+
 class UserDataView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
