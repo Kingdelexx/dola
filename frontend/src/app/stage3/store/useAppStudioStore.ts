@@ -127,7 +127,7 @@ interface AppStudioState {
   selectScreen: (id: string) => void;
   
   // Elements Actions
-  addElement: (type: string) => void;
+  addElement: (type: string, position?: { x: number; y: number }) => void;
   deleteElement: (id: string) => void;
   duplicateElement: (id: string) => void;
   updateElementProp: (id: string, prop: keyof AppElement | 'style' | 'events', val: any) => void;
@@ -520,7 +520,7 @@ export const useAppStudioStore = create<AppStudioState>((set, get) => ({
   },
 
   // Elements
-  addElement: (type) => {
+  addElement: (type, position) => {
     const projId = get().currentProjectId;
     const screenId = get().currentScreenId;
     if (!projId || !screenId) return;
@@ -568,6 +568,16 @@ export const useAppStudioStore = create<AppStudioState>((set, get) => ({
       webViewer: { src: 'https://example.com', style: { width: 260, height: 200, borderRadius: 8, backgroundColor: '#ffffff', color: '#000000', fontFamily: 'system-ui', fontSize: 12, fontWeight: 'normal', textAlign: 'center', opacity: 1, rotation: 0, position: 'absolute', zIndex: 10 } }
     };
 
+    const targetWidth = defaults[type]?.style?.width || 100;
+    const targetHeight = defaults[type]?.style?.height || 40;
+
+    const calcX = position
+      ? Math.max(0, Math.min(320 - targetWidth, Math.round(position.x - targetWidth / 2)))
+      : (30 + (screen.elements.length * 10) % 80);
+    const calcY = position
+      ? Math.max(0, Math.min(560 - targetHeight, Math.round(position.y - targetHeight / 2)))
+      : (80 + (screen.elements.length * 15) % 150);
+
     const newElement: AppElement = {
       id: elId,
       type,
@@ -583,10 +593,10 @@ export const useAppStudioStore = create<AppStudioState>((set, get) => ({
       chartType: defaults[type]?.chartType,
       mapCenter: defaults[type]?.mapCenter,
       style: {
-        x: 30 + (screen.elements.length * 10) % 80,
-        y: 80 + (screen.elements.length * 15) % 150,
-        width: defaults[type]?.style?.width || 100,
-        height: defaults[type]?.style?.height || 40,
+        x: calcX,
+        y: calcY,
+        width: targetWidth,
+        height: targetHeight,
         borderRadius: defaults[type]?.style?.borderRadius || 0,
         backgroundColor: defaults[type]?.style?.backgroundColor || '#ffffff',
         color: defaults[type]?.style?.color || '#000000',
@@ -806,7 +816,7 @@ export const useAppStudioStore = create<AppStudioState>((set, get) => ({
   },
 
   // Tabs / Sidebars
-  setActiveTab: (activeTab) => set({ activeTab }),
+  setActiveTab: (activeTab) => set({ activeTab: activeTab === 'code' ? 'blocks' : activeTab }),
   setLeftSidebarTab: (leftSidebarTab) => set({ leftSidebarTab }),
   setBottomPanelTab: (bottomPanelTab) => set({ bottomPanelTab }),
   setIdeTheme: (ideTheme) => set({ ideTheme }),

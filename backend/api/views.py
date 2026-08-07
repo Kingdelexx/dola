@@ -343,30 +343,39 @@ class ChatView(APIView):
         messages = request.data.get('messages', [])
         stage = request.data.get('stage', '1')
         level = request.data.get('level', '1')
+        context_info = request.data.get('contextInfo', '') or request.data.get('levelGoal', '')
         
         last_message = ""
-        if messages and len(messages) > 0:
-            last_message = messages[-1].get('content', '').strip()
+        sanitized_messages = []
+        if isinstance(messages, list):
+            for m in messages:
+                if isinstance(m, dict):
+                    role = str(m.get('role', 'user'))
+                    content = str(m.get('content', ''))
+                    sanitized_messages.append({'role': role, 'content': content})
+            if sanitized_messages:
+                last_message = sanitized_messages[-1]['content'].strip()
 
         api_key = os.environ.get('OPENAI_API_KEY')
         
-        if api_key:
+        if api_key and len(api_key.strip()) > 10:
             try:
+                context_prompt = f"\nLevel Goal / Code Context: {context_info}\n" if context_info else ""
                 system_prompt = (
                     f"You are Lizzy 🧚✨, a warm, encouraging, and kid-friendly AI tutor on DolaCode!\n"
                     f"Your mission is to lead and guide students through coding and math challenges.\n"
-                    f"The student is currently working on Stage {stage}, Level {level}.\n"
+                    f"The student is currently working on Stage {stage}, Level {level}.{context_prompt}\n"
                     f"Guidelines:\n"
-                    f"1. Be friendly, energetic, and clear.\n"
+                    f"1. Be friendly, energetic, specific to their stage/level, and clear.\n"
                     f"2. Never just give the exact answer immediately—instead, give hints and ask guiding questions to lead them to the solution.\n"
                     f"3. Use supportive emojis and keep responses concise and easy for kids/beginners to read."
                 )
                 
                 payload = json.dumps({
-                    "model": "gpt-3.5-turbo",
+                    "model": "gpt-4o-mini",
                     "messages": [
                         {"role": "system", "content": system_prompt},
-                        *[{ "role": m.get('role', 'user'), "content": m.get('content', '') } for m in messages[-6:]]
+                        *sanitized_messages[-6:]
                     ],
                     "max_tokens": 250,
                     "temperature": 0.7
@@ -377,49 +386,56 @@ class ChatView(APIView):
                     data=payload,
                     headers={
                         "Content-Type": "application/json",
-                        "Authorization": f"Bearer {api_key}"
+                        "Authorization": f"Bearer {api_key.strip()}"
                     }
                 )
                 
-                with urllib.request.urlopen(req, timeout=10) as response:
+                with urllib.request.urlopen(req, timeout=8) as response:
                     res_body = json.loads(response.read().decode('utf-8'))
                     reply = res_body['choices'][0]['message']['content']
-                    return Response({"reply": reply, "author": "Lizzy"})
+                    return Response({"reply": reply, "author": "Lizzy", "source": "openai"})
             except Exception as e:
-                print(f"OpenAI API call error: {e}")
-                # Fallback to local response engine if OpenAI fails
+                err_detail = str(e)
+                if hasattr(e, 'read'):
+                    try:
+                        err_detail += " - " + e.read().decode('utf-8')
+                    except Exception:
+                        pass
+                print(f"[Lizzy AI Notice]: OpenAI call failed ({err_detail}). Using Local Guidance Engine fallback.")
 
         # Local Intelligent Guidance Engine for Lizzy when OpenAI key is not set or API fails
-        reply = self.generate_lizzy_guidance(last_message, stage, level)
-        return Response({"reply": reply, "author": "Lizzy"})
+        reply = self.generate_lizzy_guidance(last_message, stage, level, context_info)
+        return Response({"reply": reply, "author": "Lizzy", "source": "local_fallback"})
 
-    def generate_lizzy_guidance(self, prompt, stage, level):
+    def generate_lizzy_guidance(self, prompt, stage, level, context_info=""):
         prompt_lower = prompt.lower()
+        stage_str = str(stage)
+        level_str = str(level)
+        ctx = f"\n📌 **Goal Context**: {context_info}\n" if context_info else ""
         
         if "who are you" in prompt_lower or "your name" in prompt_lower or "hello" in prompt_lower or "hi" in prompt_lower:
-            return f"Hi there! I'm Lizzy 🧚✨, your AI learning guide! I'm here in Stage {stage} to help you think through problems, give you helpful hints, and guide you to victory! What are you working on right now?"
+            return f"Hi there! I'm Lizzy 🧚✨, your AI learning guide! I'm here in Stage {stage_str} to help you think through problems, give you helpful hints, and guide you to victory! What are you working on right now?"
             
-        if "hint" in prompt_lower or "help" in prompt_lower or "stuck" in prompt_lower or "clue" in prompt_lower:
-            stage_str = str(stage)
+        if any(k in prompt_lower for k in ["hint", "help", "stuck", "clue", "💡"]):
             if stage_str == "1":
-                return f"💡 **Lizzy's Stage 1 Hint (Level {level})**:\nLook closely at the math pattern or count carefully! Try breaking down the problem into smaller numbers first. You've got this! ⭐"
+                return f"💡 **Lizzy's Stage 1 Hint (Level {level_str})**:{ctx}\nLook closely at the math pattern or count carefully! Try breaking down the problem into smaller numbers first. You've got this! ⭐"
             elif stage_str == "2":
-                return f"🧱 **Lizzy's Stage 2 Hint (Level {level})**:\nCheck your Blockly blocks! Make sure your loop counters or movement blocks are in the exact order needed. Try running your blocks step-by-step! 🎮"
+                return f"🧱 **Lizzy's Stage 2 Hint (Level {level_str})**:{ctx}\nCheck your Blockly blocks! Make sure your loop counters or movement blocks are in the exact order needed. Try running your blocks step-by-step! 🎮"
             elif stage_str == "3":
-                return f"🎨 **Lizzy's Stage 3 Hint**:\nIn this game engine world, check your sprite events and motion triggers! Make sure your conditions are connected properly before pressing Play. 🚀"
+                return f"🎨 **Lizzy's Stage 3 Hint**:{ctx}\nIn this game engine world, check your sprite events, motion blocks, and collision triggers! Make sure all conditions are connected before pressing Play. 🚀"
             elif stage_str == "4":
-                return f"🐍 **Lizzy's Stage 4 Hint**:\nCheck your Python syntax carefully! Make sure your indentations, variable names, and function calls match up. Run your code and check the output box for clues! 💻"
+                return f"🐍 **Lizzy's Stage 4 Hint**:{ctx}\nCheck your Python syntax carefully! Make sure your indentations, variable names, and function calls match up. Run your code and check the output box for clues! 💻"
             else:
-                return f"🌟 **Lizzy's Hint**:\nRead the prompt step-by-step! Try breaking the task down into smaller parts. Tell me what part feels tricky!"
+                return f"🌟 **Lizzy's Hint**:{ctx}\nRead the prompt step-by-step! Try breaking the task down into smaller parts. Tell me what part feels tricky!"
 
-        if "explain" in prompt_lower or "how to" in prompt_lower or "what" in prompt_lower:
-            return f"Great question! 🧐 In Stage {stage}, we are building logic step-by-step. Try describing what you want your code or answer to do first, and I'll help you spot the next move! 💫"
+        if any(k in prompt_lower for k in ["explain", "how to", "what", "🧐"]):
+            return f"Great question! 🧐 In Stage {stage_str} (Level {level_str}), we are building logic step-by-step.{ctx} Try describing what you want your code or answer to do first, and I'll help you spot the next move! 💫"
 
-        if "thank" in prompt_lower or "awesome" in prompt_lower or "cool" in prompt_lower or "great" in prompt_lower:
+        if any(k in prompt_lower for k in ["cheer", "encourage", "thank", "awesome", "cool", "great", "⭐"]):
             return "You're so welcome! Keep up the amazing work! You are becoming a true master coder! 🚀🌟"
 
         # Default friendly response
-        return f"I'm right here with you! 🧚✨ In Stage {stage} (Level {level}), try taking it one step at a time. Ask me for a hint 💡 or type what you're trying to solve!"
+        return f"I'm right here with you! 🧚✨ In Stage {stage_str} (Level {level_str}), try taking it one step at a time.{ctx} Ask me for a hint 💡 or type what you're trying to solve!"
 
 
 from .models import School, Classroom, ParentChild

@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
-import { Mail, Lock, ChevronRight, Gamepad2, Star } from 'lucide-react';
+import { Mail, Lock, ChevronRight, Gamepad2, Star, Rocket } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import RocketLoader from '@/components/RocketLoader';
 
 export default function LoginPage() {
   const containerRef = useRef(null);
@@ -16,12 +17,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/login/`, {
         method: 'POST',
@@ -41,12 +44,15 @@ export default function LoginPage() {
           else router.push('/dashboard');
         } else {
           setError(data.non_field_errors?.[0] || 'Invalid email or password.');
+          setIsLoading(false);
         }
       } else {
         setError('Login failed. Please try again.');
+        setIsLoading(false);
       }
     } catch (err) {
       setError('Login failed. Please try again.');
+      setIsLoading(false);
     }
   };
 
@@ -79,49 +85,12 @@ export default function LoginPage() {
   const handleGoogleAuth = async () => {
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '106344535315-jsm41ud840rm19plmbh4em94j9g3bb9o.apps.googleusercontent.com';
     
-    if (typeof window !== 'undefined' && (window as unknown as { google?: { accounts?: { id?: { initialize: (config: object) => void; prompt: () => void } } } }).google?.accounts?.id) {
-      const googleObj = (window as unknown as { google: { accounts: { id: { initialize: (config: object) => void; prompt: () => void } } } }).google;
-      googleObj.accounts.id.initialize({
-        client_id: googleClientId,
-        use_fedcm_for_prompt: false,
-        callback: async (response: { credential?: string }) => {
-          if (response.credential) {
-            try {
-              const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/google/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ credential: response.credential })
-              });
-              const data = await res.json();
-              if (res.ok) {
-                login(data.token, data.user);
-                const role = data.user?.profile?.role;
-                if (role === 'super_admin') router.push('/super-admin');
-                else if (role === 'teacher') router.push('/teacher-dashboard');
-                else if (role === 'school_admin') router.push('/school-dashboard');
-                else if (role === 'parent') router.push('/parent-dashboard');
-                else router.push('/dashboard');
-              } else {
-                setError(data.error || 'Google Login failed.');
-              }
-            } catch (err) {
-              console.error(err);
-              setError('Google Authentication error.');
-            }
-          }
-        }
-      });
-      googleObj.accounts.id.prompt((notification: { isNotDisplayed: () => boolean; isSkippedMoment: () => boolean; getNotDisplayedReason: () => string }) => {
-        if (notification.isNotDisplayed()) {
-          console.log('Google prompt not displayed:', notification.getNotDisplayedReason());
-        }
-      });
-    } else {
-      // Direct prompt fallback
+    const triggerFallbackPrompt = async () => {
       const promptEmail = prompt("Enter your Gmail address to sign in with Google:");
       if (!promptEmail || !promptEmail.trim()) return;
 
       setError('');
+      setIsLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/google/`, {
           method: 'POST',
@@ -139,16 +108,70 @@ export default function LoginPage() {
           else router.push('/dashboard');
         } else {
           setError(data.error || 'Google Authentication failed.');
+          setIsLoading(false);
         }
       } catch (err) {
         console.error(err);
         setError('Google Authentication failed.');
+        setIsLoading(false);
       }
+    };
+
+    if (typeof window !== 'undefined' && (window as unknown as { google?: { accounts?: { id?: { initialize: (config: object) => void; prompt: (notification?: any) => void } } } }).google?.accounts?.id) {
+      const googleObj = (window as unknown as { google: { accounts: { id: { initialize: (config: object) => void; prompt: (notification?: any) => void } } } }).google;
+      googleObj.accounts.id.initialize({
+        client_id: googleClientId,
+        use_fedcm_for_prompt: false,
+        callback: async (response: { credential?: string }) => {
+          if (response.credential) {
+            setIsLoading(true);
+            try {
+              const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/google/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential })
+              });
+              const data = await res.json();
+              if (res.ok) {
+                login(data.token, data.user);
+                const role = data.user?.profile?.role;
+                if (role === 'super_admin') router.push('/super-admin');
+                else if (role === 'teacher') router.push('/teacher-dashboard');
+                else if (role === 'school_admin') router.push('/school-dashboard');
+                else if (role === 'parent') router.push('/parent-dashboard');
+                else router.push('/dashboard');
+              } else {
+                setError(data.error || 'Google Login failed.');
+                setIsLoading(false);
+              }
+            } catch (err) {
+              console.error(err);
+              setError('Google Authentication error.');
+              setIsLoading(false);
+            }
+          }
+        }
+      });
+      googleObj.accounts.id.prompt((notification: { isNotDisplayed: () => boolean; isSkippedMoment: () => boolean; getNotDisplayedReason: () => string }) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          console.log('Google prompt not displayed, using prompt fallback.');
+          triggerFallbackPrompt();
+        }
+      });
+    } else {
+      triggerFallbackPrompt();
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-200 via-indigo-100 to-purple-200 text-slate-800 flex items-center justify-center p-6 font-sans overflow-hidden" ref={containerRef}>
+    <div className="min-h-screen bg-gradient-to-br from-sky-200 via-indigo-100 to-purple-200 text-slate-800 flex items-center justify-center p-6 font-sans overflow-hidden relative" ref={containerRef}>
+      {/* Fullscreen Rocket Launch Overlay Loader */}
+      <RocketLoader 
+        isLoading={isLoading} 
+        title="Preparing for Liftoff..." 
+        subTitle="Logging into your coding mission control..." 
+      />
+
       {/* Playful Background Elements */}
       <div className="absolute top-10 right-10 w-40 h-40 bg-sky-300 rounded-full blur-[80px] opacity-60" />
       <div className="absolute bottom-10 left-10 w-40 h-40 bg-purple-300 rounded-full blur-[80px] opacity-60" />
@@ -190,8 +213,9 @@ export default function LoginPage() {
           <div className="mb-6">
             <button
               type="button"
+              disabled={isLoading}
               onClick={handleGoogleAuth}
-              className="w-full py-3.5 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 cursor-pointer"
+              className="w-full py-3.5 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -226,6 +250,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                   onFocus={() => setFocusedInput('email')}
                   onBlur={() => setFocusedInput(null)}
                   className="w-full bg-white border-2 border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all shadow-sm"
@@ -251,6 +276,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
                   onFocus={() => setFocusedInput('password')}
                   onBlur={() => setFocusedInput(null)}
                   className="w-full bg-white border-2 border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all shadow-sm"
@@ -261,9 +287,18 @@ export default function LoginPage() {
             <div className="input-group pt-4">
               <button 
                 type="submit" 
-                className="group w-full flex justify-center items-center gap-2 py-4 px-4 font-black text-xl rounded-xl text-white bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 shadow-[0_6px_0_#2563eb] hover:translate-y-[-2px] hover:shadow-[0_8px_0_#2563eb] active:translate-y-[4px] active:shadow-[0_0px_0_#2563eb] transition-all"
+                disabled={isLoading}
+                className="group w-full flex justify-center items-center gap-2 py-4 px-4 font-black text-xl rounded-xl text-white bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 shadow-[0_6px_0_#2563eb] hover:translate-y-[-2px] hover:shadow-[0_8px_0_#2563eb] active:translate-y-[4px] active:shadow-[0_0px_0_#2563eb] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                Enter World <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
+                {isLoading ? (
+                  <>
+                    <Rocket className="w-6 h-6 animate-bounce text-white" /> Launching...
+                  </>
+                ) : (
+                  <>
+                    Enter World <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </button>
             </div>
           </form>

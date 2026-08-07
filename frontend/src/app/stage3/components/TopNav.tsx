@@ -477,34 +477,25 @@ export default function TopNav({ onCompleteStage }: TopNavProps) {
 
       {/* Right side: View modes (Visual / Blocks / Code) & Exports */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Toggle switch for Visual / Blocks / Code */}
+        {/* Toggle switch for Visual / Blocks */}
         <div className="flex items-center bg-slate-900 border border-slate-850 rounded-xl p-0.5">
           <button
             onClick={() => setActiveTab('design')}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
               activeTab === 'design' ? 'bg-indigo-600 text-white font-extrabold shadow' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span className="hidden xs:inline">DESIGN</span>
+            🎨 <span className="hidden xs:inline">DESIGN</span>
             <span className="inline xs:hidden">DES</span>
           </button>
           <button
             onClick={() => setActiveTab('blocks')}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
               activeTab === 'blocks' ? 'bg-indigo-600 text-white font-extrabold shadow' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span className="hidden xs:inline">BLOCKS</span>
+            🧩 <span className="hidden xs:inline">BLOCKS</span>
             <span className="inline xs:hidden">BLK</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('code')}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-              activeTab === 'code' ? 'bg-indigo-600 text-white font-extrabold shadow' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <span className="hidden xs:inline">CODE</span>
-            <span className="inline xs:hidden">COD</span>
           </button>
         </div>
 

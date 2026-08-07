@@ -11,6 +11,7 @@ export default function VisualCanvas() {
     currentProjectId,
     currentScreenId,
     selectedComponentId,
+    addElement,
     updateElementProp,
     selectElement,
     deleteElement,
@@ -24,6 +25,7 @@ export default function VisualCanvas() {
   } = useAppStudioStore();
 
   const canvasRef = useRef<HTMLDivElement>(null);
+  const phoneScreenRef = useRef<HTMLDivElement>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
@@ -118,6 +120,21 @@ export default function VisualCanvas() {
     });
   };
 
+  const startTouchDragElement = (e: React.TouchEvent, el: AppElement) => {
+    e.stopPropagation();
+    selectElement(el.id);
+    setDraggedElementId(el.id);
+    const touch = e.touches[0];
+    if (touch) {
+      setDragStart({
+        x: touch.clientX,
+        y: touch.clientY,
+        elX: el.style.x,
+        elY: el.style.y
+      });
+    }
+  };
+
   const startResizeElement = (e: React.MouseEvent, el: AppElement) => {
     e.stopPropagation();
     setResizingElementId(el.id);
@@ -127,6 +144,75 @@ export default function VisualCanvas() {
       width: el.style.width,
       height: el.style.height
     });
+  };
+
+  const startTouchResizeElement = (e: React.TouchEvent, el: AppElement) => {
+    e.stopPropagation();
+    setResizingElementId(el.id);
+    const touch = e.touches[0];
+    if (touch) {
+      setResizeStart({
+        x: touch.clientX,
+        y: touch.clientY,
+        width: el.style.width,
+        height: el.style.height
+      });
+    }
+  };
+
+  const handleTouchMoveCanvas = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    if (isPanning) {
+      setPan({ x: touch.clientX - panStart.x, y: touch.clientY - panStart.y });
+    } else if (draggedElementId) {
+      const dx = (touch.clientX - dragStart.x) / zoom;
+      const dy = (touch.clientY - dragStart.y) / zoom;
+      
+      let newX = dragStart.elX + dx;
+      let newY = dragStart.elY + dy;
+
+      if (snapToGrid) {
+        newX = Math.round(newX / gridSize) * gridSize;
+        newY = Math.round(newY / gridSize) * gridSize;
+      }
+
+      newX = Math.max(0, Math.min(320 - 20, newX));
+      newY = Math.max(0, Math.min(560 - 20, newY));
+
+      updateElementProp(draggedElementId, 'style', { x: newX, y: newY });
+    } else if (resizingElementId) {
+      const dx = (touch.clientX - resizeStart.x) / zoom;
+      const dy = (touch.clientY - resizeStart.y) / zoom;
+
+      let newWidth = resizeStart.width + dx;
+      let newHeight = resizeStart.height + dy;
+
+      if (snapToGrid) {
+        newWidth = Math.max(10, Math.round(newWidth / gridSize) * gridSize);
+        newHeight = Math.max(10, Math.round(newHeight / gridSize) * gridSize);
+      }
+
+      updateElementProp(resizingElementId, 'style', { width: newWidth, height: newHeight });
+    }
+  };
+
+  const handleDropCanvas = (e: React.DragEvent) => {
+    e.preventDefault();
+    let type = e.dataTransfer.getData('text/plain');
+    if (!type) {
+      try {
+        const json = JSON.parse(e.dataTransfer.getData('application/json'));
+        type = json.type;
+      } catch (err) {}
+    }
+    if (type && phoneScreenRef.current) {
+      const rect = phoneScreenRef.current.getBoundingClientRect();
+      const dropX = (e.clientX - rect.left) / zoom;
+      const dropY = (e.clientY - rect.top) / zoom;
+      addElement(type, { x: dropX, y: dropY });
+    }
   };
 
   // Render element custom markup on visual canvas
@@ -291,6 +377,9 @@ export default function VisualCanvas() {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchMove={handleTouchMoveCanvas}
+      onTouchEnd={handleMouseUp}
+      onTouchCancel={handleMouseUp}
       className="flex-1 bg-slate-950 border border-slate-900 overflow-hidden relative flex items-center justify-center select-none group/canvas cursor-grab active:cursor-grabbing custom-scrollbar"
     >
       {/* Grid Pattern overlay */}
@@ -318,8 +407,14 @@ export default function VisualCanvas() {
             <div className="w-12 h-1 bg-slate-900 rounded-full"></div>
           </div>
 
-          {/* Canvas Screens Viewport */}
+          {/* Canvas Screens Viewport with Drag & Drop */}
           <div 
+            ref={phoneScreenRef}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'copy';
+            }}
+            onDrop={handleDropCanvas}
             style={{ backgroundColor: screen?.backgroundColor || '#ffffff' }}
             className="w-[320px] h-[560px] rounded-[24px] overflow-hidden relative shadow-inner"
           >
@@ -330,7 +425,8 @@ export default function VisualCanvas() {
                 <div
                   key={el.id}
                   onMouseDown={(e) => startDragElement(e, el)}
-                  className="absolute cursor-move"
+                  onTouchStart={(e) => startTouchDragElement(e, el)}
+                  className="absolute cursor-move touch-none"
                   style={{
                     left: el.style.x,
                     top: el.style.y,
@@ -353,7 +449,8 @@ export default function VisualCanvas() {
                       {/* Resize Handle (Bottom Right Corner) */}
                       <div
                         onMouseDown={(e) => startResizeElement(e, el)}
-                        className="absolute bottom-0 right-0 w-4 h-4 bg-indigo-600 border border-white rounded-full cursor-se-resize flex items-center justify-center shadow pointer-events-auto hover:scale-125 transition-transform"
+                        onTouchStart={(e) => startTouchResizeElement(e, el)}
+                        className="absolute bottom-0 right-0 w-4 h-4 bg-indigo-600 border border-white rounded-full cursor-se-resize flex items-center justify-center shadow pointer-events-auto hover:scale-125 transition-transform touch-none"
                         title="Drag to resize"
                       >
                         <div className="w-1.5 h-1.5 bg-white rounded-full"></div>

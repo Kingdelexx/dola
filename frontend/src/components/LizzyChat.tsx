@@ -8,6 +8,7 @@ interface LizzyChatProps {
   stage?: number | string;
   level?: number | string;
   initialOpen?: boolean;
+  contextInfo?: string;
 }
 
 interface Message {
@@ -15,7 +16,7 @@ interface Message {
   content: string;
 }
 
-export default function LizzyChat({ stage = 1, level = 1, initialOpen = false }: LizzyChatProps) {
+export default function LizzyChat({ stage = 1, level = 1, initialOpen = false, contextInfo = '' }: LizzyChatProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -37,6 +38,37 @@ export default function LizzyChat({ stage = 1, level = 1, initialOpen = false }:
     }
   }, [messages, isOpen]);
 
+  const getLocalFallbackReply = (userText: string, stageNum: number | string, levelNum: number | string) => {
+    const lower = userText.toLowerCase();
+    const stg = String(stageNum);
+    const lvl = String(levelNum);
+    const ctxText = contextInfo ? `\n📌 **Context**: ${contextInfo}` : '';
+
+    if (lower.includes('hint') || lower.includes('help') || lower.includes('stuck') || lower.includes('clue') || lower.includes('💡')) {
+      if (stg === '1') {
+        return `💡 **Lizzy's Stage 1 Hint (Level ${lvl})**:${ctxText}\nLook closely at the numbers or math pattern! Try counting out each step or breaking big numbers down. You've got this! ⭐`;
+      } else if (stg === '2') {
+        return `🧱 **Lizzy's Stage 2 Hint (Level ${lvl})**:${ctxText}\nCheck your Blockly workspace! Make sure your move blocks and loop counts are in order. Try running your blocks step-by-step! 🎮`;
+      } else if (stg === '3') {
+        return `🎨 **Lizzy's Stage 3 Hint**:${ctxText}\nIn this game builder world, check your sprite events, motion blocks, and collision triggers! Make sure all events are hooked up properly. 🚀`;
+      } else if (stg === '4') {
+        return `🐍 **Lizzy's Stage 4 Hint**:${ctxText}\nCheck your Python syntax carefully! Look out for missing colons, indentations, or misspelled variables. Run your code to check the terminal output for clues! 💻`;
+      } else {
+        return `🌟 **Lizzy's Hint**:${ctxText}\nBreak the goal down into 2 smaller steps. What is the very first thing your code or math equation needs to do?`;
+      }
+    }
+
+    if (lower.includes('explain') || lower.includes('how to') || lower.includes('what') || lower.includes('🧐')) {
+      return `Great question! 🧐 In Stage ${stg} (Level ${lvl}), we are building logic step-by-step.${ctxText} Try telling me what part of the puzzle feels confusing, and we'll tackle it together! 💫`;
+    }
+
+    if (lower.includes('cheer') || lower.includes('encourage') || lower.includes('thank') || lower.includes('cool') || lower.includes('awesome') || lower.includes('great') || lower.includes('⭐')) {
+      return `You are doing AMAZING! 🌟 Coding and math take practice, but every attempt gets you closer to mastering it! Keep pushing forward! 🚀✨`;
+    }
+
+    return `I'm right here with you! 🧚✨ In Stage ${stg} (Level ${lvl}), try taking it one step at a time.${ctxText} Click "Give Hint 💡" or type what you're trying to solve!`;
+  };
+
   const handleSend = async (customPrompt?: string) => {
     const textToSend = customPrompt || input;
     if (!textToSend.trim()) return;
@@ -48,22 +80,24 @@ export default function LizzyChat({ stage = 1, level = 1, initialOpen = false }:
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-      const response = await axios.post(`${apiUrl}/api/chat/`, {
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+      const response = await axios.post(`${baseUrl}/api/chat/`, {
         messages: updatedMessages,
         stage: stage,
-        level: level
-      });
+        level: level,
+        contextInfo: contextInfo
+      }, { timeout: 6000 });
 
-      const replyContent = response.data.reply || "I'm right here to guide you! Ask me for a hint!";
+      const replyContent = response.data.reply || getLocalFallbackReply(textToSend, stage, level);
       setMessages([...updatedMessages, { role: 'assistant', content: replyContent }]);
     } catch (error) {
-      console.error("Lizzy Chat Error:", error);
+      console.error("Lizzy Chat API Error:", error);
+      const fallbackReply = getLocalFallbackReply(textToSend, stage, level);
       setMessages([
         ...updatedMessages,
         {
           role: 'assistant',
-          content: `Oops! I had a little hiccup connecting, but I'm still here! 💡 Hint for Stage ${stage}: Try re-reading the level goal carefully step-by-step!`
+          content: fallbackReply
         }
       ]);
     } finally {

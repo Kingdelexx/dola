@@ -9,8 +9,14 @@ export default function RocketCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const rocketRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const cursor = cursorRef.current;
     if (!cursor) return;
 
@@ -81,7 +87,11 @@ export default function RocketCursor() {
       document.documentElement.removeEventListener('mouseleave', onMouseLeave);
       document.documentElement.removeEventListener('mouseenter', onMouseEnter);
     };
-  }, [isVisible]);
+  }, [isVisible, mounted]);
+
+  if (!mounted) {
+    return null;
+  }
 
   if (pathname?.startsWith('/stage')) {
     return null;

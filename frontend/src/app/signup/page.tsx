@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { Rocket, Mail, User, Lock, ChevronRight, Calendar, Code, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import RocketLoader from '@/components/RocketLoader';
 
 export default function SignUpPage() {
   const containerRef = useRef(null);
@@ -30,12 +31,14 @@ export default function SignUpPage() {
     expected_classes: ''
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/register/`, {
         method: 'POST',
@@ -71,12 +74,15 @@ export default function SignUpPage() {
           else router.push('/dashboard');
         } else {
           setError(Object.values(data).flat().join(', ') || 'Registration failed');
+          setIsLoading(false);
         }
       } else {
         setError('Registration failed. Please try again.');
+        setIsLoading(false);
       }
     } catch (err) {
       setError('Registration failed. Please try again.');
+      setIsLoading(false);
     }
   };
 
@@ -108,53 +114,12 @@ export default function SignUpPage() {
   const handleGoogleAuth = async () => {
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '106344535315-jsm41ud840rm19plmbh4em94j9g3bb9o.apps.googleusercontent.com';
 
-    if (typeof window !== 'undefined' && (window as unknown as { google?: { accounts?: { id?: { initialize: (config: object) => void; prompt: () => void } } } }).google?.accounts?.id) {
-      const googleObj = (window as unknown as { google: { accounts: { id: { initialize: (config: object) => void; prompt: () => void } } } }).google;
-      googleObj.accounts.id.initialize({
-        client_id: googleClientId,
-        use_fedcm_for_prompt: false,
-        callback: async (response: { credential?: string }) => {
-          if (response.credential) {
-            try {
-              const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/google/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  credential: response.credential,
-                  role: role,
-                  school_name: formData.school_name,
-                  school_code: formData.school_code
-                })
-              });
-              const data = await res.json();
-              if (res.ok) {
-                login(data.token, data.user);
-                const userRole = data.user?.profile?.role || role;
-                if (userRole === 'super_admin') router.push('/super-admin');
-                else if (userRole === 'teacher') router.push('/teacher-dashboard');
-                else if (userRole === 'school_admin') router.push('/school-dashboard');
-                else if (userRole === 'parent') router.push('/parent-dashboard');
-                else router.push('/dashboard');
-              } else {
-                setError(data.error || 'Google Registration failed.');
-              }
-            } catch (err) {
-              console.error(err);
-              setError('Google Authentication error.');
-            }
-          }
-        }
-      });
-      googleObj.accounts.id.prompt((notification: { isNotDisplayed: () => boolean; isSkippedMoment: () => boolean; getNotDisplayedReason: () => string }) => {
-        if (notification.isNotDisplayed()) {
-          console.log('Google prompt not displayed:', notification.getNotDisplayedReason());
-        }
-      });
-    } else {
+    const triggerFallbackPrompt = async () => {
       const promptEmail = prompt("Enter your Gmail address to register with Google:");
       if (!promptEmail || !promptEmail.trim()) return;
 
       setError('');
+      setIsLoading(true);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/google/`, {
           method: 'POST',
@@ -178,16 +143,75 @@ export default function SignUpPage() {
           else router.push('/dashboard');
         } else {
           setError(data.error || 'Google Registration failed.');
+          setIsLoading(false);
         }
       } catch (err) {
         console.error(err);
         setError('Google Registration failed.');
+        setIsLoading(false);
       }
+    };
+
+    if (typeof window !== 'undefined' && (window as unknown as { google?: { accounts?: { id?: { initialize: (config: object) => void; prompt: (notification?: any) => void } } } }).google?.accounts?.id) {
+      const googleObj = (window as unknown as { google: { accounts: { id: { initialize: (config: object) => void; prompt: (notification?: any) => void } } } }).google;
+      googleObj.accounts.id.initialize({
+        client_id: googleClientId,
+        use_fedcm_for_prompt: false,
+        callback: async (response: { credential?: string }) => {
+          if (response.credential) {
+            setIsLoading(true);
+            try {
+              const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/google/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  credential: response.credential,
+                  role: role,
+                  school_name: formData.school_name,
+                  school_code: formData.school_code
+                })
+              });
+              const data = await res.json();
+              if (res.ok) {
+                login(data.token, data.user);
+                const userRole = data.user?.profile?.role || role;
+                if (userRole === 'super_admin') router.push('/super-admin');
+                else if (userRole === 'teacher') router.push('/teacher-dashboard');
+                else if (userRole === 'school_admin') router.push('/school-dashboard');
+                else if (userRole === 'parent') router.push('/parent-dashboard');
+                else router.push('/dashboard');
+              } else {
+                setError(data.error || 'Google Registration failed.');
+                setIsLoading(false);
+              }
+            } catch (err) {
+              console.error(err);
+              setError('Google Authentication error.');
+              setIsLoading(false);
+            }
+          }
+        }
+      });
+      googleObj.accounts.id.prompt((notification: { isNotDisplayed: () => boolean; isSkippedMoment: () => boolean; getNotDisplayedReason: () => string }) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          console.log('Google prompt not displayed, using prompt fallback.');
+          triggerFallbackPrompt();
+        }
+      });
+    } else {
+      triggerFallbackPrompt();
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-purple-100 to-indigo-200 text-slate-800 flex items-center justify-center p-6 font-sans overflow-hidden" ref={containerRef}>
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-purple-100 to-indigo-200 text-slate-800 flex items-center justify-center p-6 font-sans overflow-hidden relative" ref={containerRef}>
+      {/* Fullscreen Launching Rocket Loader */}
+      <RocketLoader 
+        isLoading={isLoading} 
+        title="Launching Account..." 
+        subTitle="Preparing your new coding mission control..." 
+      />
+
       {/* Playful Background Elements */}
       <div className="absolute top-10 left-10 w-40 h-40 bg-pink-300 rounded-full blur-[80px] opacity-60" />
       <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-300 rounded-full blur-[80px] opacity-60" />
@@ -229,6 +253,7 @@ export default function SignUpPage() {
           <div className="grid grid-cols-3 gap-2 mb-6">
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => setRole('student')}
               className={`p-3 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
                 role === 'student'
@@ -242,6 +267,7 @@ export default function SignUpPage() {
 
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => setRole('parent')}
               className={`p-3 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
                 role === 'parent'
@@ -255,6 +281,7 @@ export default function SignUpPage() {
 
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => setRole('school_admin')}
               className={`p-3 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
                 role === 'school_admin'
@@ -271,8 +298,9 @@ export default function SignUpPage() {
           <div className="mb-5">
             <button
               type="button"
+              disabled={isLoading}
               onClick={handleGoogleAuth}
-              className="w-full py-3 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+              className="w-full py-3 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -305,6 +333,7 @@ export default function SignUpPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 required
+                disabled={isLoading}
                 onFocus={() => setFocusedInput('name')}
                 onBlur={() => setFocusedInput(null)}
                 className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all shadow-sm"
@@ -322,6 +351,7 @@ export default function SignUpPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 required
+                disabled={isLoading}
                 onFocus={() => setFocusedInput('email')}
                 onBlur={() => setFocusedInput(null)}
                 className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all shadow-sm"
@@ -341,6 +371,7 @@ export default function SignUpPage() {
                     min="5" max="99"
                     value={formData.age}
                     onChange={(e) => setFormData({...formData, age: e.target.value})}
+                    disabled={isLoading}
                     onFocus={() => setFocusedInput('age')}
                     onBlur={() => setFocusedInput(null)}
                     className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-10 pr-3 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all shadow-sm"
@@ -352,6 +383,7 @@ export default function SignUpPage() {
                     <Code size={18} />
                   </div>
                   <select 
+                    disabled={isLoading}
                     onFocus={() => setFocusedInput('exp')}
                     onBlur={() => setFocusedInput(null)}
                     value={formData.coding_experience}
@@ -377,6 +409,7 @@ export default function SignUpPage() {
                     value={formData.school_name}
                     onChange={(e) => setFormData({...formData, school_name: e.target.value})}
                     required
+                    disabled={isLoading}
                     className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                   />
                 </div>
@@ -389,6 +422,7 @@ export default function SignUpPage() {
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
                     required
+                    disabled={isLoading}
                     className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                   />
                 </div>
@@ -402,6 +436,7 @@ export default function SignUpPage() {
                       value={formData.contact_person}
                       onChange={(e) => setFormData({...formData, contact_person: e.target.value})}
                       required
+                      disabled={isLoading}
                       className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                     />
                   </div>
@@ -414,6 +449,7 @@ export default function SignUpPage() {
                       value={formData.phone_number}
                       onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
                       required
+                      disabled={isLoading}
                       className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                     />
                   </div>
@@ -428,6 +464,7 @@ export default function SignUpPage() {
                       value={formData.principal_email}
                       onChange={(e) => setFormData({...formData, principal_email: e.target.value})}
                       required
+                      disabled={isLoading}
                       className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                     />
                   </div>
@@ -439,6 +476,7 @@ export default function SignUpPage() {
                       placeholder="e.g. 500" 
                       value={formData.number_of_pupils}
                       onChange={(e) => setFormData({...formData, number_of_pupils: e.target.value})}
+                      disabled={isLoading}
                       className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                     />
                   </div>
@@ -451,12 +489,12 @@ export default function SignUpPage() {
                     placeholder="e.g. Primary 1 to 6, JSS 1 to 3" 
                     value={formData.expected_classes}
                     onChange={(e) => setFormData({...formData, expected_classes: e.target.value})}
+                    disabled={isLoading}
                     className="w-full bg-white border-2 border-slate-200 rounded-xl py-2.5 px-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
                   />
                 </div>
               </div>
             )}
-
 
             {/* School Code option for Students */}
             {role === 'student' && (
@@ -466,6 +504,7 @@ export default function SignUpPage() {
                   placeholder="School Code (Optional, e.g. SCH-DOL-101)" 
                   value={formData.school_code}
                   onChange={(e) => setFormData({...formData, school_code: e.target.value})}
+                  disabled={isLoading}
                   className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all shadow-sm"
                 />
               </div>
@@ -482,6 +521,7 @@ export default function SignUpPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
                 required
+                disabled={isLoading}
                 onFocus={() => setFocusedInput('password')}
                 onBlur={() => setFocusedInput(null)}
                 className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all shadow-sm"
@@ -491,9 +531,18 @@ export default function SignUpPage() {
             <div className="input-group pt-2">
               <button 
                 type="submit" 
-                className="group w-full flex justify-center items-center gap-2 py-3.5 px-4 font-black text-lg rounded-xl text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 shadow-[0_4px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#c026d3] active:translate-y-[2px] active:shadow-[0_0px_0_#c026d3] transition-all cursor-pointer"
+                disabled={isLoading}
+                className="group w-full flex justify-center items-center gap-2 py-3.5 px-4 font-black text-lg rounded-xl text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 shadow-[0_4px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_6px_0_#c026d3] active:translate-y-[2px] active:shadow-[0_0px_0_#c026d3] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                Create Account <Rocket size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                {isLoading ? (
+                  <>
+                    <Rocket className="w-5 h-5 animate-bounce text-white" /> Launching...
+                  </>
+                ) : (
+                  <>
+                    Create Account <Rocket size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </>
+                )}
               </button>
             </div>
           </form>

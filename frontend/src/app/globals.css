@@ -24,3 +24,56 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Blockly Toolbox Category Label Text Colors (Matching Block Colors) */
+.blocklyTreeLabel {
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+}
+
+.blocklyTreeRow {
+  padding: 6px 8px !important;
+  margin: 2px 4px !important;
+  border-radius: 6px !important;
+}
+
+.blocklyTreeRow:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Category Specific Text Color Rules */
+.cat-events .blocklyTreeLabel { color: #d97706 !important; }
+.cat-ui .blocklyTreeLabel { color: #0284c7 !important; }
+.cat-vars .blocklyTreeLabel { color: #ea580c !important; }
+.cat-math .blocklyTreeLabel { color: #16a34a !important; }
+.cat-logic .blocklyTreeLabel { color: #15803d !important; }
+.cat-loops .blocklyTreeLabel { color: #9333ea !important; }
+.cat-text .blocklyTreeLabel { color: #db2777 !important; }
+.cat-lists .blocklyTreeLabel { color: #dc2626 !important; }
+.cat-objects .blocklyTreeLabel { color: #78350f !important; }
+.cat-date .blocklyTreeLabel { color: #0d9488 !important; }
+.cat-nav .blocklyTreeLabel { color: #d97706 !important; }
+.cat-storage .blocklyTreeLabel { color: #c2410c !important; }
+.cat-db .blocklyTreeLabel { color: #3730a3 !important; }
+.cat-net .blocklyTreeLabel { color: #0891b2 !important; }
+.cat-media .blocklyTreeLabel { color: #6d28d9 !important; }
+.cat-notif .blocklyTreeLabel { color: #ea580c !important; }
+.cat-device .blocklyTreeLabel { color: #4b5563 !important; }
+.cat-ai .blocklyTreeLabel { color: #7c3aed !important; }
+.cat-func .blocklyTreeLabel { color: #4b5563 !important; }
+.cat-comments .blocklyTreeLabel { color: #6b7280 !important; }
+.cat-themes .blocklyTreeLabel { color: #db2777 !important; }
+.cat-anim .blocklyTreeLabel { color: #0284c7 !important; }
+.cat-sensors .blocklyTreeLabel { color: #d97706 !important; }
+
+/* Active Selected Category Contrast */
+.blocklyTreeSelected {
+  background-color: #312e81 !important;
+  border-radius: 6px !important;
+}
+
+.blocklyTreeSelected .blocklyTreeLabel {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}

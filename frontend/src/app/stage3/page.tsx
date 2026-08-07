@@ -16,7 +16,7 @@ import JavaScriptEditor from './components/JavaScriptEditor';
 import LivePreview from './components/LivePreview';
 
 import { useAppStudioStore } from './store/useAppStudioStore';
-import { Smartphone, Code, Library, Layers } from 'lucide-react';
+import { Smartphone, Library, Layers, Sliders, Puzzle, Play, LayoutGrid } from 'lucide-react';
 
 export default function Stage3Page() {
   const router = useRouter();
@@ -34,6 +34,7 @@ export default function Stage3Page() {
   
   const {
     activeTab,
+    setActiveTab,
     projects,
     initProjects
   } = useAppStudioStore();
@@ -44,11 +45,13 @@ export default function Stage3Page() {
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   
-  // Mobile responsive view controller
-  // 'preview' -> Canvas / LivePreview
-  // 'workspace' -> BlocklyWorkspace / JavaScriptEditor
-  // 'sidebar' -> LeftSidebar (Component Library / Assets / Templates)
-  const [mobileActiveView, setMobileActiveView] = useState<'preview' | 'workspace' | 'sidebar'>('preview');
+  // Mobile responsive view controller:
+  // 'canvas' -> VisualCanvas design editor
+  // 'library' -> LeftSidebar component library & screen manager
+  // 'inspector' -> RightSidebar properties inspector
+  // 'blocks' -> BlocklyWorkspace block programming
+  // 'simulator' -> LivePreview interactive mobile simulator
+  const [mobileActiveView, setMobileActiveView] = useState<'canvas' | 'library' | 'inspector' | 'blocks' | 'simulator'>('canvas');
 
   // Load streak / user progress updates
   useEffect(() => {
@@ -117,60 +120,56 @@ export default function Stage3Page() {
   };
 
   return (
-    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden text-slate-100 font-sans select-none">
+    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden text-slate-100 font-sans">
       {/* Top Nav Header */}
       <TopNav onCompleteStage={handleCompleteStage} />
 
       {/* Main Workspace Area */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* LEFT COL: LeftSidebar */}
-        {/* Desktop: visible. Mobile: visible only if mobileActiveView === 'sidebar' */}
-        <div className={`shrink-0 h-full lg:block ${mobileActiveView === 'sidebar' ? 'block absolute inset-0 z-30 w-full' : 'hidden'}`}>
+        {/* LEFT COL: LeftSidebar (Component Library / Screens / Assets) */}
+        {/* Desktop: visible. Mobile: visible when mobileActiveView === 'library' */}
+        <div className={`shrink-0 h-full lg:block ${mobileActiveView === 'library' ? 'block absolute inset-0 z-30 w-full' : 'hidden'}`}>
           <LeftSidebar />
         </div>
 
-        {/* CENTER COL: Workspace (Canvas / Blocks / Code) */}
-        {/* On mobile, we show either workspace or canvas depending on mobileActiveView */}
+        {/* CENTER COL: VisualCanvas or BlocklyWorkspace */}
         <div className={`flex-1 flex flex-col h-full overflow-hidden ${
-          mobileActiveView === 'sidebar' ? 'hidden lg:flex' : 'flex'
+          mobileActiveView === 'library' || mobileActiveView === 'inspector' || mobileActiveView === 'simulator'
+            ? 'hidden lg:flex' 
+            : 'flex'
         }`}>
-          {/* Main workspace frame based on activeTab */}
           <div className="flex-1 flex overflow-hidden min-h-0 relative">
-            
-            {activeTab === 'design' && (
-              <div className={`flex-1 h-full ${mobileActiveView === 'preview' ? 'block' : 'hidden lg:block'}`}>
-                <VisualCanvas />
-              </div>
-            )}
+            {/* Visual Canvas View */}
+            <div className={`flex-1 h-full ${
+              activeTab === 'design' && (mobileActiveView === 'canvas' || mobileActiveView === 'library' || mobileActiveView === 'inspector')
+                ? 'block' 
+                : (activeTab === 'design' ? 'hidden lg:block' : 'hidden')
+            }`}>
+              <VisualCanvas />
+            </div>
 
-            {activeTab === 'blocks' && (
-              <div className={`flex-1 h-full ${mobileActiveView === 'workspace' ? 'block' : 'hidden lg:block'}`}>
-                <BlocklyWorkspace />
-              </div>
-            )}
-
-            {activeTab === 'code' && (
-              <div className={`flex-1 h-full ${mobileActiveView === 'workspace' ? 'block' : 'hidden lg:block'}`}>
-                <JavaScriptEditor />
-              </div>
-            )}
+            {/* Blockly Blocks View */}
+            <div className={`flex-1 h-full ${
+              activeTab === 'blocks' || mobileActiveView === 'blocks'
+                ? 'block' 
+                : 'hidden'
+            }`}>
+              <BlocklyWorkspace />
+            </div>
           </div>
 
-          {/* Bottom Panel Console Output (collapses on mobile workspace) */}
+          {/* Bottom Panel Console Output */}
           <div className="hidden lg:block">
             <BottomPanel />
           </div>
         </div>
 
-        {/* RIGHT COL: LivePreview or RightSidebar properties inspector */}
-        {/* In Design mode, we show RightSidebar properties inspector. */}
-        {/* In Blocks & Code modes, we show LivePreview simulator. */}
-        {/* On mobile: visible only if mobileActiveView === 'preview' */}
+        {/* RIGHT COL: Inspector (RightSidebar) or Simulator (LivePreview) */}
         <div className={`shrink-0 h-full lg:block ${
-          mobileActiveView === 'preview' ? 'block w-full lg:w-auto' : 'hidden'
+          mobileActiveView === 'inspector' || mobileActiveView === 'simulator' ? 'block absolute inset-0 z-30 w-full lg:static lg:z-auto lg:w-auto' : 'hidden'
         }`}>
-          {activeTab === 'design' ? (
+          {activeTab === 'design' && mobileActiveView !== 'simulator' ? (
             <div className="h-full">
               <RightSidebar />
             </div>
@@ -184,37 +183,61 @@ export default function Stage3Page() {
       </div>
 
       {/* MOBILE BOTTOM NAVIGATION BAR */}
-      {/* Renders only on mobile devices (lg:hidden) */}
-      <div className="lg:hidden h-14 bg-slate-900 border-t border-slate-800 flex items-center justify-around text-slate-400 shrink-0 z-40">
+      <div className="lg:hidden h-14 bg-slate-900 border-t border-slate-800 flex items-center justify-around text-slate-400 shrink-0 z-40 px-1">
         <button
-          onClick={() => setMobileActiveView('sidebar')}
-          className={`flex flex-col items-center gap-0.5 text-[10px] font-black uppercase tracking-wider ${
-            mobileActiveView === 'sidebar' ? 'text-indigo-400 font-extrabold' : ''
+          onClick={() => {
+            setActiveTab('design');
+            setMobileActiveView('canvas');
+          }}
+          className={`flex flex-col items-center gap-0.5 text-[9px] font-black uppercase tracking-wider ${
+            mobileActiveView === 'canvas' && activeTab === 'design' ? 'text-indigo-400 font-extrabold' : ''
           }`}
         >
-          <Library size={18} />
+          <LayoutGrid size={17} />
+          <span>Canvas</span>
+        </button>
+
+        <button
+          onClick={() => setMobileActiveView('library')}
+          className={`flex flex-col items-center gap-0.5 text-[9px] font-black uppercase tracking-wider ${
+            mobileActiveView === 'library' ? 'text-indigo-400 font-extrabold' : ''
+          }`}
+        >
+          <Library size={17} />
           <span>Library</span>
         </button>
 
         <button
-          onClick={() => setMobileActiveView('preview')}
-          className={`flex flex-col items-center gap-0.5 text-[10px] font-black uppercase tracking-wider ${
-            mobileActiveView === 'preview' ? 'text-indigo-400 font-extrabold' : ''
+          onClick={() => setMobileActiveView('inspector')}
+          className={`flex flex-col items-center gap-0.5 text-[9px] font-black uppercase tracking-wider ${
+            mobileActiveView === 'inspector' ? 'text-indigo-400 font-extrabold' : ''
           }`}
         >
-          <Smartphone size={18} />
-          <span>Simulator</span>
+          <Sliders size={17} />
+          <span>Inspector</span>
         </button>
 
         <button
-          onClick={() => setMobileActiveView('workspace')}
-          disabled={activeTab === 'design'}
-          className={`flex flex-col items-center gap-0.5 text-[10px] font-black uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed ${
-            mobileActiveView === 'workspace' ? 'text-indigo-400 font-extrabold' : ''
+          onClick={() => {
+            setActiveTab('blocks');
+            setMobileActiveView('blocks');
+          }}
+          className={`flex flex-col items-center gap-0.5 text-[9px] font-black uppercase tracking-wider ${
+            mobileActiveView === 'blocks' || activeTab === 'blocks' ? 'text-indigo-400 font-extrabold' : ''
           }`}
         >
-          <Code size={18} />
-          <span>Editor</span>
+          <Puzzle size={17} />
+          <span>Blocks</span>
+        </button>
+
+        <button
+          onClick={() => setMobileActiveView('simulator')}
+          className={`flex flex-col items-center gap-0.5 text-[9px] font-black uppercase tracking-wider ${
+            mobileActiveView === 'simulator' ? 'text-emerald-400 font-extrabold' : ''
+          }`}
+        >
+          <Play size={17} />
+          <span>Test App</span>
         </button>
       </div>
 

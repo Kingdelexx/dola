@@ -18,7 +18,8 @@ export default function AIChat() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/chat/`, {
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+      const response = await axios.post(`${baseUrl}/api/chat/`, {
         messages: newMessages.map(m => ({ role: m.role, content: m.content }))
       });
       setMessages([...newMessages, { role: 'assistant', content: response.data.reply }]);

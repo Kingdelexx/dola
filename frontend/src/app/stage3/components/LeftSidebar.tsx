@@ -153,8 +153,15 @@ export default function LeftSidebar() {
                   {cat.items.map((item) => (
                     <button
                       key={item.type}
+                      draggable={true}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('application/json', JSON.stringify({ type: item.type }));
+                        e.dataTransfer.setData('text/plain', item.type);
+                        e.dataTransfer.effectAllowed = 'copy';
+                      }}
                       onClick={() => addElement(item.type)}
-                      className="w-full flex items-center justify-between text-left p-2.5 bg-slate-950 hover:bg-indigo-900/15 border border-slate-850 hover:border-indigo-500/30 rounded-xl transition-all group"
+                      className="w-full flex items-center justify-between text-left p-2.5 bg-slate-950 hover:bg-indigo-900/15 border border-slate-850 hover:border-indigo-500/30 rounded-xl transition-all group cursor-grab active:cursor-grabbing"
+                      title="Drag to canvas or click to add"
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>

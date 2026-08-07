@@ -168,12 +168,138 @@ export default function LivePreview() {
           addConsoleLog(String(msg));
         };
 
+        const onScreenOpen = (screenId: string, callback: Function) => {
+          addConsoleLog(`onScreenOpen("${screenId}") registered.`);
+          if (runtimeActiveScreenId === screenId) callback();
+        };
+
+        const onDeviceEvent = (eventType: string, callback: Function) => {
+          addConsoleLog(`onDeviceEvent("${eventType}") registered.`);
+        };
+
+        const openUrl = (url: string) => {
+          addConsoleLog(`openUrl("${url}")`);
+          window.open(url, '_blank');
+        };
+
+        const shareText = (text: string) => {
+          addConsoleLog(`shareText("${text}")`);
+          setToastMessage(`📤 Shared: ${text}`);
+          setTimeout(() => setToastMessage(null), 3000);
+        };
+
+        const dbCreateRecord = (col: string, data: any) => {
+          addConsoleLog(`dbCreateRecord("${col}", ${JSON.stringify(data)})`);
+          setLocalDb(prev => ({
+            ...prev,
+            [col]: [...(prev[col] || []), { id: Date.now(), ...data }]
+          }));
+        };
+
+        const httpRequest = (method: string, url: string, callback: Function) => {
+          addConsoleLog(`httpRequest("${method}", "${url}")`);
+          setTimeout(() => {
+            callback({ status: 200, success: true, message: `Mock API response from ${url}` });
+          }, 500);
+        };
+
+        const askAI = (prompt: string, callback: Function) => {
+          addConsoleLog(`askAI("${prompt}")`);
+          setTimeout(() => {
+            callback(`🤖 Dola AI: Response to "${prompt}"`);
+          }, 800);
+        };
+
+        const summarizeText = (text: string) => {
+          addConsoleLog(`summarizeText(...)`);
+          return `Summary: ${String(text).slice(0, 50)}...`;
+        };
+
+        const animateElement = (id: string, animType: string) => {
+          addConsoleLog(`animateElement("${id}", "${animType}")`);
+          setToastMessage(`✨ Animating ${id} (${animType})`);
+          setTimeout(() => setToastMessage(null), 2000);
+        };
+
+        const getSensorValue = (sensor: string) => {
+          if (sensor === 'battery') return 95;
+          if (sensor === 'micLevel') return 42;
+          return 10;
+        };
+
+        const setTheme = (themeName: string) => {
+          addConsoleLog(`setTheme("${themeName}")`);
+          setToastMessage(`🎨 App Theme: ${themeName}`);
+          setTimeout(() => setToastMessage(null), 2000);
+        };
+
+        const onAppClose = (cb: Function) => addConsoleLog("onAppClose registered");
+        const onScreenClose = (screenId: string, cb: Function) => addConsoleLog(`onScreenClose("${screenId}") registered`);
+        const closeScreen = () => addConsoleLog("closeScreen called");
+        const deleteData = (key: string) => {
+          addConsoleLog(`deleteData("${key}")`);
+          setLocalDb(prev => {
+            const next = { ...prev };
+            delete next[key];
+            return next;
+          });
+        };
+        const clearStorage = () => {
+          addConsoleLog("clearStorage()");
+          setLocalDb({});
+        };
+        const dbReadRecord = (col: string, id: string) => {
+          const list = localDb[col] || [];
+          return list.find((item: any) => item.id == id);
+        };
+        const dbDeleteRecord = (col: string, id: string) => {
+          addConsoleLog(`dbDeleteRecord("${col}", "${id}")`);
+          setLocalDb(prev => ({
+            ...prev,
+            [col]: (prev[col] || []).filter((item: any) => item.id != id)
+          }));
+        };
+        const downloadFile = (url: string) => {
+          addConsoleLog(`downloadFile("${url}")`);
+          setToastMessage(`📥 Downloading file...`);
+          setTimeout(() => setToastMessage(null), 2000);
+        };
+        const pauseAudio = () => addConsoleLog("pauseAudio()");
+        const stopAudio = () => addConsoleLog("stopAudio()");
+        const takePicture = (cb: Function) => {
+          addConsoleLog("takePicture()");
+          setToastMessage("📷 Photo captured");
+          if (cb) cb("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200");
+          setTimeout(() => setToastMessage(null), 2000);
+        };
+        const confirmDialog = (q: string, yesCb: Function, noCb: Function) => {
+          if (window.confirm(q)) { if (yesCb) yesCb(); }
+          else { if (noCb) noCb(); }
+        };
+        const vibrateDevice = (ms: number) => {
+          addConsoleLog(`vibrateDevice(${ms}ms)`);
+          setToastMessage("📳 Device Vibrated");
+          setTimeout(() => setToastMessage(null), 1500);
+        };
+        const toggleFlashlight = (state: string) => addConsoleLog(`toggleFlashlight("${state}")`);
+        const generateCodeAI = (p: string) => "// AI Code Generated";
+        const explainCodeAI = (c: string) => "AI Explanation: Executes user interaction logic.";
+        const fixErrorAI = (e: string) => "AI Fixed Error Output";
+        const generateImageAI = (p: string) => "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200";
+        const translateText = (t: string, lang: string) => `Translated (${lang}): ${t}`;
+
         // Construct sandbox runner
         const runner = new Function(
           'onEvent', 'setProperty', 'getProperty', 'setText', 'getText', 
           'setValue', 'getValue', 'show', 'hide', 'navigateTo', 
           'showAlert', 'showToast', 'playAudio', 'saveData', 'loadData', 
-          'generateRandomNumber', 'log',
+          'generateRandomNumber', 'log', 'onScreenOpen', 'onDeviceEvent',
+          'openUrl', 'shareText', 'dbCreateRecord', 'httpRequest', 'askAI',
+          'summarizeText', 'animateElement', 'getSensorValue', 'setTheme',
+          'onAppClose', 'onScreenClose', 'closeScreen', 'deleteData', 'clearStorage',
+          'dbReadRecord', 'dbDeleteRecord', 'downloadFile', 'pauseAudio', 'stopAudio',
+          'takePicture', 'confirmDialog', 'vibrateDevice', 'toggleFlashlight',
+          'generateCodeAI', 'explainCodeAI', 'fixErrorAI', 'generateImageAI', 'translateText',
           project.code
         );
 
@@ -182,7 +308,13 @@ export default function LivePreview() {
           onEvent, setProperty, getProperty, setText, getText,
           setValue, getValue, show, hide, navigateTo,
           showAlert, showToast, playAudio, saveData, loadData,
-          generateRandomNumber, log
+          generateRandomNumber, log, onScreenOpen, onDeviceEvent,
+          openUrl, shareText, dbCreateRecord, httpRequest, askAI,
+          summarizeText, animateElement, getSensorValue, setTheme,
+          onAppClose, onScreenClose, closeScreen, deleteData, clearStorage,
+          dbReadRecord, dbDeleteRecord, downloadFile, pauseAudio, stopAudio,
+          takePicture, confirmDialog, vibrateDevice, toggleFlashlight,
+          generateCodeAI, explainCodeAI, fixErrorAI, generateImageAI, translateText
         );
 
       } catch (err: any) {
