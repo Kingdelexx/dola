@@ -40,6 +40,7 @@ export type User = {
 
 type AuthContextType = {
   user: User | null;
+  token: string | null;
   login: (token: string, userData: User) => void;
   logout: () => void;
   loading: boolean;
@@ -48,6 +49,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  token: null,
   login: () => {},
   logout: () => {},
   loading: true,
@@ -56,15 +58,17 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (storedToken) {
+      setToken(storedToken);
       fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/user/`, {
         headers: {
-          'Authorization': `Token ${token}`
+          'Authorization': `Token ${storedToken}`
         }
       })
       .then(res => {
@@ -80,17 +84,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(data);
         } else {
           localStorage.removeItem('token');
+          setToken(null);
         }
       })
-      .catch(() => localStorage.removeItem('token'))
+      .catch(() => {
+        localStorage.removeItem('token');
+        setToken(null);
+      })
       .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
   }, []);
 
-  const login = (token: string, userData: User) => {
-    localStorage.setItem('token', token);
+  const login = (tokenVal: string, userData: User) => {
+    localStorage.setItem('token', tokenVal);
+    setToken(tokenVal);
     setUser(userData);
   };
 
@@ -102,12 +111,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('stage1_progress');
     localStorage.removeItem('stage2_progress');
+    setToken(null);
     setUser(null);
     router.push('/');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, updateUser }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

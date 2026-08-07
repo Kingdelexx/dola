@@ -8,6 +8,18 @@ interface InstructionCarouselProps {
   level: PythonLevel;
 }
 
+interface SlideItem {
+  id: string;
+  tag: string;
+  title: string;
+  icon: string;
+  type: string;
+  content?: string;
+  description?: string;
+  codeSnippet?: string;
+  highlight?: string;
+}
+
 export default function InstructionCarousel({ level }: InstructionCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -17,7 +29,7 @@ export default function InstructionCarousel({ level }: InstructionCarouselProps)
   }, [level.id]);
 
   // Generate interactive instruction cards dynamically
-  const generateSlides = () => {
+  const generateSlides = (): SlideItem[] => {
     if (level.chapter === 0) {
       return [
         {
