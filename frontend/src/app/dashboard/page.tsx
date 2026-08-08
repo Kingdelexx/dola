@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [quote, setQuote] = useState(quotes[0]);
   const [stage1Progress, setStage1Progress] = useState(0);
   const [stage2Progress, setStage2Progress] = useState(0);
+  const [stage3Completed, setStage3Completed] = useState(false);
   const [allBadges, setAllBadges] = useState<any[]>([]);
 
   useEffect(() => {
@@ -32,8 +33,10 @@ export default function DashboardPage() {
     // Load progress
     const s1 = user?.profile?.stage1_progress ?? (localStorage.getItem('stage1_progress') ? parseInt(localStorage.getItem('stage1_progress') || '0', 10) : 0);
     const s2 = user?.profile?.stage2_progress ?? (localStorage.getItem('stage2_progress') ? parseInt(localStorage.getItem('stage2_progress') || '0', 10) : 0);
+    const s3 = localStorage.getItem('stage3_completed') === 'true';
     setStage1Progress(s1);
     setStage2Progress(s2);
+    setStage3Completed(s3);
   }, [user]);
 
   useEffect(() => {
@@ -92,9 +95,12 @@ export default function DashboardPage() {
     );
   }
 
-  const isStage2Unlocked = true;
-  const isStage3Unlocked = true;
-  const isStage4Unlocked = true; 
+  const isAdminOrTeacher = user?.profile?.role && ['teacher', 'school_admin', 'super_admin'].includes(user.profile.role);
+
+  const isStage1Unlocked = true;
+  const isStage2Unlocked = stage1Progress >= 80 || isAdminOrTeacher;
+  const isStage3Unlocked = (stage1Progress >= 80 && stage2Progress >= 11) || isAdminOrTeacher;
+  const isStage4Unlocked = (stage1Progress >= 80 && stage2Progress >= 11 && stage3Completed) || isAdminOrTeacher; 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-indigo-50 to-purple-100 text-slate-800 p-6 md:p-10 font-sans overflow-x-hidden" ref={containerRef}>
