@@ -42,31 +42,30 @@ export default function LizzyChat({ stage = 1, level = 1, initialOpen = false, c
     const lower = userText.toLowerCase();
     const stg = String(stageNum);
     const lvl = String(levelNum);
-    const ctxText = contextInfo ? `\n📌 **Context**: ${contextInfo}` : '';
 
     if (lower.includes('hint') || lower.includes('help') || lower.includes('stuck') || lower.includes('clue') || lower.includes('💡')) {
       if (stg === '1') {
-        return `💡 **Lizzy's Stage 1 Hint (Level ${lvl})**:${ctxText}\nLook closely at the numbers or math pattern! Try counting out each step or breaking big numbers down. You've got this! ⭐`;
+        return `💡 **Stage 1 Hint (Lvl ${lvl})**:\n- Count pattern steps UP (+) or DOWN (-).\n- Find the missing target number! ⭐`;
       } else if (stg === '2') {
-        return `🧱 **Lizzy's Stage 2 Hint (Level ${lvl})**:${ctxText}\nCheck your Blockly workspace! Make sure your move blocks and loop counts are in order. Try running your blocks step-by-step! 🎮`;
+        return `🧱 **Stage 2 Hint (Lvl ${lvl})**:\n- Connect blocks inside the loop.\n- Click **Run** to test sprite moves! 🎮`;
       } else if (stg === '3') {
-        return `🎨 **Lizzy's Stage 3 Hint**:${ctxText}\nIn this game builder world, check your sprite events, motion blocks, and collision triggers! Make sure all events are hooked up properly. 🚀`;
+        return `🎨 **Stage 3 Hint**:\n- Check \`onClick\` event in Inspector.\n- Ensure screen state updates on tap! 🚀`;
       } else if (stg === '4') {
-        return `🐍 **Lizzy's Stage 4 Hint**:${ctxText}\nCheck your Python syntax carefully! Look out for missing colons, indentations, or misspelled variables. Run your code to check the terminal output for clues! 💻`;
+        return `🐍 **Stage 4 Hint (Lvl ${lvl})**:\n- Indent lines under functions/loops with 4 spaces.\n- Check exact variable spelling! 💻`;
       } else {
-        return `🌟 **Lizzy's Hint**:${ctxText}\nBreak the goal down into 2 smaller steps. What is the very first thing your code or math equation needs to do?`;
+        return `🌟 **Hint**:\n- Test the first command step-by-step!`;
       }
     }
 
     if (lower.includes('explain') || lower.includes('how to') || lower.includes('what') || lower.includes('🧐')) {
-      return `Great question! 🧐 In Stage ${stg} (Level ${lvl}), we are building logic step-by-step.${ctxText} Try telling me what part of the puzzle feels confusing, and we'll tackle it together! 💫`;
+      return `🧐 **Quick Guide (Lvl ${lvl})**:\nRead the mission task at top, then execute the first step to test output! 💫`;
     }
 
     if (lower.includes('cheer') || lower.includes('encourage') || lower.includes('thank') || lower.includes('cool') || lower.includes('awesome') || lower.includes('great') || lower.includes('⭐')) {
-      return `You are doing AMAZING! 🌟 Coding and math take practice, but every attempt gets you closer to mastering it! Keep pushing forward! 🚀✨`;
+      return `You're doing fantastic! 🚀🌟 Keep pushing forward!`;
     }
 
-    return `I'm right here with you! 🧚✨ In Stage ${stg} (Level ${lvl}), try taking it one step at a time.${ctxText} Click "Give Hint 💡" or type what you're trying to solve!`;
+    return `🧚✨ **Stage ${stg} Lvl ${lvl}**:\nClick **Give Hint 💡** or ask what step feels tricky!`;
   };
 
   const handleSend = async (customPrompt?: string) => {

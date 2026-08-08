@@ -360,27 +360,25 @@ class ChatView(APIView):
         
         if api_key and len(api_key.strip()) > 10:
             try:
-                context_prompt = f"\nDirect Level & Student Context:\n{context_info}\n" if context_info else ""
+                context_prompt = f"\nTask Context:\n{context_info}\n" if context_info else ""
                 system_prompt = (
-                    f"You are Lizzy 🧚✨, an elite, warm, encouraging AI tutor on DolaCode!\n"
-                    f"You provide HYPER-SPECIFIC, ACCURATE, and EASY-TO-UNDERSTAND hints for young coders and beginners.\n"
-                    f"Current Location: Stage {stage}, Level {level}.{context_prompt}\n"
-                    f"CRITICAL TUTORING RULES:\n"
-                    f"1. Directly inspect the Level Goal & Student Context above (which tells you the exact problem title, task, code, or error).\n"
-                    f"2. Never give vague or generic replies! Reference the exact numbers, variables, blocks, or code lines in the student's task.\n"
-                    f"3. Guide them step-by-step: highlight what part is correct, where their mistake is, or the immediate next action to take.\n"
-                    f"4. Do NOT just dump the full final code/solution—ask guiding questions and give precise clues so they learn.\n"
-                    f"5. Keep responses concise (2-4 friendly bullet points or short paragraphs with emojis)."
+                    f"You are Lizzy 🧚✨, an ultra-concise, precise AI coding tutor on DolaCode.\n"
+                    f"Location: Stage {stage}, Level {level}.{context_prompt}\n"
+                    f"STRICT RESPONSE RULES:\n"
+                    f"1. KEEP ALL REPLIES 50% SHORTER: Maximum 2 short bullet points or 25-45 words total.\n"
+                    f"2. NO LONG PREAMBLE or filler intros. Give the precise hint immediately.\n"
+                    f"3. Reference exact numbers, variables, blocks, or error lines from the student's task.\n"
+                    f"4. Give an actionable next step so they can solve it."
                 )
                 
                 payload = json.dumps({
                     "model": "gpt-4o-mini",
                     "messages": [
                         {"role": "system", "content": system_prompt},
-                        *sanitized_messages[-6:]
+                        *sanitized_messages[-4:]
                     ],
-                    "max_tokens": 300,
-                    "temperature": 0.5
+                    "max_tokens": 120,
+                    "temperature": 0.3
                 }).encode('utf-8')
 
                 req = urllib.request.Request(
@@ -414,30 +412,30 @@ class ChatView(APIView):
         stage_str = str(stage)
         level_str = str(level)
         
-        ctx_detail = f"\n📌 **Current Task Context**: {context_info}" if context_info else ""
+        ctx_summary = f" ({context_info[:60]}...)" if context_info else ""
         
         if "who are you" in prompt_lower or "your name" in prompt_lower or "hello" in prompt_lower or "hi" in prompt_lower:
-            return f"Hi there! I'm Lizzy 🧚✨, your AI learning tutor! I'm tracking your progress on Stage {stage_str} Level {level_str}.{ctx_detail}\nWhat specific question or part of this puzzle do you need help with right now?"
+            return f"Hi! I'm Lizzy 🧚✨ (Stage {stage_str} Level {level_str}). How can I help you solve this puzzle?"
             
         if any(k in prompt_lower for k in ["hint", "help", "stuck", "clue", "💡"]):
             if stage_str == "1":
-                return f"💡 **Lizzy's Stage 1 Target Hint (Level {level_str})**:{ctx_detail}\n- Step 1: Look closely at the sequence or equation shown in your mission box.\n- Step 2: Pay attention to whether the pattern goes UP (addition) or DOWN (subtraction).\n- Step 3: Count step-by-step to find the missing target number!"
+                return f"💡 **Stage 1 Hint**{ctx_summary}:\n- Check if pattern counts UP (+) or DOWN (-).\n- Count step-by-step to find the missing target!"
             elif stage_str == "2":
-                return f"🧱 **Lizzy's Stage 2 Block Hint (Level {level_str})**:{ctx_detail}\n- Check your block connections! Are your `when clicked` or `repeat` loop blocks attached?\n- Verify the order: Sprite action blocks must be placed inside the loop body.\n- Click **Run** to watch how your sprite moves step-by-step!"
+                return f"🧱 **Stage 2 Hint**{ctx_summary}:\n- Place action blocks inside your loop body.\n- Hit **Run** to trace sprite steps!"
             elif stage_str == "3":
-                return f"🎨 **Lizzy's Stage 3 App Studio Hint**:{ctx_detail}\n- Check your active component properties in the Right Inspector.\n- Make sure your event handler (like `onClick`) updates the screen state.\n- Switch views between Visual Canvas and JS Editor to test your app flow!"
+                return f"🎨 **Stage 3 Hint**{ctx_summary}:\n- Check `onClick` event in Inspector.\n- Verify screen state updates on click!"
             elif stage_str == "4":
-                return f"🐍 **Lizzy's Stage 4 Python Hint (Level {level_str})**:{ctx_detail}\n- Check your Python code structure carefully!\n- If you're using a function or loop, make sure the line below it is indented with 4 spaces.\n- Verify variable names match exactly (Python is case-sensitive!)."
+                return f"🐍 **Stage 4 Hint**{ctx_summary}:\n- Indent lines under loops/functions with 4 spaces.\n- Check exact variable spelling!"
             else:
-                return f"🌟 **Lizzy's Target Hint**:{ctx_detail}\nBreak the challenge down:\n1. What is the expected starting value?\n2. What operation or command changes it?\n3. Test it one step at a time!"
+                return f"🌟 **Hint**:\n- Break task into 2 steps.\n- Test the first command!"
 
         if any(k in prompt_lower for k in ["explain", "how to", "what", "🧐"]):
-            return f"Let me explain Stage {stage_str} (Level {level_str})! 🧐{ctx_detail}\n- Goal: Understand how the sequence or instruction is processed by the system.\n- Tip: Read the mission box at the top of your screen, then try executing the first command to see what happens!"
+            return f"🧐 **Quick Guide (Lvl {level_str})**:\nRead mission goal at top, then run your first command to test the output!"
 
         if any(k in prompt_lower for k in ["cheer", "encourage", "thank", "awesome", "cool", "great", "⭐"]):
-            return "You're doing fantastic! 🌟 Every puzzle you solve builds your coding superpowers. Keep pushing forward! 🚀"
+            return "Awesome work! 🌟 Keep coding! 🚀"
 
-        return f"I'm here to guide you through Stage {stage_str} Level {level_str}! 🧚✨{ctx_detail}\nTry typing your question or click **Give Hint 💡** to get a step-by-step clue!"
+        return f"🧚✨ **Stage {stage_str} Lvl {level_str}**:\nClick **Give Hint 💡** or ask what step feels tricky!"
 
 
 from .models import School, Classroom, ParentChild
