@@ -5381,7 +5381,11 @@ export default function Stage1Page() {
       />
 
       {/* Lizzy AI Tutor Floating Chatbox */}
-      <LizzyChat stage={1} level={currentLevelIndex + 1} />
+      <LizzyChat 
+        stage={1} 
+        level={currentLevelIndex + 1} 
+        contextInfo={`Part ${currentPartIndex + 1} (${part.title}), Level ${currentLevelIndex + 1} (${level.title}): ${level.objective}. Topic: ${level.topic}. Game Type: ${level.gameType}. Unlocked Ability: ${level.unlockedAbility || 'None'}`} 
+      />
     </div>
   );
 }

@@ -329,7 +329,11 @@ await main()
       />
 
       {/* Lizzy AI Tutor Floating Chatbox */}
-      <LizzyChat stage={2} level={currentLevelIndex + 1} />
+      <LizzyChat 
+        stage={2} 
+        level={currentLevelIndex + 1} 
+        contextInfo={`Stage 2 Level ${currentLevelIndex + 1} (${level.title}): ${level.objective}. Theme: ${level.theme}. Current Generated Code: "${pythonCode}"`} 
+      />
     </div>
   );
 }

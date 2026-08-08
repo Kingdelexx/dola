@@ -452,7 +452,11 @@ export default function Stage4Page() {
       />
 
       {/* Lizzy AI Tutor Floating Chatbox */}
-      <LizzyChat stage={4} level={currentLevelId} />
+      <LizzyChat 
+        stage={4} 
+        level={currentLevelId} 
+        contextInfo={`Stage 4 Python Quest. Level ${activeLevel.id} (${activeLevel.title}). Chapter ${activeLevel.chapter}. Instructions: ${activeLevel.instructions}. Starter Code: "${activeLevel.starterCode}". Current Student Code: "${codeState[activeLevel.id] || activeLevel.starterCode}". ${executionError ? `Terminal Error: ${executionError.message}` : ''}`} 
+      />
     </div>
   );
 }

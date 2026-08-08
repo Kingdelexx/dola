@@ -250,7 +250,10 @@ export default function Stage3Page() {
       />
 
       {/* Lizzy AI Tutor Floating Chatbox */}
-      <LizzyChat stage={3} />
+      <LizzyChat 
+        stage={3} 
+        contextInfo={`Stage 3 App Studio. Active Workspace Tab: ${activeTab}. Active View: ${mobileActiveView}. Drag and drop UI elements, edit properties, and add JavaScript logic.`} 
+      />
     </div>
   );
 }

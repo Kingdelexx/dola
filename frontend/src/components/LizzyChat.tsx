@@ -225,26 +225,22 @@ export default function LizzyChat({ stage = 1, level = 1, initialOpen = false, c
         </div>
       )}
 
-      {/* Floating Trigger Button */}
+      {/* Floating Trigger Button (70% smaller, compact & unobtrusive) */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-white/30 cursor-pointer"
+          className="group relative flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-white/40 cursor-pointer"
+          title="Ask Lizzy AI Assistant"
         >
-          <div className="relative">
-            <span className="text-2xl group-hover:rotate-12 transition-transform duration-300 inline-block">🧚✨</span>
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-purple-800 rounded-full animate-ping"></span>
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-purple-800 rounded-full"></span>
+          <div className="relative flex items-center justify-center">
+            <span className="text-base group-hover:rotate-12 transition-transform duration-300 inline-block">🧚</span>
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border border-purple-800 rounded-full animate-ping"></span>
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border border-purple-800 rounded-full"></span>
           </div>
 
-          <div className="flex flex-col text-left">
-            <span className="font-extrabold text-sm leading-none flex items-center gap-1">
-              Ask Lizzy <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-            </span>
-            <span className="text-[10px] text-purple-200 font-medium">AI Learning Guide</span>
-          </div>
-
-          <MessageCircle className="w-4 h-4 text-purple-200 group-hover:translate-x-0.5 transition-transform" />
+          <span className="font-extrabold text-xs tracking-tight flex items-center gap-1">
+            Lizzy <Sparkles className="w-3 h-3 text-yellow-300" />
+          </span>
         </button>
       )}
     </div>
