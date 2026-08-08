@@ -2019,13 +2019,13 @@ export default function Stage1Page() {
               `3 x 4` in code executes a loop adding 4 units, 3 separate times!
             </p>
 
-            <div className="flex gap-6 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-6 sm:mb-10 max-w-full">
               {Array.from({ length: factor1 }).map((_, i) => (
-                <div key={i} className="flex flex-col items-center bg-indigo-50 border-2 border-indigo-200 p-4 rounded-2xl shadow-sm relative">
+                <div key={i} className="flex flex-col items-center bg-indigo-50 border-2 border-indigo-200 p-3 sm:p-4 rounded-2xl shadow-sm relative">
                   <span className="text-[10px] text-indigo-400 font-black uppercase mb-2">Iter {i+1}</span>
                   <div className="grid grid-cols-2 gap-1.5">
                     {Array.from({ length: factor2 }).map((_, j) => (
-                      <div key={j} className="w-5 h-5 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                      <div key={j} className="w-4 h-4 sm:w-5 sm:h-5 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
                     ))}
                   </div>
                 </div>
@@ -2072,14 +2072,14 @@ export default function Stage1Page() {
               Distribute {total} incoming tasks evenly among the {divisor} server ports below.
             </p>
 
-            <div className="flex gap-6 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-6 sm:mb-10 max-w-full">
               {Array.from({ length: divisor }).map((_, i) => (
-                <div key={i} className="w-24 h-28 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/50 flex flex-col items-center p-2 relative">
-                  <span className="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2">SERVER {i+1}</span>
+                <div key={i} className="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/50 flex flex-col items-center p-2 relative">
+                  <span className="text-[9px] sm:text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2">SERVER {i+1}</span>
                   {selectedDivisionAnswer !== null && selectedDivisionAnswer === level.gameData.correctAnswer && (
                     <div className="grid grid-cols-2 gap-1.5 animate-in zoom-in duration-300">
                       {Array.from({ length: level.gameData.correctAnswer }).map((_, j) => (
-                        <div key={j} className="w-4 h-4 bg-pink-500 rounded-full" />
+                        <div key={j} className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-pink-500 rounded-full" />
                       ))}
                     </div>
                   )}
@@ -2382,13 +2382,13 @@ export default function Stage1Page() {
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
               Loop Step Iterator Gate
             </h4>
-            <div className="flex items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 max-w-full">
               {seq.map((n: number | null, i: number) => (
                 <div 
                   key={i} 
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black border-4 shadow-md transition-all
+                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-lg sm:text-2xl font-black border-2 sm:border-4 shadow-md transition-all
                     ${n === null 
-                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-20 h-20' 
+                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-14 h-14 sm:w-20 sm:h-20' 
                       : 'bg-white border-slate-200 text-slate-800'}`}
                 >
                   {n === null ? '?' : n}
@@ -2442,13 +2442,13 @@ export default function Stage1Page() {
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
               Nested Matrix Renderer Pattern
             </h4>
-            <div className="flex items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 max-w-full">
               {seq.map((s: string | null, i: number) => (
                 <div 
                   key={i} 
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-black border-4 shadow-md transition-all
+                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-black border-2 sm:border-4 shadow-md transition-all
                     ${s === null 
-                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-20 h-20' 
+                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-14 h-14 sm:w-20 sm:h-20' 
                       : shapeColors[s]}`}
                 >
                   {renderShapeText(s)}
@@ -2491,13 +2491,13 @@ export default function Stage1Page() {
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
               Recursive Scaling Node
             </h4>
-            <div className="flex items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 max-w-full">
               {seq.map((n: number | null, i: number) => (
                 <div 
                   key={i} 
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black border-4 shadow-md transition-all
+                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-lg sm:text-2xl font-black border-2 sm:border-4 shadow-md transition-all
                     ${n === null 
-                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-20 h-20' 
+                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-14 h-14 sm:w-20 sm:h-20' 
                       : 'bg-white border-slate-200 text-slate-800'}`}
                 >
                   {n === null ? '?' : n}
@@ -2539,13 +2539,13 @@ export default function Stage1Page() {
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
               Array Offset Index Repair
             </h4>
-            <div className="flex items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 max-w-full">
               {seq.map((n: number | null, i: number) => (
                 <div 
                   key={i} 
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black border-4 shadow-md transition-all
+                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-lg sm:text-2xl font-black border-2 sm:border-4 shadow-md transition-all
                     ${n === null 
-                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-20 h-20' 
+                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-14 h-14 sm:w-20 sm:h-20' 
                       : 'bg-white border-slate-200 text-slate-800'}`}
                 >
                   {n === null ? '?' : n}
@@ -2691,7 +2691,7 @@ export default function Stage1Page() {
               Click a key registry block on the left, then select its matching definition value on the right!
             </p>
 
-            <div className="grid grid-cols-2 gap-8 w-full max-w-2xl mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 w-full max-w-2xl mb-6">
               {/* Keys Left */}
               <div className="flex flex-col gap-4">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Keys</span>
@@ -2956,7 +2956,7 @@ export default function Stage1Page() {
             </h4>
             <p className="text-slate-500 text-sm font-medium mb-6">Complete the symmetrical reflective copy (mirror sign transform scaleX=-1):</p>
             
-            <div className="flex gap-4 items-center mb-8 bg-slate-800 p-6 rounded-3xl border-4 border-slate-700 shadow-inner">
+            <div className="flex flex-wrap gap-2 sm:gap-4 items-center justify-center mb-8 bg-slate-800 p-4 sm:p-6 rounded-3xl border-4 border-slate-700 shadow-inner max-w-full">
               {/* Left Side */}
               <div className="grid grid-cols-2 gap-2">
                 {leftSide.map((active: boolean, i: number) => (
@@ -3448,7 +3448,7 @@ export default function Stage1Page() {
             <p className="text-slate-550 font-medium text-xs mb-6 text-center max-w-sm">
               {level.gameData.question}
             </p>
-            <div className="grid grid-cols-7 gap-1.5 p-4 bg-slate-900 border-4 border-slate-800 rounded-3xl shadow-inner mb-6 w-full max-w-sm">
+            <div className="grid grid-cols-7 gap-1 p-2 sm:p-4 bg-slate-900 border-4 border-slate-800 rounded-3xl shadow-inner mb-6 w-full max-w-sm">
               {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
                 <div key={i} className="text-slate-500 text-[10px] font-black text-center mb-1">{d}</div>
               ))}
@@ -4429,9 +4429,9 @@ export default function Stage1Page() {
               Find the mean average value of the following storage capacity logs: <br/>
               <span className="font-bold text-slate-605">Mean = Sum / Total Count</span>
             </p>
-            <div className="flex gap-3 mb-8">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 max-w-full">
               {values.map((v: number, idx: number) => (
-                <span key={idx} className="bg-indigo-50 border-2 border-indigo-100 text-indigo-600 px-5 py-3 rounded-2xl text-2xl font-black shadow-inner">{v}</span>
+                <span key={idx} className="bg-indigo-50 border-2 border-indigo-100 text-indigo-600 px-3.5 py-2 sm:px-5 sm:py-3 rounded-2xl text-xl sm:text-2xl font-black shadow-inner">{v}</span>
               ))}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-sm">
@@ -4471,9 +4471,9 @@ export default function Stage1Page() {
             <p className="text-slate-550 font-medium text-xs mb-6 text-center max-w-sm leading-relaxed animate-pulse">
               Find the middle value (median) of these sorted CPU loading percentages:
             </p>
-            <div className="flex gap-2.5 mb-8">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mb-8 max-w-full">
               {values.map((v: number, idx: number) => (
-                <span key={idx} className="bg-indigo-50 border-2 border-indigo-100 text-indigo-600 px-4 py-2.5 rounded-2xl text-xl font-black shadow-inner">{v}</span>
+                <span key={idx} className="bg-indigo-50 border-2 border-indigo-100 text-indigo-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-lg sm:text-xl font-black shadow-inner">{v}</span>
               ))}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-sm">
@@ -4555,9 +4555,9 @@ export default function Stage1Page() {
             <p className="text-slate-550 font-medium text-xs mb-6 text-center max-w-sm leading-relaxed animate-pulse">
               Find the range (maximum value - minimum value) of the storage nodes:
             </p>
-            <div className="flex gap-3 mb-8">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 max-w-full">
               {values.map((v: number, idx: number) => (
-                <span key={idx} className="bg-indigo-50 border-2 border-indigo-100 text-indigo-600 px-5 py-3 rounded-2xl text-xl font-black shadow-inner">{v}</span>
+                <span key={idx} className="bg-indigo-50 border-2 border-indigo-100 text-indigo-600 px-3.5 py-2 sm:px-5 sm:py-3 rounded-2xl text-lg sm:text-xl font-black shadow-inner">{v}</span>
               ))}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-sm">
