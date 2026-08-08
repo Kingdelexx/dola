@@ -2064,22 +2064,22 @@ export default function Stage1Page() {
         const total = level.gameData.total;
         const divisor = level.gameData.divisor;
         return (
-          <div className="flex flex-col items-center justify-center p-6 h-full">
-            <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
+          <div className="flex flex-col items-center justify-center p-2 sm:p-6 h-full w-full max-w-full">
+            <h4 className="text-lg sm:text-xl font-bold text-slate-700 mb-3 sm:mb-4 bg-slate-100 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-slate-200 text-center">
               CPU Load Balance Distributor
             </h4>
-            <p className="text-slate-500 font-medium text-center mb-6 max-w-md text-sm">
+            <p className="text-slate-500 font-medium text-center mb-4 sm:mb-6 max-w-md text-xs sm:text-sm">
               Distribute {total} incoming tasks evenly among the {divisor} server ports below.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-6 sm:mb-10 max-w-full">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mb-6 sm:mb-10 w-full max-w-full">
               {Array.from({ length: divisor }).map((_, i) => (
-                <div key={i} className="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/50 flex flex-col items-center p-2 relative">
-                  <span className="text-[9px] sm:text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2">SERVER {i+1}</span>
+                <div key={i} className="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/50 flex flex-col items-center p-1.5 sm:p-2 relative shrink-0">
+                  <span className="text-[9px] sm:text-[10px] font-black text-pink-500 uppercase tracking-widest mb-1 sm:mb-2">SERVER {i+1}</span>
                   {selectedDivisionAnswer !== null && selectedDivisionAnswer === level.gameData.correctAnswer && (
-                    <div className="grid grid-cols-2 gap-1.5 animate-in zoom-in duration-300">
+                    <div className="grid grid-cols-2 gap-1 sm:gap-1.5 animate-in zoom-in duration-300">
                       {Array.from({ length: level.gameData.correctAnswer }).map((_, j) => (
-                        <div key={j} className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-pink-500 rounded-full" />
+                        <div key={j} className="w-3 h-3 sm:w-4 sm:h-4 bg-pink-500 rounded-full" />
                       ))}
                     </div>
                   )}
@@ -2087,8 +2087,8 @@ export default function Stage1Page() {
               ))}
             </div>
 
-            <p className="text-slate-500 font-bold mb-4">How many tasks does each server receive?</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-md">
+            <p className="text-slate-500 font-bold mb-3 sm:mb-4 text-xs sm:text-sm text-center">How many tasks does each server receive?</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 w-full max-w-md">
               {level.gameData.options.map((opt: number) => {
                 const isSelected = selectedDivisionAnswer === opt;
                 const isCorrect = opt === level.gameData.correctAnswer;
@@ -2097,7 +2097,7 @@ export default function Stage1Page() {
                     key={opt}
                     disabled={selectedDivisionAnswer !== null}
                     onClick={() => submitDivision(opt)}
-                    className={`py-4 rounded-2xl font-black text-xl border-4 transition-all shadow-md transform hover:scale-105 active:scale-95
+                    className={`py-3 sm:py-4 rounded-2xl font-black text-lg sm:text-xl border-2 sm:border-4 transition-all shadow-md transform hover:scale-105 active:scale-95
                       ${selectedDivisionAnswer === null 
                         ? 'bg-gradient-to-b from-pink-400 to-pink-500 hover:from-pink-300 hover:to-pink-400 text-white border-pink-600' 
                         : isSelected && isCorrect 
@@ -5181,7 +5181,7 @@ export default function Stage1Page() {
 
           {/* Right panel: Interactive lab game */}
           <div className="w-full lg:col-span-8 order-1 lg:order-2">
-            <div className={`w-full bg-white rounded-[2.5rem] border-[6px] ${success ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)]' : success === false ? 'border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.25)]' : 'border-indigo-200 shadow-[0_0_25px_rgba(99,102,241,0.15)]'} p-4 sm:p-8 shadow-xl min-h-[460px] transition-all duration-300 ${shake ? 'animate-shake' : ''}`}>
+            <div className={`w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] border-4 sm:border-[6px] ${success ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)]' : success === false ? 'border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.25)]' : 'border-indigo-200 shadow-[0_0_25px_rgba(99,102,241,0.15)]'} p-3 sm:p-8 shadow-xl min-h-[420px] sm:min-h-[460px] transition-all duration-300 overflow-x-auto ${shake ? 'animate-shake' : ''}`}>
               {renderGameArea()}
             </div>
           </div>
