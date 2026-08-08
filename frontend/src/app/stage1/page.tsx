@@ -1393,13 +1393,13 @@ export default function Stage1Page() {
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
               {step.label} Challenge ({countingStep + 1}/2)
             </h4>
-            <div className="flex items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 max-w-full">
               {step.sequence.map((n: number | null, i: number) => (
                 <div 
                   key={i} 
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black border-4 shadow-md transition-all
+                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-lg sm:text-2xl font-black border-2 sm:border-4 shadow-md transition-all
                     ${n === null 
-                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-20 h-20' 
+                      ? 'bg-yellow-50 border-dashed border-yellow-400 text-yellow-500 animate-pulse w-14 h-14 sm:w-20 sm:h-20' 
                       : 'bg-white border-slate-200 text-slate-800'}`}
                 >
                   {n === null ? '?' : n}
