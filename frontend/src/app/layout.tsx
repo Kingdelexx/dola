@@ -16,8 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DolaCode",
-  description: "Built by Devnaija Academy",
+  title: "Dolacode - Kids & Schools Interactive Coding Platform",
+  description: "Dolacode is an interactive STEM and programming education application for kids, parents, and schools. Sign in with Google to create accounts, build games, track learning progress across coding stages, and manage student rosters.",
+  applicationName: "Dolacode",
+  authors: [{ name: "Devnaija Academy" }],
+  keywords: ["Dolacode", "DolaCode", "Kids Coding", "Block Coding", "Python for Kids", "Devnaija Academy"],
+  openGraph: {
+    title: "Dolacode - Kids & Schools Interactive Coding Platform",
+    description: "Dolacode is an interactive STEM and programming education application for kids, parents, and schools. Sign in with Google to create accounts, build games, track learning progress across coding stages, and manage student rosters.",
+    siteName: "Dolacode",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

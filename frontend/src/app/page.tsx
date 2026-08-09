@@ -154,7 +154,7 @@ export default function Home() {
             <Rocket className="text-white" size={24} />
           </div>
           <span className="text-2xl font-black tracking-tight text-slate-800 ml-1">
-            DolaCode
+            Dolacode
           </span>
         </div>
         <div className="space-x-3 flex items-center">
@@ -215,7 +215,24 @@ export default function Home() {
             <div className="inline-block bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full font-bold mb-2">
               <Trophy size={20} className="inline mr-2 -mt-1" /> Level Up Your Skills
             </div>
-            <h2 className="text-4xl lg:text-6xl font-black text-slate-800">Why kids <span className="text-pink-500">love</span> DolaCode</h2>
+            <h2 className="text-4xl lg:text-6xl font-black text-slate-800">Why kids <span className="text-pink-500">love</span> Dolacode</h2>
+            
+            {/* Explicit Application Purpose Banner for Google OAuth Verification */}
+            <div className="max-w-4xl mx-auto mt-6 bg-slate-900 text-white rounded-3xl p-6 lg:p-8 text-left border-4 border-purple-400 shadow-xl space-y-3">
+              <div className="flex items-center gap-3 border-b border-slate-700 pb-3">
+                <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center font-black text-xl text-white">D</div>
+                <div>
+                  <h3 className="text-xl font-black text-white">About the Dolacode Application</h3>
+                  <p className="text-xs text-purple-300 font-bold uppercase tracking-wider">Developed by Devnaija Academy</p>
+                </div>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed font-medium">
+                <strong>Dolacode</strong> is an interactive STEM and programming education application for kids, parents, and school educators. Dolacode enables students to learn computational thinking, block-based coding, app creation, and Python programming through gamified modules.
+              </p>
+              <p className="text-slate-300 text-sm leading-relaxed font-medium">
+                <strong>Google Account Integration:</strong> Users sign in to Dolacode using Google OAuth to securely authenticate, create student or educator profiles, save coding stage progress, store project workspace files, and link parent/teacher progress monitoring dashboards.
+              </p>
+            </div>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Card 1 */}
