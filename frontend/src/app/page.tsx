@@ -427,9 +427,7 @@ export default function Home() {
       <section className="relative z-10 bg-pink-500 py-32 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-20 mix-blend-overlay"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center justify-center gap-3 mb-8 text-yellow-900 font-black bg-yellow-400 px-6 py-3 rounded-full shadow-[0_4px_0_#ca8a04] rotate-[-2deg]">
-            <Star size={24} className="fill-yellow-900" /> Join 10,000+ Kids Coding Today!
-          </div>
+
           <h2 className="text-5xl lg:text-7xl font-black text-white leading-tight mb-8 drop-shadow-lg">
             Ready to Build Your First <span className="text-yellow-300">Game?</span>
           </h2>
