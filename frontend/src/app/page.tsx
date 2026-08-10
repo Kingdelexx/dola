@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import 'animate.css';
-import { 
-  Blocks, Terminal, Bot, Rocket, Star, Sparkles, ChevronRight, 
+import {
+  Blocks, Terminal, Bot, Rocket, Star, Sparkles, ChevronRight,
   Play, MousePointerClick, Unlock, Ghost, LayoutGrid, Quote, UserCircle2,
   Plus, Minus, Mail, MapPin, Cloud, Trophy, Gamepad2, Sun, Crown, Heart
 } from 'lucide-react';
@@ -21,9 +21,9 @@ export default function Home() {
   const shapesRef = useRef(null);
   const howItWorksRef = useRef(null);
   const demoRef = useRef(null);
-  const marqueeRef = useRef(null);
+
   const ctaButtonRef = useRef(null);
-  
+
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const { user, logout, loading } = useAuth();
 
@@ -58,34 +58,31 @@ export default function Home() {
           duration: 0.3,
           ease: "power2.out"
         })
-        .to(`.step-${step} .step-icon`, { scale: 1.3, rotation: 10, duration: 0.2, yoyo: true, repeat: 1 }, "<")
-        .to(`.step-${step}`, {
-          y: 0,
-          scale: 1,
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-          borderColor: "rgba(0,0,0,0.05)",
-          duration: 0.5,
-          ease: "bounce.out"
-        }, "+=0.5");
+          .to(`.step-${step} .step-icon`, { scale: 1.3, rotation: 10, duration: 0.2, yoyo: true, repeat: 1 }, "<")
+          .to(`.step-${step}`, {
+            y: 0,
+            scale: 1,
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            borderColor: "rgba(0,0,0,0.05)",
+            duration: 0.5,
+            ease: "bounce.out"
+          }, "+=0.5");
       });
 
       // Demo Loop (More energetic)
       const demoTl = gsap.timeline({ repeat: -1 });
       demoTl.to(".demo-sprite", { x: 180, duration: 1.2, ease: "power2.inOut" })
-            .to(".demo-sprite", { y: -80, duration: 0.4, ease: "power1.out" })
-            .to(".demo-sprite", { y: 0, duration: 0.6, ease: "bounce.out" })
-            .to(".demo-sprite", { x: 0, duration: 1.2, ease: "power2.inOut", delay: 0.5 })
-            .to(".demo-sprite", { rotation: 360, duration: 0.8, ease: "back.out(1.5)" }, "-=1.2");
-            
+        .to(".demo-sprite", { y: -80, duration: 0.4, ease: "power1.out" })
+        .to(".demo-sprite", { y: 0, duration: 0.6, ease: "bounce.out" })
+        .to(".demo-sprite", { x: 0, duration: 1.2, ease: "power2.inOut", delay: 0.5 })
+        .to(".demo-sprite", { rotation: 360, duration: 0.8, ease: "back.out(1.5)" }, "-=1.2");
+
       const codeTl = gsap.timeline({ repeat: -1 });
       codeTl.fromTo(".fake-block-1", { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" })
-            .fromTo(".fake-block-2", { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" }, "+=0.3")
-            .to(".fake-block-1, .fake-block-2", { opacity: 0, delay: 2.5 });
+        .fromTo(".fake-block-2", { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "back.out(2)" }, "+=0.3")
+        .to(".fake-block-1, .fake-block-2", { opacity: 0, delay: 2.5 });
 
-      // Marquee Loop
-      if (marqueeRef.current) {
-        gsap.to(".marquee-track", { xPercent: -50, ease: "none", duration: 35, repeat: -1 });
-      }
+
 
       // CTA Wiggle
       gsap.to(ctaButtonRef.current, {
@@ -102,13 +99,6 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
-  const testimonials = [
-    { name: "Sarah", text: "DolaCode completely changed how my son sees learning. He's so excited to build games every day!", role: "Parent" },
-    { name: "Leo, Age 10", text: "I made a space shooter game all by myself! Python is actually really fun when you use it here.", role: "Student" },
-    { name: "Mr. Davis", text: "As a teacher, finding a platform that bridges blocks to text code is rare. This does it perfectly.", role: "Teacher" },
-    { name: "Emma, Age 12", text: "The AI tutor is the best! It helps me fix my bugs without just giving me the answer immediately.", role: "Student" },
-    { name: "Michael", text: "Finally an educational app that competes with regular video games for my kids' attention.", role: "Parent" }
-  ];
 
   const faqs = [
     {
@@ -183,13 +173,13 @@ export default function Home() {
           <div className="text-center lg:text-left space-y-8">
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border-2 border-pink-200 shadow-sm animate__animated animate__fadeInDown">
               <Sparkles className="text-pink-500" size={20} />
-              <span className="text-sm font-bold text-pink-600 uppercase tracking-wide">The #1 coding game for kids</span>
+              <span className="text-sm font-bold text-pink-600 uppercase tracking-wide">The coding game for kids</span>
             </div>
             <h1 ref={titleRef} className="text-5xl lg:text-7xl font-black leading-[1.1] text-slate-800 drop-shadow-sm">
               Code your own <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Games</span> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-505 to-green-400">Adventures!</span>
             </h1>
             <p ref={subtitleRef} className="text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium">
-              Join thousands of kids learning to build games, animations, and apps. No boring lessons—just pure fun!
+              Join next generation of creators who are learning to build games, animations, and apps. No boring lessons, just pure fun!
             </p>
             <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               <Link href={user ? "/dashboard" : "/signup"} className="group relative px-10 py-5 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full font-black text-xl text-white shadow-[0_8px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_10px_0_#c026d3] active:translate-y-[6px] active:shadow-[0_2px_0_#c026d3] transition-all w-full sm:w-auto text-center flex items-center justify-center gap-3">
@@ -199,10 +189,10 @@ export default function Home() {
             </div>
           </div>
           <div className="relative flex justify-center items-center h-[400px] lg:h-[500px]">
-            <img 
-              src="/kids_coding_hero.png" 
-              alt="Kids Coding" 
-              className="w-full max-w-[500px] animate__animated animate__zoomIn drop-shadow-[0_20px_50px_rgba(236,72,153,0.3)] rounded-[3rem] border-[6px] border-white rotate-2 hover:rotate-0 transition-transform duration-500" 
+            <img
+              src="/kids_coding_hero.png"
+              alt="Kids Coding"
+              className="w-full max-w-[500px] animate__animated animate__zoomIn drop-shadow-[0_20px_50px_rgba(236,72,153,0.3)] rounded-[3rem] border-[6px] border-white rotate-2 hover:rotate-0 transition-transform duration-500"
             />
           </div>
         </div>
@@ -216,7 +206,7 @@ export default function Home() {
               <Trophy size={20} className="inline mr-2 -mt-1" /> Level Up Your Skills
             </div>
             <h2 className="text-4xl lg:text-6xl font-black text-slate-800">Why kids <span className="text-pink-500">love</span> Dolacode</h2>
-            
+
             {/* Explicit Application Purpose Banner for Google OAuth Verification */}
             <div className="max-w-4xl mx-auto mt-6 bg-slate-900 text-white rounded-3xl p-6 lg:p-8 text-left border-4 border-purple-400 shadow-xl space-y-3">
               <div className="flex items-center gap-3 border-b border-slate-700 pb-3">
@@ -306,12 +296,12 @@ export default function Home() {
         {/* Animated clouds for background */}
         <Cloud className="absolute top-10 left-10 text-white/30" size={150} />
         <Cloud className="absolute bottom-10 right-10 text-white/30" size={200} />
-        
+
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-4xl lg:text-6xl font-black text-white drop-shadow-md">See it in <span className="text-yellow-300">Action!</span></h2>
           </div>
-          
+
           <div className="relative mx-auto max-w-5xl bg-white rounded-[2.5rem] border-8 border-white shadow-[0_0_0_8px_rgba(255,255,255,0.2)] overflow-hidden flex flex-col md:flex-row h-[450px]">
             {/* Editor Side */}
             <div className="w-full md:w-1/2 bg-slate-50 border-r-4 border-slate-200 p-8 flex flex-col gap-5 relative overflow-hidden">
@@ -350,38 +340,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials - Bright and friendly */}
-      <section className="relative z-10 py-32 bg-white overflow-hidden text-slate-900 border-t-8 border-dashed border-sky-200" ref={marqueeRef}>
-        <div className="text-center mb-16 px-6">
-          <div className="inline-flex items-center justify-center bg-pink-100 text-pink-600 px-4 py-2 rounded-full font-bold mb-4">
-            <Heart size={20} className="mr-2 fill-pink-500" /> Loved by Everyone
-          </div>
-          <h2 className="text-4xl lg:text-6xl font-black text-slate-800">Hall of <span className="text-purple-500">Fame</span></h2>
-        </div>
-        <div className="relative w-full flex overflow-hidden py-4">
-          <div className="absolute top-0 left-0 w-16 md:w-40 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute top-0 right-0 w-16 md:w-40 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-          <div className="marquee-track flex gap-8 w-max pl-8">
-            {[...testimonials, ...testimonials].map((t, index) => (
-              <div key={index} className="w-[380px] bg-sky-50 rounded-[2rem] p-8 border-4 border-sky-100 flex-shrink-0 flex flex-col justify-between shadow-lg">
-                <div>
-                  <Quote className="text-sky-300 mb-6" size={48} />
-                  <p className="text-slate-700 font-medium text-lg leading-relaxed mb-8">"{t.text}"</p>
-                </div>
-                <div className="flex items-center gap-4 mt-auto bg-white p-3 rounded-2xl border-2 border-sky-100">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-inner ${index % 2 === 0 ? 'bg-pink-400' : 'bg-purple-400'}`}>
-                    {t.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-black text-slate-800 text-lg">{t.name}</h4>
-                    <span className="text-sm text-sky-600 font-bold uppercase tracking-wider">{t.role}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* FAQ Section - Friendly accordion */}
       <section className="relative z-10 py-32 bg-purple-50 px-6 border-t-8 border-purple-100">
@@ -393,11 +352,11 @@ export default function Home() {
 
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`bg-white border-4 ${openFaq === index ? 'border-pink-400 shadow-[0_8px_0_#f472b6] translate-y-[-4px]' : 'border-purple-200 shadow-sm'} rounded-[1.5rem] overflow-hidden transition-all duration-300`}
               >
-                <button 
+                <button
                   onClick={() => toggleFaq(index)}
                   className="w-full px-8 py-6 flex items-center justify-between text-left focus:outline-none"
                 >
@@ -408,7 +367,7 @@ export default function Home() {
                     {openFaq === index ? <Minus size={20} /> : <Plus size={20} />}
                   </div>
                 </button>
-                <div 
+                <div
                   className={`grid transition-all duration-300 ease-in-out ${openFaq === index ? 'grid-rows-[1fr] opacity-100 pb-6 px-8' : 'grid-rows-[0fr] opacity-0 px-8 pb-0'}`}
                 >
                   <div className="overflow-hidden">
@@ -427,7 +386,9 @@ export default function Home() {
       <section className="relative z-10 bg-pink-500 py-32 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-20 mix-blend-overlay"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
-
+          {/* <div className="inline-flex items-center justify-center gap-3 mb-8 text-yellow-900 font-black bg-yellow-400 px-6 py-3 rounded-full shadow-[0_4px_0_#ca8a04] rotate-[-2deg]">
+            <Star size={24} className="fill-yellow-900" /> Join 10,000+ Kids Coding Today!
+          </div> */}
           <h2 className="text-5xl lg:text-7xl font-black text-white leading-tight mb-8 drop-shadow-lg">
             Ready to Build Your First <span className="text-yellow-300">Game?</span>
           </h2>
@@ -435,9 +396,9 @@ export default function Home() {
             Start coding for free right now. No credit card required, just your imagination!
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Link 
+            <Link
               ref={ctaButtonRef}
-              href={user ? "/dashboard" : "/signup"} 
+              href={user ? "/dashboard" : "/signup"}
               className="px-12 py-6 bg-yellow-400 text-yellow-900 rounded-full font-black text-3xl shadow-[0_10px_0_#ca8a04] hover:bg-yellow-300 hover:shadow-[0_12px_0_#ca8a04] active:translate-y-[8px] active:shadow-[0_2px_0_#ca8a04] transition-all w-full sm:w-auto border-4 border-white"
             >
               {user ? "Continue Playing" : "Play For Free!"}
