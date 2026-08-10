@@ -98,9 +98,9 @@ export default function DashboardPage() {
   const isAdminOrTeacher = user?.profile?.role && ['teacher', 'school_admin', 'super_admin'].includes(user.profile.role);
 
   const isStage1Unlocked = true;
-  const isStage2Unlocked = stage1Progress >= 80 || isAdminOrTeacher;
-  const isStage3Unlocked = (stage1Progress >= 80 && stage2Progress >= 11) || isAdminOrTeacher;
-  const isStage4Unlocked = (stage1Progress >= 80 && stage2Progress >= 11 && stage3Completed) || isAdminOrTeacher; 
+  const isStage2Unlocked = true;
+  const isStage3Unlocked = true; // World 3 (Python Pro) Unlocked
+  const isStage4Unlocked = (stage1Progress >= 80 && stage2Progress >= 11 && stage3Completed) || isAdminOrTeacher; // World 4 (App Studio) Locked
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-indigo-50 to-purple-100 text-slate-800 p-6 md:p-10 font-sans overflow-x-hidden" ref={containerRef}>
@@ -241,42 +241,15 @@ export default function DashboardPage() {
             )}
           </div>
           
-          {/* Stage 3 */}
+          {/* World 3: Python Pro */}
           <div className="dash-element">
             {isStage3Unlocked ? (
-              <Link href="/stage3" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(56,189,248,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(56,189,248,0.5)] hover:border-sky-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-sky-50 to-transparent"></div>
-                <div className="w-20 h-20 bg-gradient-to-br from-sky-400 to-blue-500 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
-                  <span className="text-3xl">📱</span>
-                </div>
-                <h3 className="text-xl font-black mb-1 text-slate-800">World 3</h3>
-                <p className="text-sky-600 font-bold bg-sky-50 px-3 py-0.5 rounded-full mb-3 text-sm">App Studio</p>
-                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Design user interfaces, add buttons and sliders, and write code to build real apps.</p>
-                <div className="mt-4 bg-sky-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#0284c7] group-hover:bg-sky-400 transition-colors">Play Now</div>
-              </Link>
-            ) : (
-              <div className="h-full bg-slate-100/70 border-4 border-dashed border-slate-200 p-6 rounded-[2rem] flex flex-col items-center text-center relative overflow-hidden opacity-75">
-                <div className="absolute top-4 right-4 bg-slate-200 text-slate-500 font-bold px-2 py-0.5 rounded text-xs flex items-center gap-1"><Lock size={12} /> Locked</div>
-                <div className="w-20 h-20 bg-slate-200 rounded-3xl flex items-center justify-center mb-4 border-4 border-white relative z-10 text-slate-400 shadow-inner">
-                  <span className="text-3xl">📱</span>
-                </div>
-                <h3 className="text-xl font-black mb-1 text-slate-600">World 3</h3>
-                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">App Studio</p>
-                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 2: Block Coding to unlock your App Designer studio!</p>
-                <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
-              </div>
-            )}
-          </div>
-
-          {/* Stage 4 */}
-          <div className="dash-element">
-            {isStage4Unlocked ? (
               <Link href="/stage4" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(139,92,246,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.5)] hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-purple-50 to-transparent"></div>
                 <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
                   <Code size={32} />
                 </div>
-                <h3 className="text-xl font-black mb-1 text-slate-800">World 4</h3>
+                <h3 className="text-xl font-black mb-1 text-slate-800">World 3</h3>
                 <p className="text-purple-600 font-bold bg-purple-50 px-3 py-0.5 rounded-full mb-3 text-sm">Python Pro</p>
                 <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Write real text-based Python code and build programs with an AI sidekick.</p>
                 <div className="mt-4 bg-purple-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#6d28d9] group-hover:bg-purple-400 transition-colors">Play Now</div>
@@ -287,9 +260,36 @@ export default function DashboardPage() {
                 <div className="w-20 h-20 bg-slate-200 rounded-3xl flex items-center justify-center mb-4 border-4 border-white relative z-10 text-slate-400 shadow-inner">
                   <Code size={36} />
                 </div>
-                <h3 className="text-xl font-black mb-1 text-slate-600">World 4</h3>
+                <h3 className="text-xl font-black mb-1 text-slate-600">World 3</h3>
                 <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">Python Pro</p>
-                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 3: App Studio to collaborate with a Python AI helper.</p>
+                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 2: Block Coding to collaborate with a Python AI helper.</p>
+                <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
+              </div>
+            )}
+          </div>
+
+          {/* World 4: App Studio (Moved & Locked) */}
+          <div className="dash-element">
+            {isStage4Unlocked ? (
+              <Link href="/stage3" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(56,189,248,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(56,189,248,0.5)] hover:border-sky-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-sky-50 to-transparent"></div>
+                <div className="w-20 h-20 bg-gradient-to-br from-sky-400 to-blue-500 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
+                  <span className="text-3xl">📱</span>
+                </div>
+                <h3 className="text-xl font-black mb-1 text-slate-800">World 4</h3>
+                <p className="text-sky-600 font-bold bg-sky-50 px-3 py-0.5 rounded-full mb-3 text-sm">App Studio</p>
+                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Design user interfaces, add buttons and sliders, and write code to build real apps.</p>
+                <div className="mt-4 bg-sky-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#0284c7] group-hover:bg-sky-400 transition-colors">Play Now</div>
+              </Link>
+            ) : (
+              <div className="h-full bg-slate-100/70 border-4 border-dashed border-slate-200 p-6 rounded-[2rem] flex flex-col items-center text-center relative overflow-hidden opacity-75">
+                <div className="absolute top-4 right-4 bg-slate-200 text-slate-500 font-bold px-2 py-0.5 rounded text-xs flex items-center gap-1"><Lock size={12} /> Locked</div>
+                <div className="w-20 h-20 bg-slate-200 rounded-3xl flex items-center justify-center mb-4 border-4 border-white relative z-10 text-slate-400 shadow-inner">
+                  <span className="text-3xl">📱</span>
+                </div>
+                <h3 className="text-xl font-black mb-1 text-slate-600">World 4</h3>
+                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">App Studio</p>
+                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 3: Python Pro to unlock your App Designer studio!</p>
                 <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
               </div>
             )}

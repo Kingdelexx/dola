@@ -171,15 +171,11 @@ export default function Home() {
       <main className="relative z-10 flex flex-col items-center justify-center pt-16 pb-32 px-6">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left space-y-8">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border-2 border-pink-200 shadow-sm animate__animated animate__fadeInDown">
-              <Sparkles className="text-pink-500" size={20} />
-              <span className="text-sm font-bold text-pink-600 uppercase tracking-wide">The coding game for kids</span>
-            </div>
             <h1 ref={titleRef} className="text-5xl lg:text-7xl font-black leading-[1.1] text-slate-800 drop-shadow-sm">
               Code your own <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Games</span> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-505 to-green-400">Adventures!</span>
             </h1>
             <p ref={subtitleRef} className="text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium">
-              Join next generation of creators who are learning to build games, animations, and apps. No boring lessons, just pure fun!
+              Join new generation of creators in earning to build games, animations, and apps. No boring lessons—just pure fun
             </p>
             <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               <Link href={user ? "/dashboard" : "/signup"} className="group relative px-10 py-5 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full font-black text-xl text-white shadow-[0_8px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_10px_0_#c026d3] active:translate-y-[6px] active:shadow-[0_2px_0_#c026d3] transition-all w-full sm:w-auto text-center flex items-center justify-center gap-3">
@@ -217,7 +213,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-slate-300 text-sm leading-relaxed font-medium">
-                <strong>Dolacode</strong> is an interactive STEM and programming education application for kids, parents, and school educators. Dolacode enables students to learn computational thinking, block-based coding, app creation, and Python programming through gamified modules.
+                <strong>Dolacode</strong> is an interactive STEM and programming education application for kids, parents, and school educators. Dolacode enables students to learn computational thinking, block-based coding, Python programming, and app creation through gamified modules.
               </p>
               <p className="text-slate-300 text-sm leading-relaxed font-medium">
                 <strong>Google Account Integration:</strong> Users sign in to Dolacode using Google OAuth to securely authenticate, create student or educator profiles, save coding stage progress, store project workspace files, and link parent/teacher progress monitoring dashboards.
@@ -242,20 +238,20 @@ export default function Home() {
               <p className="text-slate-655 leading-relaxed font-semibold text-sm">Snap colorful Blockly blocks together like digital Legos! Learn structured programming without typing mistakes.</p>
             </div>
             {/* Card 3 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-sky-200 hover:border-sky-400 shadow-[0_15px_30px_-5px_rgba(56,189,248,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white">
-                <LayoutGrid className="text-white" size={32} />
-              </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-sky-500 transition-colors">3. App Studio</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Design beautiful user interfaces, add buttons and sliders, and write JavaScript to build your own real-time apps.</p>
-            </div>
-            {/* Card 4 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-12">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white">
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white">
                 <Terminal className="text-white" size={32} />
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-purple-500 transition-colors">4. Python Pro</h3>
+              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-purple-500 transition-colors">3. Python Pro</h3>
               <p className="text-slate-655 leading-relaxed font-semibold text-sm">Write real text-based Python code and build advanced programs with a helpful AI tutor sidekick.</p>
+            </div>
+            {/* Card 4 - App Studio moved to World 4 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-sky-200 hover:border-sky-400 shadow-[0_15px_30px_-5px_rgba(56,189,248,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-12 relative overflow-hidden">
+              <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white">
+                <LayoutGrid className="text-white" size={32} />
+              </div>
+              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-sky-500 transition-colors">4. App Studio</h3>
+              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Design beautiful user interfaces, add buttons and sliders, and write JavaScript to build your own real-time apps.</p>
             </div>
           </div>
         </div>
@@ -275,8 +271,8 @@ export default function Home() {
             {[
               { step: 1, title: "1. Numeracy (8 Parts)", desc: "Number sense, operations, logic, measurement, fractions, data, and algorithms.", icon: Star, color: "indigo" },
               { step: 2, title: "2. Block Coding", desc: "Snap Blockly code cards to control robots.", icon: Blocks, color: "pink" },
-              { step: 3, title: "3. App Studio", desc: "Design interfaces and code custom app behaviors.", icon: LayoutGrid, color: "sky" },
-              { step: 4, title: "4. Python Pro", desc: "Write real text-based Python code with an AI sidekick.", icon: Terminal, color: "purple" }
+              { step: 3, title: "3. Python Pro", desc: "Write real text-based Python code with an AI sidekick.", icon: Terminal, color: "purple" },
+              { step: 4, title: "4. App Studio", desc: "Design interfaces and code custom app behaviors.", icon: LayoutGrid, color: "sky" }
             ].map((item, i) => (
               <div key={i} className={`step-${item.step} bg-white p-6 rounded-[2rem] border-4 border-slate-100 relative z-10 text-center flex flex-col items-center shadow-xl`}>
                 <div className={`step-icon w-16 h-16 bg-indigo-500 rounded-[1.5rem] rotate-3 flex items-center justify-center mb-4 border-4 border-white shadow-lg`}>
@@ -435,8 +431,8 @@ export default function Home() {
             <ul className="space-y-4 font-bold">
               <li><Link href="/stage1" className="hover:text-pink-400 hover:pl-2 transition-all block">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-pink-400 hover:pl-2 transition-all block">2. Block Coding</Link></li>
-              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">3. App Studio</Link></li>
-              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Python Pro</Link></li>
+              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Pro</Link></li>
+              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">4. App Studio</Link></li>
             </ul>
           </div>
 
