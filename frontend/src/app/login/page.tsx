@@ -185,7 +185,10 @@ export default function LoginPage() {
         {/* Left Side: Form */}
         <div className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 bg-slate-50 relative">
           <div ref={titleRef} className="mb-8 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 text-sky-600 text-sm font-black mb-4 border-2 border-sky-200 shadow-sm">
+            <Link href="/" className="inline-block mb-4">
+              <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain" />
+            </Link>
+            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 text-sky-600 text-sm font-black mb-4 border-2 border-sky-200 shadow-sm w-fit">
               <Gamepad2 size={18} className="fill-sky-500 text-white" /> Player 1 Ready
             </div>
             <h1 className="text-4xl md:text-5xl font-black mb-3 text-slate-800 tracking-tight">Log In</h1>

@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     siteName: "Dolacode",
     type: "website",
   },
+  icons: {
+    icon: "/logo-icon.png",
+    shortcut: "/logo-icon.png",
+    apple: "/logo-icon.png",
+  },
 };
 
 export default function RootLayout({

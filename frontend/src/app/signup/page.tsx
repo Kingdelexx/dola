@@ -228,6 +228,9 @@ export default function SignUpPage() {
         {/* Right Side: Form */}
         <div className="w-full md:w-7/12 p-6 sm:p-10 md:p-12 bg-slate-50 relative overflow-y-auto max-h-[90vh]">
           <div ref={titleRef} className="mb-6">
+            <Link href="/" className="inline-block mb-3">
+              <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain" />
+            </Link>
             <h1 className="text-3xl sm:text-4xl font-black mb-2 text-slate-800 tracking-tight">Create Account</h1>
             <p className="text-slate-500 font-medium text-sm">Choose how you want to join DolaCode.</p>
           </div>

@@ -139,14 +139,9 @@ export default function Home() {
 
       {/* Navigation */}
       <nav className="relative z-50 flex justify-between items-center p-4 lg:px-8 bg-white/70 backdrop-blur-xl sticky top-4 mx-4 lg:mx-12 rounded-full border-[3px] border-white shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-pink-200 transform -rotate-6">
-            <Rocket className="text-white" size={24} />
-          </div>
-          <span className="text-2xl font-black tracking-tight text-slate-800 ml-1">
-            Dolacode
-          </span>
-        </div>
+        <Link href="/" className="flex items-center group">
+          <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain group-hover:scale-105 transition-transform" />
+        </Link>
         <div className="space-x-3 flex items-center">
           {!loading && user ? (
             <>
@@ -175,7 +170,7 @@ export default function Home() {
               Code your own <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Games</span> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-505 to-green-400">Adventures!</span>
             </h1>
             <p ref={subtitleRef} className="text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium">
-              Join new generation of creators in earning to build games, animations, and apps. No boring lessons—just pure fun
+              Join new generation of creators in learning to build games, animations, and apps. No boring lessons—just pure fun
             </p>
             <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               <Link href={user ? "/dashboard" : "/signup"} className="group relative px-10 py-5 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full font-black text-xl text-white shadow-[0_8px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_10px_0_#c026d3] active:translate-y-[6px] active:shadow-[0_2px_0_#c026d3] transition-all w-full sm:w-auto text-center flex items-center justify-center gap-3">
@@ -195,29 +190,48 @@ export default function Home() {
       </main>
 
       {/* Features Section - Gamified Cards */}
-      <section className="relative z-20 pt-20 pb-32 bg-white rounded-t-[3rem] lg:rounded-t-[5rem] px-6 border-t-[8px] border-sky-200" ref={featuresRef}>
+      <section className="relative z-20 pt-20 pb-32 bg-white rounded-t-[3rem] lg:rounded-t-[5rem] px-4 sm:px-6 border-t-[8px] border-sky-200" ref={featuresRef}>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-block bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full font-bold mb-2">
+          <div className="text-center mb-12 sm:mb-16 space-y-6">
+            <div className="inline-block bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-bold mb-2 shadow-xs">
               <Trophy size={20} className="inline mr-2 -mt-1" /> Level Up Your Skills
             </div>
-            <h2 className="text-4xl lg:text-6xl font-black text-slate-800">Why kids <span className="text-pink-500">love</span> Dolacode</h2>
+            <h2 className="text-4xl lg:text-6xl font-black text-slate-800 tracking-tight">Why kids <span className="text-pink-500">love</span> Dolacode</h2>
 
-            {/* Explicit Application Purpose Banner for Google OAuth Verification */}
-            <div className="max-w-4xl mx-auto mt-6 bg-slate-900 text-white rounded-3xl p-6 lg:p-8 text-left border-4 border-purple-400 shadow-xl space-y-3">
-              <div className="flex items-center gap-3 border-b border-slate-700 pb-3">
-                <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center font-black text-xl text-white">D</div>
-                <div>
-                  <h3 className="text-xl font-black text-white">About the Dolacode Application</h3>
-                  <p className="text-xs text-purple-300 font-bold uppercase tracking-wider">Developed by Devnaija Academy</p>
+            {/* Attached DolaCode Illustration Logo */}
+            <div className="flex justify-center my-6">
+              <img
+                src="/why_kids_love_dolacode.png"
+                alt="DolaCode - Learn, Create, Build the Future"
+                className="w-full max-w-[650px] h-auto object-contain drop-shadow-xl hover:scale-102 transition-transform duration-300 rounded-3xl"
+              />
+            </div>
+
+            {/* Bright & Responsive "About the Dolacode Application" Section */}
+            <div className="w-full max-w-4xl mx-auto mt-8 bg-gradient-to-br from-purple-50 via-pink-50 to-sky-50 text-slate-800 rounded-3xl p-6 sm:p-8 lg:p-10 text-left border-4 border-purple-300/80 shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-purple-200/80 pb-4">
+                <div className="flex items-center gap-3">
+                  <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain bg-white p-2 rounded-xl shadow-xs" />
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black text-purple-950 tracking-tight">About the Dolacode Application</h3>
+                    <p className="text-xs text-purple-700 font-bold uppercase tracking-wider">Developed by Devnaija Academy</p>
+                  </div>
                 </div>
+                <span className="bg-purple-200/60 text-purple-800 font-extrabold text-xs px-3 py-1 rounded-full border border-purple-300/60 shrink-0">
+                  Verified Educational Platform
+                </span>
               </div>
-              <p className="text-slate-300 text-sm leading-relaxed font-medium">
+              <p className="text-slate-700 text-sm sm:text-base leading-relaxed font-medium">
                 <strong>Dolacode</strong> is an interactive STEM and programming education application for kids, parents, and school educators. Dolacode enables students to learn computational thinking, block-based coding, Python programming, and app creation through gamified modules.
               </p>
-              <p className="text-slate-300 text-sm leading-relaxed font-medium">
-                <strong>Google Account Integration:</strong> Users sign in to Dolacode using Google OAuth to securely authenticate, create student or educator profiles, save coding stage progress, store project workspace files, and link parent/teacher progress monitoring dashboards.
-              </p>
+              <div className="bg-white/80 p-4 sm:p-5 rounded-2xl border border-purple-200 text-slate-700 text-xs sm:text-sm leading-relaxed font-medium space-y-1">
+                <p className="font-bold text-purple-900 flex items-center gap-1.5">
+                  <Sparkles size={16} className="text-amber-500" /> Google Account Integration:
+                </p>
+                <p>
+                  Users sign in to Dolacode using Google OAuth to securely authenticate, create student or educator profiles, save coding stage progress, store project workspace files, and link parent/teacher progress monitoring dashboards.
+                </p>
+              </div>
             </div>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -408,11 +422,8 @@ export default function Home() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand Info */}
           <div className="md:col-span-1 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-pink-500 rounded-xl flex items-center justify-center rotate-6">
-                <Rocket className="text-white" size={28} />
-              </div>
-              <span className="text-2xl font-black text-white">DolaCode</span>
+            <div className="flex items-center">
+              <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain bg-white/90 p-2 rounded-xl shadow-sm" />
             </div>
             <p className="font-medium text-slate-400 leading-relaxed">
               Empowering the next generation of creators through fun, interactive, and intelligent coding adventures!
@@ -441,8 +452,7 @@ export default function Home() {
             <h4 className="text-white font-black text-lg mb-6 uppercase tracking-widest text-purple-400">Company</h4>
             <ul className="space-y-4 font-bold">
               <li><Link href="/about" className="hover:text-purple-300 hover:pl-2 transition-all block">About Us</Link></li>
-              <li><Link href="/careers" className="hover:text-purple-300 hover:pl-2 transition-all block">Careers</Link></li>
-              <li><Link href="/blog" className="hover:text-purple-300 hover:pl-2 transition-all block">Blog</Link></li>
+              <li><Link href="/child-safety" className="hover:text-purple-300 hover:pl-2 transition-all block">Child Safety</Link></li>
               <li><Link href="/contact" className="hover:text-purple-300 hover:pl-2 transition-all block">Contact</Link></li>
             </ul>
           </div>
@@ -453,6 +463,7 @@ export default function Home() {
             <ul className="space-y-4 font-bold">
               <li><Link href="/terms" className="hover:text-yellow-300 hover:pl-2 transition-all block">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-yellow-300 hover:pl-2 transition-all block">Privacy Policy</Link></li>
+              <li><Link href="/child-safety" className="hover:text-yellow-300 hover:pl-2 transition-all block">Child Safety Policy</Link></li>
               <li className="flex items-center gap-3 mt-6 text-slate-400 bg-slate-800 p-3 rounded-xl border border-slate-700"><Mail size={18} className="text-sky-400" /> hello@dolacode.com</li>
             </ul>
           </div>

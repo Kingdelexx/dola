@@ -4,34 +4,32 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
   FileText, 
-  CheckCircle2, 
-  ShieldAlert, 
+  ShieldCheck, 
   UserCheck, 
   Scale, 
-  Clock, 
-  ArrowLeft, 
-  Printer, 
+  AlertCircle, 
   Mail, 
-  Rocket,
-  AlertCircle,
-  CreditCard,
-  Gavel,
-  ShieldCheck
+  ArrowLeft, 
+  Printer,
+  CheckCircle2,
+  Clock,
+  Sparkles,
+  BookOpen,
+  Award
 } from 'lucide-react';
 
 export default function TermsOfServicePage() {
-  const [activeSection, setActiveSection] = useState('acceptance');
+  const [activeSection, setActiveSection] = useState('agreement');
 
   const sections = [
-    { id: 'acceptance', title: '1. Acceptance of Terms', icon: CheckCircle2 },
-    { id: 'accounts', title: '2. Accounts & Parent Consent', icon: UserCheck },
-    { id: 'google-sso', title: '3. Google OAuth & Authentication', icon: ShieldCheck },
-    { id: 'use-conduct', title: '4. Platform Usage & Rules', icon: ShieldAlert },
-    { id: 'intellectual-property', title: '5. Intellectual Property', icon: Scale },
-    { id: 'billing', title: '6. Subscriptions & Payments', icon: CreditCard },
-    { id: 'disclaimer', title: '7. Limitation of Liability', icon: AlertCircle },
-    { id: 'governing-law', title: '8. Governing Law & Termination', icon: Gavel },
-    { id: 'contact', title: '9. Contact Information', icon: Mail },
+    { id: 'agreement', title: '1. Agreement to Terms', icon: FileText },
+    { id: 'eligibility', title: '2. User Accounts & Eligibility', icon: UserCheck },
+    { id: 'google-sso', title: '3. Google Sign-In & Authentication', icon: ShieldCheck, highlight: true },
+    { id: 'acceptable-use', title: '4. Code of Conduct & Acceptable Use', icon: Scale },
+    { id: 'intellectual-property', title: '5. Intellectual Property & Content', icon: BookOpen },
+    { id: 'subscriptions', title: '6. Platform Access & Services', icon: Award },
+    { id: 'liability', title: '7. Disclaimer & Limitation of Liability', icon: AlertCircle },
+    { id: 'contact', title: '8. Legal Contact Information', icon: Mail },
   ];
 
   const scrollToSection = (id: string) => {
@@ -49,32 +47,24 @@ export default function TermsOfServicePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-purple-400 selection:text-white">
       {/* Header / Navbar */}
-      <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-12 py-4">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 lg:px-12 py-3.5 shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
-              <Rocket className="text-white" size={22} />
-            </div>
-            <div>
-              <span className="text-xl font-black tracking-tight text-white block leading-none">
-                DolaCode
-              </span>
-              <span className="text-xs text-slate-400 font-medium">Devnaija Academy</span>
-            </div>
+            <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain group-hover:scale-105 transition-transform" />
           </Link>
 
           <div className="flex items-center gap-3">
             <button 
               onClick={handlePrint}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors border border-slate-300"
             >
               <Printer size={14} /> Print Terms
             </button>
             <Link 
               href="/"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white shadow-md transition-all hover:scale-105"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-md transition-all hover:scale-105"
             >
               <ArrowLeft size={14} /> Back to DolaCode
             </Link>
@@ -82,21 +72,24 @@ export default function TermsOfServicePage() {
         </div>
       </header>
 
-      {/* Hero Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-purple-950/40 via-slate-900 to-slate-900 border-b border-slate-800 py-12 lg:py-16 px-6">
+      {/* Hero Header Banner (Bright Theme) */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-purple-100/70 via-pink-50/50 to-slate-50 border-b border-purple-100 py-12 lg:py-16 px-6">
         <div className="max-w-5xl mx-auto text-center relative z-10 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold uppercase tracking-wider">
-            <FileText size={16} /> Legal Terms & Conditions
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100 border border-purple-300 text-purple-700 text-xs font-black uppercase tracking-wider shadow-xs">
+            <Scale size={16} /> Legal Agreement & Platform Guidelines
           </div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-white">
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900">
             Application Terms of Service
           </h1>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium">
-            Please read these terms carefully before using DolaCode, our learning stages, parent/teacher dashboards, or signing in with Google.
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+            Welcome to DolaCode. These Terms of Service govern your use of our interactive STEM & coding educational platform.
           </p>
-          <div className="flex items-center justify-center gap-4 text-xs font-semibold text-slate-400 pt-2">
-            <span className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
-              <Clock size={14} className="text-purple-400" /> Effective Date: August 9, 2026
+          <div className="flex items-center justify-center gap-4 text-xs font-bold text-slate-600 pt-2">
+            <span className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-lg border border-slate-200 shadow-xs">
+              <Clock size={14} className="text-purple-500" /> Effective Date: August 11, 2026
+            </span>
+            <span className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-lg border border-slate-200 shadow-xs">
+              <CheckCircle2 size={14} className="text-emerald-500" /> Binding Legal Terms
             </span>
           </div>
         </div>
@@ -108,9 +101,9 @@ export default function TermsOfServicePage() {
           
           {/* Table of Contents Sidebar */}
           <aside className="lg:col-span-1">
-            <div className="sticky top-24 bg-slate-800/50 backdrop-blur-lg rounded-2xl border border-slate-700/80 p-4 space-y-2">
+            <div className="sticky top-24 bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2 shadow-sm">
               <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 px-3 py-2">
-                Quick Navigation
+                Terms Navigation
               </h2>
               <nav className="space-y-1">
                 {sections.map((sec) => {
@@ -122,27 +115,29 @@ export default function TermsOfServicePage() {
                       onClick={() => scrollToSection(sec.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-left transition-all ${
                         isActive 
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md' 
-                          : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                          ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md' 
+                          : sec.highlight 
+                            ? 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200' 
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                       }`}
                     >
-                      <IconComponent size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
+                      <IconComponent size={16} className={isActive ? 'text-white' : sec.highlight ? 'text-purple-500' : 'text-slate-400'} />
                       <span className="truncate">{sec.title}</span>
                     </button>
                   );
                 })}
               </nav>
 
-              <div className="pt-4 border-t border-slate-700/60 mt-4 px-3 space-y-3">
-                <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-700/50">
-                  <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
-                    Have questions about our Terms of Service?
+              <div className="pt-4 border-t border-slate-200 mt-4 px-3 space-y-3">
+                <div className="p-3 bg-purple-50/60 rounded-xl border border-purple-100">
+                  <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                    Legal inquiries or terms questions:
                   </p>
                   <a 
                     href="mailto:legal@dolacode.com"
-                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-purple-400 hover:text-purple-300"
+                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-purple-600 hover:text-purple-700"
                   >
-                    <Mail size={12} /> Contact Legal Team
+                    <Mail size={12} /> Email Legal Desk
                   </a>
                 </div>
               </div>
@@ -150,146 +145,165 @@ export default function TermsOfServicePage() {
           </aside>
 
           {/* Policy Detail Sections */}
-          <div className="lg:col-span-3 space-y-10 text-slate-300 leading-relaxed text-sm">
+          <div className="lg:col-span-3 space-y-10 text-slate-700 leading-relaxed text-sm">
 
-            {/* Section 1 */}
-            <section id="acceptance" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <CheckCircle2 className="text-purple-400" size={24} />
-                <h2 className="text-2xl font-black text-white">1. Acceptance of Terms</h2>
+            {/* Terms Summary Highlight Box (Bright Theme) */}
+            <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50 border-2 border-purple-300/80 rounded-3xl p-6 lg:p-8 shadow-md space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-400/40 flex items-center justify-center text-purple-600">
+                  <Scale size={26} />
+                </div>
+                <div>
+                  <span className="text-xs font-black uppercase tracking-widest text-purple-700">
+                    Agreement Overview
+                  </span>
+                  <h3 className="text-xl font-black text-slate-900">
+                    Important Terms for Parents, Students & Schools
+                  </h3>
+                </div>
+              </div>
+              <p className="text-slate-700 font-medium">
+                By accessing or registering an account on DolaCode, you represent that you have read, understood, and agreed to these Terms of Service. If you are under the age of 18, your parent or legal guardian must review and agree to these terms on your behalf.
+              </p>
+              <ul className="grid sm:grid-cols-2 gap-3 text-xs pt-2">
+                <li className="flex items-center gap-2 bg-white p-3 rounded-xl border border-purple-200/80 shadow-2xs font-bold text-slate-800">
+                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                  <span>Educational platform for all ages</span>
+                </li>
+                <li className="flex items-center gap-2 bg-white p-3 rounded-xl border border-purple-200/80 shadow-2xs font-bold text-slate-800">
+                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                  <span>Google OAuth SSO supported</span>
+                </li>
+                <li className="flex items-center gap-2 bg-white p-3 rounded-xl border border-purple-200/80 shadow-2xs font-bold text-slate-800">
+                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                  <span>Parent & Teacher dashboard accounts</span>
+                </li>
+                <li className="flex items-center gap-2 bg-white p-3 rounded-xl border border-purple-200/80 shadow-2xs font-bold text-slate-800">
+                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+                  <span>Safe Python & Blockly sandbox execution</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 1: Agreement */}
+            <section id="agreement" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <FileText className="text-purple-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">1. Agreement to Terms</h2>
               </div>
               <p>
-                These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally binding agreement between you and <strong>Devnaija Academy</strong> (&ldquo;DolaCode&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;), governing your access to and use of the DolaCode platform, website, interactive learning stages, code editors, and mobile/web applications.
+                These Terms of Service constitute a legally binding agreement between you and <strong>Devnaija Academy</strong> (&ldquo;Company&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;), governing your access to and use of the <strong>DolaCode</strong> website, application modules, parent/teacher dashboards, and related services.
               </p>
               <p>
-                By creating an account, logging in, or accessing DolaCode, you confirm that you have read, understood, and agreed to these Terms and our <Link href="/privacy" className="text-pink-400 font-bold underline">Privacy Policy</Link>.
+                If you do not agree with all of these terms, you are expressly prohibited from using the platform and must discontinue use immediately.
               </p>
             </section>
 
-            {/* Section 2 */}
-            <section id="accounts" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <UserCheck className="text-pink-400" size={24} />
-                <h2 className="text-2xl font-black text-white">2. User Accounts & Parental Authorization</h2>
+            {/* Section 2: Eligibility */}
+            <section id="eligibility" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <UserCheck className="text-pink-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">2. Account Registration & Minor Consent</h2>
               </div>
               <p>
-                DolaCode provides customized user portals for Students, Parents, Teachers, and School Administrators:
+                DolaCode provides learning accounts for Students, Parents, Teachers, and School Administrators.
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Minor Accounts & Parental Consent:</strong> If you are under 18 years of age, you may use DolaCode only under the supervision and with the consent of a parent, legal guardian, or authorized educator.</li>
-                <li><strong>Parent & Teacher Responsibility:</strong> Parents and verified school teachers registering accounts for minors agree to supervise learning activity and ensure compliance with these Terms.</li>
-                <li><strong>Account Security:</strong> You are responsible for safeguarding your authentication credentials (including Google OAuth tokens) and for all activities that occur under your account.</li>
+                <li><strong>Minor Students (Under 18):</strong> Students under the age of 18 must use DolaCode under the supervision of a parent, legal guardian, or authorized school educator.</li>
+                <li><strong>Parent & Teacher Accounts:</strong> Adults registering parent or teacher accounts warrant that they have legal authority to enroll student sub-accounts and monitor student coding progress.</li>
+                <li><strong>Account Security:</strong> You are responsible for maintaining the confidentiality of your account credentials and login sessions.</li>
               </ul>
             </section>
 
-            {/* Section 3 */}
-            <section id="google-sso" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <ShieldCheck className="text-amber-400" size={24} />
-                <h2 className="text-2xl font-black text-white">3. Google OAuth & Third-Party Authentication</h2>
+            {/* Section 3: Google SSO */}
+            <section id="google-sso" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <ShieldCheck className="text-amber-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">3. Google Sign-In & Single Sign-On</h2>
               </div>
               <p>
-                DolaCode offers single sign-on authentication via Google OAuth 2.0. By using Google Sign-In:
+                DolaCode permits account sign-in via <strong>Google OAuth 2.0</strong>. By signing in using your Google account:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>You grant DolaCode permission to access your basic Google profile (Name, Email, Profile Picture URL, Unique Google User ID) solely for authentication and account creation.</li>
-                <li>You acknowledge that DolaCode complies with the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" className="text-pink-400 font-bold underline">Google API Services User Data Policy</a>, including the Limited Use requirements as outlined in our <Link href="/privacy" className="text-pink-400 font-bold underline">Privacy Policy</Link>.</li>
-                <li>You remain subject to Google&apos;s Terms of Service and Privacy Policy regarding your Google account credentials.</li>
+                <li>You authorize DolaCode to access your basic Google profile details (name, email address, profile photo, and unique Google ID) to create and authenticate your DolaCode user account.</li>
+                <li>DolaCode does not request access to your Google Drive, Gmail messages, contacts, or sensitive Google cloud files.</li>
+                <li>You can revoke DolaCode&apos;s OAuth access at any time through your Google Security Account settings.</li>
               </ul>
             </section>
 
-            {/* Section 4 */}
-            <section id="use-conduct" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <ShieldAlert className="text-yellow-400" size={24} />
-                <h2 className="text-2xl font-black text-white">4. Platform Rules & Acceptable Use</h2>
+            {/* Section 4: Acceptable Use */}
+            <section id="acceptable-use" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <Scale className="text-sky-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">4. Code of Conduct & Acceptable Use</h2>
               </div>
-              <p>You agree not to engage in any of the following prohibited activities:</p>
+              <p>
+                You agree not to engage in any prohibited activities on DolaCode, including:
+              </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Attempting to bypass security mechanisms, reverse engineer Pyodide execution environments, or inject malicious code into interactive editors.</li>
-                <li>Scraping, automated data extraction, or running unauthorized bots on the platform.</li>
-                <li>Impersonating another user, parent, teacher, or DolaCode administrator.</li>
-                <li>Using the platform for any commercial purpose or unauthorized advertisement distribution.</li>
+                <li>Attempting to bypass browser sandboxes, execute malicious code, or compromise server security.</li>
+                <li>Using automated bots, web scrapers, or scripts to flood DolaCode servers.</li>
+                <li>Impersonating another student, parent, or school educator.</li>
+                <li>Uploading objectionable, abusive, or harmful content into project files or AI prompts.</li>
               </ul>
             </section>
 
-            {/* Section 5 */}
-            <section id="intellectual-property" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <Scale className="text-sky-400" size={24} />
-                <h2 className="text-2xl font-black text-white">5. Intellectual Property Rights</h2>
+            {/* Section 5: Intellectual Property */}
+            <section id="intellectual-property" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <BookOpen className="text-indigo-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">5. Intellectual Property Rights</h2>
               </div>
               <p>
-                All curriculum materials, challenge stages, Blockly blocks, graphics, software, code templates, brand logos, and artwork on DolaCode are owned by Devnaija Academy and protected by copyright and intellectual property laws.
+                All curriculum materials, stage designs, graphics, branding, software code, and lesson content on DolaCode are owned by <strong>Devnaija Academy</strong>.
               </p>
               <p>
-                <strong>Student Ownership:</strong> Students retain ownership of original code and creative projects they write on DolaCode. By saving projects to DolaCode servers, you grant us a non-exclusive, worldwide license to host, display, and execute your project files within your user dashboard and class showcases.
+                <strong>Student Content:</strong> Students retain ownership of the original code, Blockly project scripts, and game creations they author on DolaCode.
               </p>
             </section>
 
-            {/* Section 6 */}
-            <section id="billing" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <CreditCard className="text-emerald-400" size={24} />
-                <h2 className="text-2xl font-black text-white">6. Subscriptions & Payments</h2>
+            {/* Section 6: Subscriptions & Platform Access */}
+            <section id="subscriptions" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <Award className="text-emerald-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">6. Platform Availability & Subscriptions</h2>
               </div>
               <p>
-                DolaCode offers free introductory access and optional premium subscription tiers for expanded AI tutoring features and school licenses:
-              </p>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>Subscription fees are billed in advance on a recurring monthly or annual basis as selected during purchase.</li>
-                <li>Parents or schools may cancel subscriptions at any time via account settings. Access will continue through the end of the current billing cycle.</li>
-              </ul>
-            </section>
-
-            {/* Section 7 */}
-            <section id="disclaimer" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <AlertCircle className="text-amber-400" size={24} />
-                <h2 className="text-2xl font-black text-white">7. Limitation of Liability & Disclaimers</h2>
-              </div>
-              <p>
-                DolaCode is provided on an &ldquo;AS IS&rdquo; and &ldquo;AS AVAILABLE&rdquo; basis without warranties of any kind, whether express or implied. To the maximum extent permitted by law, Devnaija Academy disclaims all warranties, including merchantability and fitness for a particular purpose.
-              </p>
-              <p>
-                Devnaija Academy shall not be liable for indirect, incidental, special, or consequential damages resulting from platform downtime or loss of saved project data.
+                We strive to maintain continuous platform availability. However, we reserve the right to perform scheduled maintenance, update coding modules, or modify platform features to improve learning outcomes.
               </p>
             </section>
 
-            {/* Section 8 */}
-            <section id="governing-law" className="bg-slate-800/40 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <Gavel className="text-purple-400" size={24} />
-                <h2 className="text-2xl font-black text-white">8. Governing Law & Account Termination</h2>
+            {/* Section 7: Disclaimer & Limitation of Liability */}
+            <section id="liability" className="bg-white rounded-2xl border border-slate-200/90 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <AlertCircle className="text-rose-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">7. Limitation of Liability</h2>
               </div>
               <p>
-                We reserve the right to suspend or terminate any account that violates these Terms, compromises platform security, or engages in fraudulent activity.
-              </p>
-              <p>
-                These Terms shall be governed by and construed in accordance with applicable governing laws, without regard to conflict of law principles.
+                To the fullest extent permitted by law, DolaCode and Devnaija Academy shall not be liable for indirect, incidental, or consequential damages resulting from platform downtime or data loss beyond our reasonable control.
               </p>
             </section>
 
-            {/* Section 9 */}
-            <section id="contact" className="bg-gradient-to-br from-slate-800/80 to-purple-950/30 rounded-2xl border border-slate-700/60 p-6 lg:p-8 space-y-4">
-              <div className="flex items-center gap-3 border-b border-slate-700/60 pb-4">
-                <Mail className="text-pink-400" size={24} />
-                <h2 className="text-2xl font-black text-white">9. Contact & Legal Enquiries</h2>
+            {/* Section 8: Legal Contact */}
+            <section id="contact" className="bg-gradient-to-br from-slate-100 to-purple-50 rounded-2xl border border-purple-200 p-6 lg:p-8 space-y-4 shadow-xs">
+              <div className="flex items-center gap-3 border-b border-purple-200 pb-4">
+                <Mail className="text-purple-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-900">8. Legal Contact Information</h2>
               </div>
               <p>
-                If you have any questions or legal inquiries regarding these Terms of Service, please contact us:
+                If you have questions regarding these Terms of Service, please contact our legal desk:
               </p>
 
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
-                <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
-                  <h4 className="font-bold text-white text-xs uppercase tracking-wider text-purple-400">Legal Department</h4>
-                  <p className="text-sm font-bold text-slate-200">legal@dolacode.com</p>
-                  <p className="text-xs text-slate-400">hello@dolacode.com</p>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+                  <h4 className="font-bold text-xs uppercase tracking-wider text-purple-600">Legal Contact Email</h4>
+                  <p className="text-sm font-bold text-slate-800">legal@dolacode.com</p>
+                  <p className="text-xs text-slate-500">hello@dolacode.com</p>
                 </div>
-                <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
-                  <h4 className="font-bold text-white text-xs uppercase tracking-wider text-pink-400">Organization</h4>
-                  <p className="text-sm font-bold text-slate-200">Devnaija Academy</p>
-                  <p className="text-xs text-slate-400">DolaCode Educational Platform</p>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+                  <h4 className="font-bold text-xs uppercase tracking-wider text-pink-600">Operating Entity</h4>
+                  <p className="text-sm font-bold text-slate-800">Devnaija Academy</p>
+                  <p className="text-xs text-slate-500">DolaCode Legal Department</p>
                 </div>
               </div>
             </section>
@@ -298,14 +312,17 @@ export default function TermsOfServicePage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 py-8 px-6 text-center text-xs text-slate-500 font-medium">
+      {/* Footer (Bright Theme) */}
+      <footer className="border-t border-slate-200 bg-white py-8 px-6 text-center text-xs text-slate-500 font-medium">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
           <p>© 2026 DolaCode Platform (Devnaija Academy). All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
-            <Link href="/terms" className="text-purple-400 font-bold">Terms of Service</Link>
-            <Link href="/privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link href="/" className="hover:text-slate-800 transition-colors">Home</Link>
+            <Link href="/about" className="hover:text-slate-800 transition-colors">About Us</Link>
+            <Link href="/terms" className="text-purple-600 font-bold">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
+            <Link href="/child-safety" className="hover:text-slate-800 transition-colors">Child Safety</Link>
+            <Link href="/contact" className="hover:text-slate-800 transition-colors">Contact Us</Link>
           </div>
         </div>
       </footer>

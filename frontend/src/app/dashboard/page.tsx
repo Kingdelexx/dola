@@ -113,11 +113,8 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4 dash-element">
-          <Link href="/" className="flex items-center gap-3 bg-white px-6 py-3 rounded-full border-4 border-white shadow-[0_8px_0_rgba(0,0,0,0.05)] hover:translate-y-[-2px] transition-transform">
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-500 rounded-xl flex items-center justify-center shadow-inner rotate-3">
-              <Rocket className="text-white" size={24} />
-            </div>
-            <span className="font-black text-2xl text-slate-800">DolaCode</span>
+          <Link href="/" className="flex items-center bg-white px-5 py-2.5 rounded-full border-4 border-white shadow-[0_8px_0_rgba(0,0,0,0.05)] hover:translate-y-[-2px] transition-transform">
+            <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain" />
           </Link>
           <button onClick={logout} className="flex items-center gap-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-500 border-2 border-slate-200 hover:border-red-200 px-6 py-3 rounded-full font-bold transition-all shadow-sm">
             <LogOut size={20} /> Save & Exit
