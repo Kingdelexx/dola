@@ -31,12 +31,6 @@ export default function Stage2Page() {
         router.push('/login');
       } else if (user.profile?.role === 'parent') {
         router.push('/parent-dashboard');
-      } else {
-        const s1Progress = user.profile?.stage1_progress ?? (localStorage.getItem('stage1_progress') ? parseInt(localStorage.getItem('stage1_progress') || '0', 10) : 0);
-        const isAdminOrTeacher = user.profile?.role && ['teacher', 'school_admin', 'super_admin'].includes(user.profile.role);
-        if (s1Progress < 80 && !isAdminOrTeacher) {
-          router.push('/dashboard');
-        }
       }
     }
   }, [user, loading, router]);
