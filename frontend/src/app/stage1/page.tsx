@@ -3285,7 +3285,7 @@ export default function Stage1Page() {
       }
 
       case 'measure-length': {
-        const lineLength = level.gameData.lineLength;
+        const lineLength = level.gameData.lineLength ?? level.gameData.lengthVal ?? 8;
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full">
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3329,7 +3329,7 @@ export default function Stage1Page() {
       }
 
       case 'measure-height': {
-        const heights = level.gameData.heights;
+        const heights = level.gameData.heights ?? level.gameData.towers ?? { A: 12, B: 18, C: 8 };
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full">
             <h4 className="text-xl font-bold text-slate-700 mb-6 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3351,7 +3351,7 @@ export default function Stage1Page() {
                 );
               })}
             </div>
-            <p className="text-slate-700 font-bold mb-4 text-center">{level.gameData.question}</p>
+            <p className="text-slate-700 font-bold mb-4 text-center">{level.gameData.question || "Which tower is the tallest?"}</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-sm">
               {level.gameData.options.map((opt: string) => (
                 <button
@@ -3663,8 +3663,8 @@ export default function Stage1Page() {
 
       // PART 6: Fractions, Decimals, and Percentages
       case 'fraction-whole': {
-        const total = level.gameData.total;
-        const active = level.gameData.active;
+        const total = level.gameData.denominator ?? level.gameData.total ?? 8;
+        const active = level.gameData.numerator ?? level.gameData.active ?? 3;
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3712,7 +3712,7 @@ export default function Stage1Page() {
       }
 
       case 'fraction-equivalence': {
-        const base = level.gameData.baseFraction;
+        const base = level.gameData.base ?? level.gameData.baseFraction ?? "2/3";
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3752,8 +3752,8 @@ export default function Stage1Page() {
       }
 
       case 'fraction-comparison': {
-        const f1 = level.gameData.fraction1;
-        const f2 = level.gameData.fraction2;
+        const f1 = level.gameData.f1 ?? level.gameData.fraction1 ?? "3/4";
+        const f2 = level.gameData.f2 ?? level.gameData.fraction2 ?? "5/8";
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3801,7 +3801,7 @@ export default function Stage1Page() {
       }
 
       case 'fraction-addition': {
-        const sum = level.gameData.sum;
+        const sum = level.gameData.sum ?? (level.gameData.f1 && level.gameData.f2 ? `${level.gameData.f1} + ${level.gameData.f2}` : "1/5 + 3/5");
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3881,7 +3881,7 @@ export default function Stage1Page() {
       }
 
       case 'decimal-money': {
-        const items = level.gameData.items;
+        const items = level.gameData.items ?? (level.gameData.prices ? level.gameData.prices.map((p: number, i: number) => ({ name: `Upgrade Item #${i+1}`, price: p })) : []);
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -3966,8 +3966,8 @@ export default function Stage1Page() {
       }
 
       case 'percentage-discount': {
-        const original = level.gameData.originalPrice;
-        const discount = level.gameData.discountPercent;
+        const original = level.gameData.originalPrice ?? 80;
+        const discount = level.gameData.discount ?? level.gameData.discountPercent ?? 25;
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -4009,8 +4009,8 @@ export default function Stage1Page() {
       }
 
       case 'ratio-basics': {
-        const itemA = level.gameData.itemA;
-        const itemB = level.gameData.itemB;
+        const itemA = level.gameData.green ?? level.gameData.itemA ?? 4;
+        const itemB = level.gameData.purple ?? level.gameData.itemB ?? 6;
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
@@ -4055,7 +4055,7 @@ export default function Stage1Page() {
       }
 
       case 'proportion-basics': {
-        const text = level.gameData.text;
+        const text = level.gameData.text ?? `Scale resources proportionally: if ${level.gameData.nodes || 2} worker nodes handle ${level.gameData.tasks || 10} tasks, how many tasks can ${level.gameData.targetNodes || 6} nodes handle?`;
         return (
           <div className="flex flex-col items-center justify-center p-6 h-full w-full animate-fadeIn">
             <h4 className="text-xl font-bold text-slate-700 mb-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">

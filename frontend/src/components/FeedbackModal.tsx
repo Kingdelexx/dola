@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, Sparkles, MessageSquare, Flame } from 'lucide-react';
 
 interface FeedbackModalProps {
@@ -18,7 +18,25 @@ export default function FeedbackModal({ isOpen, stage, part, onClose }: Feedback
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      setRating(0);
+      setHoveredRating(0);
+      setDifficulty('');
+      setEnjoyment('');
+      setComments('');
+      setSubmitting(false);
+      setError('');
+      setSuccess(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    setSuccess(false);
+    onClose();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +80,7 @@ export default function FeedbackModal({ isOpen, stage, part, onClose }: Feedback
 
       setSuccess(true);
       setTimeout(() => {
-        onClose();
+        handleClose();
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'Something went wrong.');
@@ -84,7 +102,13 @@ export default function FeedbackModal({ isOpen, stage, part, onClose }: Feedback
               🎉
             </div>
             <h2 className="text-3xl font-black text-slate-800 mb-2">Awesome Feedback!</h2>
-            <p className="text-slate-500 font-bold text-sm">Thank you! Your feedback helps us make DolaCode even better!</p>
+            <p className="text-slate-500 font-bold text-sm mb-6">Thank you! Your feedback helps us make DolaCode even better!</p>
+            <button
+              onClick={handleClose}
+              className="py-3.5 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              Continue 🚀
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="relative z-10 flex flex-col gap-6 font-sans">
