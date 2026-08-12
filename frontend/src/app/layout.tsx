@@ -51,7 +51,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Script 
           src="https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.js" 
-          strategy="beforeInteractive"
+          strategy="lazyOnload"
         />
         <AuthProvider>
           {children}

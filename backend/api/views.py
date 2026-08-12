@@ -336,6 +336,8 @@ import os
 import urllib.request
 import json
 
+from .stage_curriculum import get_curriculum_context
+
 class ChatView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -357,18 +359,18 @@ class ChatView(APIView):
                 last_message = sanitized_messages[-1]['content'].strip()
 
         api_key = os.environ.get('OPENAI_API_KEY')
+        curriculum_context = get_curriculum_context(stage, level, context_info)
         
         if api_key and len(api_key.strip()) > 10:
             try:
-                context_prompt = f"\nTask Context:\n{context_info}\n" if context_info else ""
                 system_prompt = (
-                    f"You are Lizzy 🧚✨, an ultra-concise, precise AI coding tutor on DolaCode.\n"
-                    f"Location: Stage {stage}, Level {level}.{context_prompt}\n"
-                    f"STRICT RESPONSE RULES:\n"
-                    f"1. KEEP ALL REPLIES 50% SHORTER: Maximum 2 short bullet points or 25-45 words total.\n"
+                    f"You are Lizzy 🧚✨, an ultra-concise, encouraging AI coding tutor for kids on DolaCode.\n\n"
+                    f"=== KNOWLEDGE & TASK CONTEXT ===\n{curriculum_context}\n\n"
+                    f"STRICT TUTORING RULES:\n"
+                    f"1. KEEP REPLIES CONCISE: Maximum 2 short bullet points or 25-45 words total.\n"
                     f"2. NO LONG PREAMBLE or filler intros. Give the precise hint immediately.\n"
-                    f"3. Reference exact numbers, variables, blocks, or error lines from the student's task.\n"
-                    f"4. Give an actionable next step so they can solve it."
+                    f"3. SOCRATIC METHOD: Guide the student with a hint or next step. Do NOT give away direct answers.\n"
+                    f"4. Reference exact numbers, variables, blocks, or error lines from the student's task."
                 )
                 
                 payload = json.dumps({
@@ -412,22 +414,22 @@ class ChatView(APIView):
         stage_str = str(stage)
         level_str = str(level)
         
-        ctx_summary = f" ({context_info[:60]}...)" if context_info else ""
+        ctx_summary = f"\nTask details: {context_info[:100]}" if context_info else ""
         
         if "who are you" in prompt_lower or "your name" in prompt_lower or "hello" in prompt_lower or "hi" in prompt_lower:
             return f"Hi! I'm Lizzy 🧚✨ (Stage {stage_str} Level {level_str}). How can I help you solve this puzzle?"
             
         if any(k in prompt_lower for k in ["hint", "help", "stuck", "clue", "💡"]):
             if stage_str == "1":
-                return f"💡 **Stage 1 Hint**{ctx_summary}:\n- Check if pattern counts UP (+) or DOWN (-).\n- Count step-by-step to find the missing target!"
+                return f"💡 **Stage 1 Hint (Lvl {level_str})**:{ctx_summary}\n- Count step-by-step to find the missing target number! ⭐"
             elif stage_str == "2":
-                return f"🧱 **Stage 2 Hint**{ctx_summary}:\n- Place action blocks inside your loop body.\n- Hit **Run** to trace sprite steps!"
+                return f"🧱 **Stage 2 Hint (Lvl {level_str})**:{ctx_summary}\n- Place action blocks inside your loop body and hit **Run**!"
             elif stage_str == "3":
-                return f"🎨 **Stage 3 Hint**{ctx_summary}:\n- Check `onClick` event in Inspector.\n- Verify screen state updates on click!"
+                return f"🎨 **App Studio Hint**:{ctx_summary}\n- Check `onClick` event in Inspector to update screen state on click!"
             elif stage_str == "4":
-                return f"🐍 **Stage 4 Hint**{ctx_summary}:\n- Indent lines under loops/functions with 4 spaces.\n- Check exact variable spelling!"
+                return f"🐍 **Python Quest Hint (Lvl {level_str})**:{ctx_summary}\n- Check indentation (4 spaces under functions/loops) and variable names!"
             else:
-                return f"🌟 **Hint**:\n- Break task into 2 steps.\n- Test the first command!"
+                return f"🌟 **Hint**:\n- Break task into 2 steps and test the first command!"
 
         if any(k in prompt_lower for k in ["explain", "how to", "what", "🧐"]):
             return f"🧐 **Quick Guide (Lvl {level_str})**:\nRead mission goal at top, then run your first command to test the output!"
