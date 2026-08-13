@@ -578,8 +578,23 @@ class ParentDashboardView(APIView):
             s4 = c_profile.stage4_progress if c_profile else 0
 
             total_lessons = s1 + s2 + s3 + s4
-            numeracy_score = f"{min(95, 60 + s1 * 5)}%"
-            coding_score = f"{min(98, 55 + (s2 + s3 + s4) * 4)}%"
+            numeracy_score = f"{round((s1 / 10) * 100)}%" if s1 > 0 else "0%"
+            coding_completed = s2 + s3 + s4
+            coding_score = f"{round((coding_completed / 30) * 100)}%" if coding_completed > 0 else "0%"
+
+            feedbacks = Feedback.objects.filter(user=child)
+            feedback_count = feedbacks.count()
+
+            if total_lessons > 0:
+                homework_submitted = f"{min(100, round((total_lessons / 40) * 100))}%"
+            else:
+                homework_submitted = "0%"
+
+            if points > 0:
+                hours_spent = round(points * 0.15, 1)
+                time_spent = f"{hours_spent} Hours Total"
+            else:
+                time_spent = "0 Mins"
 
             badges = UserBadge.objects.filter(user=child)
             badge_list = [
@@ -587,27 +602,54 @@ class ParentDashboardView(APIView):
                 for ub in badges
             ]
 
+            if total_lessons == 0:
+                summary = f"{child.username} has registered and is ready to start learning."
+                teacher_feedback = "No submitted activities yet. Encourage student to complete Stage 1 Numeracy lessons!"
+                ai_rec = "Lizzy AI recommends beginning Stage 1 Level 1 numeracy puzzles."
+            else:
+                highest_stage = 4 if s4 > 0 else (3 if s3 > 0 else (2 if s2 > 0 else 1))
+                summary = f"{child.username} has completed {total_lessons} lessons and earned {points} stars! Currently active in Stage {highest_stage}."
+                
+                if feedback_count > 0:
+                    last_fb = feedbacks.order_by('-created_at').first()
+                    teacher_feedback = f"Completed Stage {last_fb.stage} Part {last_fb.part} with rating {last_fb.rating}/5."
+                else:
+                    teacher_feedback = "Actively completing curriculum lessons."
+
+                if s1 < 10:
+                    ai_rec = "Lizzy AI recommends finishing Stage 1 basic numeracy and math exercises."
+                elif s2 < 10:
+                    ai_rec = "Lizzy AI recommends practicing Stage 2 visual blockly coding logic."
+                elif s3 < 10:
+                    ai_rec = "Lizzy AI recommends focusing on Stage 3 condition loops and logic blocks."
+                else:
+                    ai_rec = "Lizzy AI recommends advancing through Stage 4 Python programming."
+
+            if c_profile and c_profile.school:
+                plan_name = f"{c_profile.school.name} Plan"
+                plan_status = f"Enrolled in {c_profile.classroom.name if c_profile.classroom else 'General Class'}"
+            else:
+                plan_name = "Independent Learner Plan"
+                plan_status = "Active Account"
+
             children_analytics.append({
                 "user": UserSerializer(child).data,
                 "analytics": {
-                    "lessons_completed": total_lessons if total_lessons > 0 else 18,
-                    "homework_submitted": f"{min(100, 80 + s1 * 2)}%",
+                    "lessons_completed": total_lessons,
+                    "homework_submitted": homework_submitted,
                     "numeracy_score": numeracy_score,
                     "coding_score": coding_score,
-                    "time_spent": f"{round(2.5 + (points / 100), 1)} Hours This Week",
-                    "achievements": badge_list if badge_list else [
-                        {"name": "Math Explorer", "description": "Completed Stage 1 Basics", "icon": "🔢"},
-                        {"name": "Blockly Coder", "description": "Built first algorithm", "icon": "🧩"}
-                    ],
+                    "time_spent": time_spent,
+                    "achievements": badge_list,
                     "weekly_report": {
-                        "summary": f"{child.username} showed outstanding focus in Stage 1 Numeracy and completed Stage 2 Blockly logic algorithms!",
-                        "teacher_feedback": "Great progress this week! Keeps up with daily exercises.",
-                        "ai_recommendation": "Lizzy AI recommends practicing double-loop logic puzzles for 15 mins."
+                        "summary": summary,
+                        "teacher_feedback": teacher_feedback,
+                        "ai_recommendation": ai_rec
                     },
                     "subscription": {
-                        "plan": "Partner School Plan",
-                        "status": "Active (Unlimited School & Home Access)",
-                        "renews_at": "End of Academic Term"
+                        "plan": plan_name,
+                        "status": plan_status,
+                        "renews_at": "N/A"
                     }
                 }
             })
