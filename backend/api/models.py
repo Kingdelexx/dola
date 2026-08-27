@@ -46,6 +46,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     age = models.IntegerField(null=True, blank=True)
+    learning_band = models.CharField(max_length=20, blank=True, null=True) # 'Discoverer', 'Explorer', 'Builder', 'Innovator'
+    starting_score = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=10, blank=True, null=True)  # 'girl', 'boy', etc.
     coding_experience = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,6 +70,31 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile ({self.get_role_display()})"
+
+class StudentCompetency(models.Model):
+    STATUS_CHOICES = (
+        ('INTRODUCED', 'Introduced'),
+        ('DEVELOPING', 'Developing'),
+        ('PROFICIENT', 'Proficient'),
+        ('MASTERED', 'Mastered'),
+    )
+    COMPETENCY_CHOICES = (
+        ('sequencing', 'Sequencing & Logic'),
+        ('patterns', 'Pattern Recognition'),
+        ('loops', 'Loop Optimization'),
+        ('debugging', 'Debugging & Reasoning'),
+        ('conditions', 'Conditional Logic'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='competencies')
+    competency = models.CharField(max_length=50, choices=COMPETENCY_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='INTRODUCED')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'competency')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_competency_display()}: {self.get_status_display()}"
 
 class ParentChild(models.Model):
     parent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='parent_relations')
@@ -114,4 +141,16 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Stage {self.stage} Part {self.part} Feedback"
+
+
+class ProgressLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progress_logs')
+    stage = models.IntegerField()
+    progress = models.IntegerField()
+    points_earned = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Stage {self.stage} Prog {self.progress} (+{self.points_earned} XP)"
+
 

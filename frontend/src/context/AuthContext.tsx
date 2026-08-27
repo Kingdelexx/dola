@@ -34,6 +34,9 @@ export type User = {
     stage2_progress: number;
     stage3_progress: number;
     stage4_progress: number;
+    classroom?: any;
+    starting_score?: number | null;
+    learning_band?: string | null;
   };
   earned_badges?: UserBadge[];
 };

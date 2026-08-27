@@ -35,6 +35,7 @@ export default function Stage1Page() {
   const [maxUnlockedLevel, setMaxUnlockedLevel] = useState(0); // 0 to 40 global level index
   const [showModal, setShowModal] = useState(false);
   const { user, updateUser, loading } = useAuth();
+  const [progressLoaded, setProgressLoaded] = useState(false);
 
   useEffect(() => {
     if (!loading) {
@@ -42,6 +43,12 @@ export default function Stage1Page() {
         router.push('/login');
       } else if (user.profile?.role === 'parent') {
         router.push('/parent-dashboard');
+      } else if (user.profile?.role === 'student') {
+        const hasClassroom = !!user.profile?.classroom;
+        const hasStartingScore = user.profile?.starting_score !== null && user.profile?.starting_score !== undefined;
+        if (!hasStartingScore && !hasClassroom) {
+          router.push('/onboarding/challenge');
+        }
       }
     }
   }, [user, loading, router]);
@@ -177,18 +184,8 @@ export default function Stage1Page() {
   const [selectedAlgoFlowchartAnswer, setSelectedAlgoFlowchartAnswer] = useState<number | null>(null);
   const [selectedAlgoDesignAnswer, setSelectedAlgoDesignAnswer] = useState<string | null>(null);
 
+  // Load success lottie on mount
   useEffect(() => {
-    // Load persisted progress
-    const savedLevel = user?.profile?.stage1_progress ?? (localStorage.getItem('stage1_progress') ? parseInt(localStorage.getItem('stage1_progress') || '0', 10) : 0);
-    setMaxUnlockedLevel(savedLevel);
-    if (savedLevel >= 80) {
-      setCurrentPartIndex(7);
-      setCurrentLevelIndex(9);
-    } else {
-      setCurrentPartIndex(Math.min(7, Math.floor(savedLevel / 10)));
-      setCurrentLevelIndex(savedLevel % 10);
-    }
-    // Load success lottie
     fetch('/assets/success.json')
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch success lottie");
@@ -196,7 +193,23 @@ export default function Stage1Page() {
       })
       .then(data => setAnimationData(data))
       .catch(e => console.error("Could not load success lottie", e));
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && user && !progressLoaded) {
+      // Load persisted progress
+      const savedLevel = user?.profile?.stage1_progress ?? (localStorage.getItem('stage1_progress') ? parseInt(localStorage.getItem('stage1_progress') || '0', 10) : 0);
+      setMaxUnlockedLevel(savedLevel);
+      if (savedLevel >= 80) {
+        setCurrentPartIndex(7);
+        setCurrentLevelIndex(9);
+      } else {
+        setCurrentPartIndex(Math.min(7, Math.floor(savedLevel / 10)));
+        setCurrentLevelIndex(savedLevel % 10);
+      }
+      setProgressLoaded(true);
+    }
+  }, [user, loading, progressLoaded]);
 
   const part = STAGE1_NUMERACY_PARTS[currentPartIndex] || STAGE1_NUMERACY_PARTS[0];
   const level = part.levels[currentLevelIndex] || part.levels[0];

@@ -51,6 +51,15 @@ interface UserItem {
   };
 }
 
+interface ClassLearningProfile {
+  numeracy_mastery: string;
+  logical_reasoning: string;
+  computational_thinking: string;
+  coding_proficiency: string;
+  most_common_weakness: string;
+  strongest_competency: string;
+}
+
 interface SchoolMetrics {
   students_count: number;
   teachers_count: number;
@@ -60,6 +69,7 @@ interface SchoolMetrics {
   ai_activities: number;
   girls_count: number;
   boys_count: number;
+  learning_profile?: ClassLearningProfile;
 }
 
 export default function SchoolDashboardPage() {
@@ -529,6 +539,92 @@ export default function SchoolDashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* School-Wide Competency aggregates */}
+            {metrics.learning_profile && (
+              <div className="p-6 rounded-3xl bg-slate-800/60 border border-slate-700/80 space-y-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700 pb-4">
+                  <div>
+                    <h3 className="text-lg font-black text-white flex items-center gap-2">
+                      <Award className="w-5 h-5 text-indigo-400" /> School-Wide Competency Aggregates
+                    </h3>
+                    <p className="text-xs text-slate-400">School-wide learning indices based on active student achievements</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 rounded-full bg-indigo-950/60 border border-indigo-500/20 text-indigo-305 text-indigo-300 text-[11px] font-bold">
+                      Top Area: {metrics.learning_profile.strongest_competency} 🚀
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/20 text-rose-300 text-[11px] font-bold">
+                      Focus Area: {metrics.learning_profile.most_common_weakness} 💡
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  
+                  {/* Numeracy Mastery */}
+                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
+                    <div className="flex justify-between text-xs font-bold text-slate-300">
+                      <span>Numeracy Index</span>
+                      <span className="text-indigo-400">{metrics.learning_profile.numeracy_mastery}</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-indigo-500 to-purple-400 h-full rounded-full"
+                        style={{ width: metrics.learning_profile.numeracy_mastery }}
+                      ></div>
+                    </div>
+                    <p className="text-[10px] text-slate-405 text-slate-450 text-slate-400">Greenfield basic and advanced numeracy</p>
+                  </div>
+
+                  {/* Logical Reasoning */}
+                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
+                    <div className="flex justify-between text-xs font-bold text-slate-300">
+                      <span>Logical Reasoning</span>
+                      <span className="text-purple-400">{metrics.learning_profile.logical_reasoning}</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-400 h-full rounded-full"
+                        style={{ width: metrics.learning_profile.logical_reasoning }}
+                      ></div>
+                    </div>
+                    <p className="text-[10px] text-slate-405 text-slate-450 text-slate-400">Logic puzzles and sequence patterns</p>
+                  </div>
+
+                  {/* Computational Thinking */}
+                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
+                    <div className="flex justify-between text-xs font-bold text-slate-300">
+                      <span>Computational Thinking</span>
+                      <span className="text-pink-400">{metrics.learning_profile.computational_thinking}</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-pink-500 to-rose-455 to-rose-400 h-full rounded-full"
+                        style={{ width: metrics.learning_profile.computational_thinking }}
+                      ></div>
+                    </div>
+                    <p className="text-[10px] text-slate-405 text-slate-450 text-slate-400">Algorithmic planning and problem splitting</p>
+                  </div>
+
+                  {/* Coding Proficiency */}
+                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
+                    <div className="flex justify-between text-xs font-bold text-slate-300">
+                      <span>Coding Index</span>
+                      <span className="text-sky-400">{metrics.learning_profile.coding_proficiency}</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-sky-505 to-blue-400 h-full rounded-full"
+                        style={{ width: metrics.learning_profile.coding_proficiency }}
+                      ></div>
+                    </div>
+                    <p className="text-[10px] text-slate-450 text-slate-400">Active Blockly & Python achievements</p>
+                  </div>
+
+                </div>
+              </div>
+            )}
 
             {/* Google Classroom Navigation Tabs */}
             <div className="flex border-b border-slate-800 gap-2 overflow-x-auto">

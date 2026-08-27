@@ -5,7 +5,7 @@ from .views import (
     SuperAdminDashboardView, SchoolDashboardView, CreateClassroomView,
     ParentDashboardView, LinkChildView, ApproveSchoolView, AddSchoolTeacherView,
     AddSchoolStudentView, InviteParentView, BulkUploadStudentsView, TeacherDashboardView,
-    ClaimParentAccountView, GoogleAuthView
+    ClaimParentAccountView, GoogleAuthView, SubmitOnboardingDiagnosticView
 )
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='login'),
     path('auth/google/', GoogleAuthView.as_view(), name='google_auth'),
     path('auth/user/', UserDataView.as_view(), name='user_data'),
+    path('user/onboarding-diagnostic/', SubmitOnboardingDiagnosticView.as_view(), name='onboarding_diagnostic'),
     path('admin-stats/', AdminDashboardStatsView.as_view(), name='admin_stats'),
     path('user/progress/', UpdateProgressView.as_view(), name='update_progress'),
     path('badges/', BadgesListView.as_view(), name='badges_list'),

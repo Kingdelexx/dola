@@ -28,6 +28,30 @@ interface SubscriptionInfo {
   renews_at: string;
 }
 
+interface LearningProfile {
+  numeracy_pattern_recognition: number;
+  logical_reasoning: number;
+  sequencing: number;
+  problem_decomposition: number;
+  computational_thinking: number;
+  coding_application: number;
+  debugging: number;
+  creative_problem_solving: number;
+}
+
+interface WeeklyJourney {
+  title: string;
+  activities_completed: number;
+  biggest_improvement: string;
+  new_skill: string;
+  project_completed: string;
+  needs_practice: string;
+  journey_level_label: string;
+  journey_group: string;
+  journey_level_percentage: number;
+  try_at_home: string;
+}
+
 interface ChildAnalytics {
   lessons_completed: number;
   homework_submitted: string;
@@ -36,6 +60,8 @@ interface ChildAnalytics {
   time_spent: string;
   achievements: Achievement[];
   weekly_report: WeeklyReport;
+  weekly_journey?: WeeklyJourney;
+  learning_profile?: LearningProfile;
   subscription: SubscriptionInfo;
 }
 
@@ -350,28 +376,266 @@ export default function ParentDashboardPage() {
                     </div>
                   </div>
 
-                  {/* Weekly Report & Lizzy AI Recommendations */}
+                  {/* Category-Grouped Learning Profile Progress Bars */}
+                  {analytics.learning_profile && (
+                    <div className="space-y-4 pt-2 border-t border-slate-100 mt-4">
+                      <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                        <Award className="w-5 h-5 text-indigo-500" /> Learning Profile Competencies
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        {/* 1. Mathematical Foundations */}
+                        <div className="p-6 rounded-3xl bg-slate-50/70 border border-slate-200/60 space-y-4">
+                          <h5 className="font-black text-xs uppercase tracking-wider text-pink-600 flex items-center gap-1.5">
+                            📐 Mathematical Foundations
+                          </h5>
+                          <div className="space-y-3.5">
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Numeracy & Pattern Recognition</span>
+                                <span>{analytics.learning_profile.numeracy_pattern_recognition}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.numeracy_pattern_recognition}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Sequencing</span>
+                                <span>{analytics.learning_profile.sequencing}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-pink-500 to-rose-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.sequencing}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 2. Computational Thinking */}
+                        <div className="p-6 rounded-3xl bg-slate-50/70 border border-slate-200/60 space-y-4">
+                          <h5 className="font-black text-xs uppercase tracking-wider text-purple-600 flex items-center gap-1.5">
+                            🧠 Computational Thinking
+                          </h5>
+                          <div className="space-y-3.5">
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Problem Decomposition</span>
+                                <span>{analytics.learning_profile.problem_decomposition}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.problem_decomposition}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Computational Thinking</span>
+                                <span>{analytics.learning_profile.computational_thinking}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.computational_thinking}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 3. Software Engineering Skills */}
+                        <div className="p-6 rounded-3xl bg-slate-50/70 border border-slate-200/60 space-y-4">
+                          <h5 className="font-black text-xs uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
+                            💻 Software Engineering Skills
+                          </h5>
+                          <div className="space-y-3.5">
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Coding Application</span>
+                                <span>{analytics.learning_profile.coding_application}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-sky-500 to-blue-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.coding_application}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Debugging</span>
+                                <span>{analytics.learning_profile.debugging}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-sky-500 to-blue-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.debugging}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 4. Cognitive Logic & Solving */}
+                        <div className="p-6 rounded-3xl bg-slate-50/70 border border-slate-200/60 space-y-4">
+                          <h5 className="font-black text-xs uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
+                            ✨ Logical & Creative Solving
+                          </h5>
+                          <div className="space-y-3.5">
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Logical Reasoning</span>
+                                <span>{analytics.learning_profile.logical_reasoning}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.logical_reasoning}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Creative Problem Solving</span>
+                                <span>{analytics.learning_profile.creative_problem_solving}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${analytics.learning_profile.creative_problem_solving}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Weekly Journey Track & Lizzy AI Recommendations */}
+                  {analytics.weekly_journey && (
+                    <div className="p-6 rounded-3xl bg-white border border-slate-200 space-y-6 shadow-xs mt-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-5 h-5 text-indigo-500" />
+                          <h4 className="font-extrabold text-base text-slate-900">
+                            {analytics.weekly_journey.title}
+                          </h4>
+                        </div>
+                        <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-indigo-505 to-pink-500 text-white font-bold text-xs shadow-xs">
+                          {analytics.weekly_journey.journey_group} ({analytics.weekly_journey.journey_level_label})
+                        </span>
+                      </div>
+
+                      {/* Journey Stepper / Progress Bar */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-bold text-slate-600">
+                          <span>Numeracy-to-Code Journey Progress</span>
+                          <span className="text-indigo-600">{analytics.weekly_journey.journey_level_label} ({analytics.weekly_journey.journey_level_percentage}%)</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden border border-slate-200/60 p-0.5 shadow-inner">
+                          <div 
+                            className="bg-gradient-to-r from-indigo-500 via-pink-500 to-purple-600 h-full rounded-full transition-all duration-500"
+                            style={{ width: `${analytics.weekly_journey.journey_level_percentage}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-400 font-semibold px-1">
+                          <span>Lv.1 Think & Discover</span>
+                          <span>Lv.4 Blockly Basics</span>
+                          <span>Lv.7 Screen Builder</span>
+                          <span>Lv.10 Python Quest</span>
+                        </div>
+                      </div>
+
+                      {/* 4 Cards (Activities completed, biggest improvement, new skill, project completed) */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        
+                        <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 flex items-start gap-3 shadow-xs">
+                          <div className="text-xl p-1 bg-indigo-100 rounded-lg">📈</div>
+                          <div>
+                            <p className="text-[10px] text-slate-400 font-black uppercase">Weekly Activities</p>
+                            <p className="font-extrabold text-slate-900 text-xs mt-0.5">{analytics.weekly_journey.activities_completed} completed</p>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3 shadow-xs">
+                          <div className="text-xl p-1 bg-emerald-100 rounded-lg">⭐</div>
+                          <div>
+                            <p className="text-[10px] text-slate-400 font-black uppercase">Improvement</p>
+                            <p className="font-extrabold text-slate-900 text-xs mt-0.5">{analytics.weekly_journey.biggest_improvement}</p>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-pink-50/50 border border-pink-100 flex items-start gap-3 shadow-xs">
+                          <div className="text-xl p-1 bg-pink-100 rounded-lg">🔑</div>
+                          <div>
+                            <p className="text-[10px] text-slate-400 font-black uppercase">Skill Mastered</p>
+                            <p className="font-extrabold text-slate-900 text-xs mt-0.5 text-pink-700">{analytics.weekly_journey.new_skill}</p>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 flex items-start gap-3 shadow-xs">
+                          <div className="text-xl p-1 bg-amber-100 rounded-lg">🚀</div>
+                          <div>
+                            <p className="text-[10px] text-slate-400 font-black uppercase">Project Done</p>
+                            <p className="font-extrabold text-slate-900 text-xs mt-0.5 text-amber-700">{analytics.weekly_journey.project_completed}</p>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* Needs Practice & Try at Home Try Tip */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-xs flex gap-2">
+                          <ShieldAlert className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="text-rose-950 font-bold block mb-0.5">Needs more practice:</strong>
+                            <span className="text-rose-800 font-medium">{analytics.weekly_journey.needs_practice}</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-100 text-xs flex gap-2">
+                          <Sparkles className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="text-purple-950 font-bold block mb-0.5">Try at home:</strong>
+                            <span className="text-purple-800 font-medium">{analytics.weekly_journey.try_at_home}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  )}
+
+                  {/* Narrative Weekly Report & Lizzy AI Recommendations */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     
                     {/* Weekly Progress Summary */}
-                    <div className="p-6 rounded-3xl bg-white border border-slate-200 space-y-3 shadow-md shadow-slate-100">
-                      <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-pink-500" /> Weekly Learning Report
+                    <div className="p-6 rounded-3xl bg-white border border-slate-200 space-y-3 shadow-xs">
+                      <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                        <FileText className="w-4.5 h-4.5 text-pink-500" /> Narrative Weekly Report
                       </h4>
                       <p className="text-xs text-slate-600 leading-relaxed font-medium">
                         {weeklyReport.summary}
                       </p>
-                      <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600">
+                      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600">
                         💬 <strong>Teacher Note:</strong> {weeklyReport.teacher_feedback}
                       </div>
                     </div>
 
                     {/* Lizzy AI Recommendation */}
-                    <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border border-purple-200/80 space-y-3 shadow-md shadow-purple-500/5">
-                      <h4 className="font-extrabold text-base text-purple-950 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-purple-600" /> Lizzy AI Tutor Recommendation
+                    <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border border-purple-200/80 space-y-3 shadow-xs">
+                      <h4 className="font-extrabold text-sm text-purple-950 flex items-center gap-2">
+                        <Sparkles className="w-4.5 h-4.5 text-purple-600" /> Narrative Lizzy Recommendation
                       </h4>
-                      <p className="text-xs text-purple-900 leading-relaxed font-medium">
+                      <p className="text-xs text-purple-950 leading-relaxed font-medium">
                         {weeklyReport.ai_recommendation}
                       </p>
                       <div className="flex items-center gap-2 text-xs font-bold text-emerald-700">

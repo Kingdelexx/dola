@@ -70,9 +70,11 @@ export default function SignUpPage() {
         if (res.ok) {
           login(data.token, data.user);
           const userRole = data.user?.profile?.role || role;
+          const hasClassroom = !!data.user?.profile?.classroom;
           if (userRole === 'super_admin') router.push('/super-admin');
           else if (userRole === 'school_admin' || userRole === 'teacher') router.push('/school-dashboard');
           else if (userRole === 'parent') router.push('/parent-dashboard');
+          else if (userRole === 'student' && !hasClassroom) router.push('/onboarding/challenge');
           else router.push('/dashboard');
         } else {
           setError(Object.values(data).flat().join(', ') || 'Registration failed');
@@ -126,10 +128,12 @@ export default function SignUpPage() {
                 if (res.ok) {
                   login(data.token, data.user);
                   const userRole = data.user?.profile?.role || role;
+                  const hasClassroom = !!data.user?.profile?.classroom;
                   if (userRole === 'super_admin') router.push('/super-admin');
                   else if (userRole === 'teacher') router.push('/teacher-dashboard');
                   else if (userRole === 'school_admin') router.push('/school-dashboard');
                   else if (userRole === 'parent') router.push('/parent-dashboard');
+                  else if (userRole === 'student' && !hasClassroom) router.push('/onboarding/challenge');
                   else router.push('/dashboard');
                 } else {
                   setError(data.error || 'Google Registration failed.');

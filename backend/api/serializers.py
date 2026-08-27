@@ -33,6 +33,13 @@ class ClassroomSerializer(serializers.ModelSerializer):
         model = Classroom
         fields = ('id', 'school', 'school_name', 'name', 'grade_level', 'teacher', 'teacher_name', 'created_at')
 
+from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild, StudentCompetency
+
+class StudentCompetencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentCompetency
+        fields = ('id', 'competency', 'status', 'updated_at')
+
 class UserProfileSerializer(serializers.ModelSerializer):
     school_details = SchoolSerializer(source='school', read_only=True)
     classroom_details = ClassroomSerializer(source='classroom', read_only=True)
@@ -40,7 +47,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'role', 'age', 'gender', 'coding_experience', 'points', 
+            'role', 'age', 'learning_band', 'starting_score', 'gender', 'coding_experience', 'points', 
             'current_streak', 'longest_streak', 'last_active_date',
             'stage1_progress', 'stage2_progress', 'stage3_progress', 'stage4_progress',
             'school', 'school_details', 'classroom', 'classroom_details'
@@ -49,10 +56,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
     earned_badges = serializers.SerializerMethodField()
+    competencies = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges')
+        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies')
         extra_kwargs = {
             'password': {'write_only': True},
             'is_superuser': {'read_only': True}
@@ -67,6 +75,10 @@ class UserSerializer(serializers.ModelSerializer):
     def get_earned_badges(self, obj):
         badges = UserBadge.objects.filter(user=obj)
         return UserBadgeSerializer(badges, many=True).data
+
+    def get_competencies(self, obj):
+        competencies = StudentCompetency.objects.filter(user=obj)
+        return StudentCompetencySerializer(competencies, many=True).data
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -118,9 +130,36 @@ class UserSerializer(serializers.ModelSerializer):
         if validated_data.get('email', '').endswith('@devnaija.com'):
             role = 'super_admin'
 
+        age = None
+        coding_experience = ''
+        if request and request.data:
+            profile_data = request.data.get('profile', {})
+            if isinstance(profile_data, dict):
+                age = profile_data.get('age')
+                coding_experience = profile_data.get('coding_experience', '')
+                if age:
+                    try:
+                        age = int(age)
+                    except (ValueError, TypeError):
+                        age = None
+
+        learning_band = None
+        if age and role == 'student':
+            if age <= 8:
+                learning_band = 'Discoverer'
+            elif age <= 11:
+                learning_band = 'Explorer'
+            elif age <= 14:
+                learning_band = 'Builder'
+            else:
+                learning_band = 'Innovator'
+
         UserProfile.objects.create(
             user=user,
             role=role,
+            age=age,
+            coding_experience=coding_experience,
+            learning_band=learning_band,
             school=school_obj
         )
         return user

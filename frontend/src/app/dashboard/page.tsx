@@ -69,6 +69,12 @@ export default function DashboardPage() {
         router.push('/school-dashboard');
       } else if (user.profile?.role === 'super_admin' || user.is_superuser) {
         router.push('/super-admin');
+      } else if (user.profile?.role === 'student') {
+        const hasClassroom = !!user.profile?.classroom;
+        const hasStartingScore = user.profile?.starting_score !== null && user.profile?.starting_score !== undefined;
+        if (!hasStartingScore && !hasClassroom) {
+          router.push('/onboarding/challenge');
+        }
       }
     }
   }, [user, loading, router]);
@@ -144,9 +150,9 @@ export default function DashboardPage() {
                     <Calendar size={18} className="text-sky-500" /> Age: {user.profile.age}
                   </span>
                 )}
-                {user.profile?.coding_experience && (
-                  <span className="flex items-center gap-2 bg-purple-50 border-2 border-purple-100 px-4 py-2 rounded-xl shadow-sm capitalize">
-                    <Target size={18} className="text-purple-500" /> Exp: {user.profile.coding_experience}
+                {user.profile?.learning_band && (
+                  <span className="flex items-center gap-2 bg-emerald-50 border-2 border-emerald-100 px-4 py-2 rounded-xl shadow-sm text-emerald-800 font-extrabold capitalize">
+                    <Brain size={18} className="text-emerald-500" /> Band: {user.profile.learning_band}
                   </span>
                 )}
                 <span className="flex items-center gap-2 bg-slate-50 border-2 border-slate-100 px-4 py-2 rounded-xl shadow-sm">

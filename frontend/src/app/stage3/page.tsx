@@ -28,6 +28,12 @@ export default function Stage3Page() {
         router.push('/login');
       } else if (user.profile?.role === 'parent') {
         router.push('/parent-dashboard');
+      } else if (user.profile?.role === 'student') {
+        const hasClassroom = !!user.profile?.classroom;
+        const hasStartingScore = user.profile?.starting_score !== null && user.profile?.starting_score !== undefined;
+        if (!hasStartingScore && !hasClassroom) {
+          router.push('/onboarding/challenge');
+        }
       }
     }
   }, [user, loading, router]);

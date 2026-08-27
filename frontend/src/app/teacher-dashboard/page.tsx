@@ -17,6 +17,7 @@ interface StudentProfile {
   stage4_progress?: number;
   gender?: string;
   age?: number;
+  learning_band?: string;
 }
 
 interface StudentUser {
@@ -33,10 +34,20 @@ interface ClassroomInfo {
   students_count: number;
 }
 
+interface ClassLearningProfile {
+  numeracy_mastery: string;
+  logical_reasoning: string;
+  computational_thinking: string;
+  coding_proficiency: string;
+  most_common_weakness: string;
+  strongest_competency: string;
+}
+
 interface TeacherMetrics {
   attendance: string;
   lesson_completion: string;
   homework: string;
+  learning_profile?: ClassLearningProfile;
 }
 
 export default function TeacherDashboardPage() {
@@ -199,6 +210,92 @@ export default function TeacherDashboardPage() {
           </div>
         </div>
 
+        {/* Class Skill Competencies aggregates */}
+        {met.learning_profile && (
+          <div className="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-850 pb-4">
+              <div>
+                <h3 className="text-lg font-black text-white flex items-center gap-2">
+                  <Award className="w-5 h-5 text-emerald-400" /> Class Skill Competencies
+                </h3>
+                <p className="text-xs text-slate-400">Average competency levels across all active student profiles</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
+                  Strongest Area: {met.learning_profile.strongest_competency} 🚀
+                </span>
+                <span className="px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/20 text-rose-300 text-[11px] font-bold">
+                  Focus Area: {met.learning_profile.most_common_weakness} 💡
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              
+              {/* Numeracy Mastery */}
+              <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
+                <div className="flex justify-between text-xs font-bold text-slate-300">
+                  <span>Numeracy Mastery</span>
+                  <span className="text-emerald-400">{met.learning_profile.numeracy_mastery}</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full"
+                    style={{ width: met.learning_profile.numeracy_mastery }}
+                  ></div>
+                </div>
+                <p className="text-[10px] text-slate-500">Stage 1 basic and advanced math concepts</p>
+              </div>
+
+              {/* Logical Reasoning */}
+              <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
+                <div className="flex justify-between text-xs font-bold text-slate-300">
+                  <span>Logical Reasoning</span>
+                  <span className="text-indigo-405 text-indigo-400">{met.learning_profile.logical_reasoning}</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-indigo-505 to-purple-400 h-full rounded-full"
+                    style={{ width: met.learning_profile.logical_reasoning }}
+                  ></div>
+                </div>
+                <p className="text-[10px] text-slate-500">Pattern sequencing and logic deduction</p>
+              </div>
+
+              {/* Computational Thinking */}
+              <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
+                <div className="flex justify-between text-xs font-bold text-slate-300">
+                  <span>Computational Thinking</span>
+                  <span className="text-purple-400">{met.learning_profile.computational_thinking}</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-pink-400 h-full rounded-full"
+                    style={{ width: met.learning_profile.computational_thinking }}
+                  ></div>
+                </div>
+                <p className="text-[10px] text-slate-500">Algorithmic planning & decomposition</p>
+              </div>
+
+              {/* Coding Proficiency */}
+              <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
+                <div className="flex justify-between text-xs font-bold text-slate-300">
+                  <span>Coding Proficiency</span>
+                  <span className="text-sky-400">{met.learning_profile.coding_proficiency}</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-sky-505 to-blue-400 h-full rounded-full"
+                    style={{ width: met.learning_profile.coding_proficiency }}
+                  ></div>
+                </div>
+                <p className="text-[10px] text-slate-400 text-slate-500">Blockly & Python coding stages</p>
+              </div>
+
+            </div>
+          </div>
+        )}
+
         {/* Grid: Left Column Leaderboard | Right Column Weak vs Strong */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
@@ -240,6 +337,11 @@ export default function TeacherDashboardPage() {
                           {st.username}
                           {st.profile?.gender === 'girl' && <span className="ml-1.5 text-pink-400 text-[10px]">👧</span>}
                           {st.profile?.gender === 'boy' && <span className="ml-1.5 text-sky-400 text-[10px]">👦</span>}
+                          {st.profile?.learning_band && (
+                            <span className="ml-2 px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/20 text-emerald-400 text-[9px] uppercase font-black">
+                              {st.profile.learning_band}
+                            </span>
+                          )}
                         </td>
                         <td className="py-3.5 px-4 space-x-1.5">
                           <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px]">

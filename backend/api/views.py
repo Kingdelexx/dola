@@ -46,6 +46,15 @@ class GoogleAuthView(APIView):
         school_name = request.data.get('school_name')
         school_code = request.data.get('school_code')
 
+        age_val = request.data.get('age') or request.data.get('profile', {}).get('age')
+        age = None
+        if age_val:
+            try:
+                age = int(age_val)
+            except (ValueError, TypeError):
+                pass
+        coding_experience = request.data.get('coding_experience') or request.data.get('profile', {}).get('coding_experience', '')
+
         if credential:
             try:
                 import json, base64
@@ -103,9 +112,23 @@ class GoogleAuthView(APIView):
                 user.is_staff = True
                 user.save()
 
+            learning_band = None
+            if age and role == 'student':
+                if age <= 8:
+                    learning_band = 'Discoverer'
+                elif age <= 11:
+                    learning_band = 'Explorer'
+                elif age <= 14:
+                    learning_band = 'Builder'
+                else:
+                    learning_band = 'Innovator'
+
             UserProfile.objects.create(
                 user=user,
                 role=role,
+                age=age,
+                coding_experience=coding_experience,
+                learning_band=learning_band,
                 school=school_obj
             )
 
@@ -123,6 +146,31 @@ class UserDataView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+class SubmitOnboardingDiagnosticView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        score = request.data.get('score')
+        if score is None:
+            return Response({"error": "Score is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            score = int(score)
+        except (ValueError, TypeError):
+            return Response({"error": "Invalid score value"}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile = request.user.profile
+        profile.starting_score = score
+        
+        # Auto-create competency records as INTRODUCED
+        from .models import StudentCompetency
+        competencies = ['sequencing', 'patterns', 'loops', 'debugging', 'conditions']
+        for comp in competencies:
+            StudentCompetency.objects.get_or_create(user=request.user, competency=comp, defaults={'status': 'INTRODUCED'})
+
+        profile.save()
+        return Response({"success": True, "user": UserSerializer(request.user).data})
 
 class AdminDashboardStatsView(APIView):
     permission_classes = [permissions.IsAdminUser]
@@ -175,11 +223,18 @@ DEFAULT_BADGES = [
         "condition_value": 1
     },
     {
+        "name": "Logic Explorer",
+        "description": "Unlock Logic Explorer by completing unplugged stages!",
+        "icon": "🧠",
+        "condition_type": "stage2_progress",
+        "condition_value": 7
+    },
+    {
         "name": "Block Master",
         "description": "Complete all levels in Stage 2",
         "icon": "🎮",
         "condition_type": "stage2_progress",
-        "condition_value": 11
+        "condition_value": 18
     },
     {
         "name": "Streak Starter",
@@ -212,9 +267,16 @@ DEFAULT_BADGES = [
 ]
 
 def seed_default_badges():
-    if Badge.objects.count() == 0:
-        for badge_data in DEFAULT_BADGES:
-            Badge.objects.create(**badge_data)
+    for badge_data in DEFAULT_BADGES:
+        Badge.objects.update_or_create(
+            name=badge_data["name"],
+            defaults={
+                "description": badge_data["description"],
+                "icon": badge_data["icon"],
+                "condition_type": badge_data["condition_type"],
+                "condition_value": badge_data["condition_value"]
+            }
+        )
 
 class UpdateProgressView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -256,6 +318,16 @@ class UpdateProgressView(APIView):
 
         profile.points += points_earned
 
+        # Log completion to database ProgressLog table
+        if points_earned > 0 and stage is not None and progress is not None:
+            from api.models import ProgressLog
+            ProgressLog.objects.create(
+                user=user,
+                stage=stage,
+                progress=progress,
+                points_earned=points_earned
+            )
+
         # 2. Update Streak
         from datetime import timedelta
         from django.utils import timezone
@@ -278,6 +350,9 @@ class UpdateProgressView(APIView):
             
         profile.last_active_date = today
         profile.save()
+
+        # Update dynamic skill competencies
+        update_student_competencies(user, profile)
 
         # 3. Check and award badges
         seed_default_badges()
@@ -504,15 +579,62 @@ class SchoolDashboardView(APIView):
         )
         total_lessons = (lesson_sum['s1'] or 0) + (lesson_sum['s2'] or 0) + (lesson_sum['s3'] or 0) + (lesson_sum['s4'] or 0)
 
+        # Calculate school aggregates
+        nr_list, lr_list, ct_list, ca_list, db_list = [], [], [], [], []
+        for student_obj in students:
+            stud_profile = getattr(student_obj, 'profile', None)
+            if stud_profile:
+                skills = calculate_skills(stud_profile)
+                nr_list.append(skills['numeracy_pattern_recognition'])
+                lr_list.append(skills['logical_reasoning'])
+                ct_list.append(skills['computational_thinking'])
+                ca_list.append(skills['coding_application'])
+                db_list.append(skills['debugging'])
+
+        if students.exists():
+            avg_nr = sum(nr_list) / len(nr_list)
+            avg_lr = sum(lr_list) / len(lr_list)
+            avg_ct = sum(ct_list) / len(ct_list)
+            avg_ca = sum(ca_list) / len(ca_list)
+            
+            all_avg_skills = {
+                "Pattern Recognition": sum(nr_list) / len(nr_list),
+                "Logical Reasoning": sum(lr_list) / len(lr_list),
+                "Sequencing": sum(calculate_skills(getattr(student_obj, 'profile'))['sequencing'] for student_obj in students if getattr(student_obj, 'profile', None)) / len(students),
+                "Problem Decomposition": sum(calculate_skills(getattr(student_obj, 'profile'))['problem_decomposition'] for student_obj in students if getattr(student_obj, 'profile', None)) / len(students),
+                "Computational Thinking": sum(ct_list) / len(ct_list),
+                "Coding Application": sum(ca_list) / len(ca_list),
+                "Debugging": sum(db_list) / len(db_list),
+                "Creative Problem Solving": sum(calculate_skills(getattr(student_obj, 'profile'))['creative_problem_solving'] for student_obj in students if getattr(student_obj, 'profile', None)) / len(students),
+            }
+            
+            strongest_competency = max(all_avg_skills, key=all_avg_skills.get)
+            most_common_weakness = min(all_avg_skills, key=all_avg_skills.get)
+        else:
+            avg_nr = 78
+            avg_lr = 71
+            avg_ct = 64
+            avg_ca = 59
+            strongest_competency = "Pattern Recognition"
+            most_common_weakness = "Debugging"
+
         metrics = {
             "students_count": students.count() if students.count() > 0 else 328,
             "teachers_count": teachers.count() if teachers.count() > 0 else 12,
             "completed_lessons": total_lessons if total_lessons > 0 else 2340,
-            "avg_numeracy_score": "71%",
-            "coding_progress": "64%",
+            "avg_numeracy_score": f"{int(avg_nr)}%",
+            "coding_progress": f"{int(avg_ca)}%",
             "ai_activities": 1221,
             "girls_count": girls_count if girls_count > 0 else 168,
             "boys_count": boys_count if boys_count > 0 else 160,
+            "learning_profile": {
+                "numeracy_mastery": f"{int(avg_nr)}%",
+                "logical_reasoning": f"{int(avg_lr)}%",
+                "computational_thinking": f"{int(avg_ct)}%",
+                "coding_proficiency": f"{int(avg_ca)}%",
+                "most_common_weakness": most_common_weakness,
+                "strongest_competency": strongest_competency
+            }
         }
 
         return Response({
@@ -555,6 +677,270 @@ class CreateClassroomView(APIView):
             "success": True,
             "classroom": ClassroomSerializer(classroom).data
         }, status=status.HTTP_201_CREATED)
+
+def calculate_skills(profile):
+    s1 = profile.stage1_progress or 0
+    s2 = profile.stage2_progress or 0
+    s3 = profile.stage3_progress or 0
+    s4 = profile.stage4_progress or 0
+
+    s1_ratio = min(1.0, s1 / 80.0) if s1 > 0 else 0
+    s2_ratio = min(1.0, s2 / 11.0) if s2 > 0 else 0
+    s3_ratio = min(1.0, s3 / 10.0) if s3 > 0 else 0
+    s4_ratio = min(1.0, s4 / 10.0) if s4 > 0 else 0
+
+    # Skill percentages calculated dynamically from high watermarks
+    nr = min(100, round((s1_ratio * 0.7 + s2_ratio * 0.15 + s3_ratio * 0.15) * 100))
+    lr = min(100, round((s1_ratio * 0.2 + s2_ratio * 0.3 + s3_ratio * 0.2 + s4_ratio * 0.3) * 100))
+    sq = min(100, round((s1_ratio * 0.4 + s2_ratio * 0.4 + s3_ratio * 0.2) * 100))
+    pd = min(100, round((s1_ratio * 0.1 + s2_ratio * 0.3 + s3_ratio * 0.3 + s4_ratio * 0.3) * 100))
+    ct = min(100, round((s1_ratio * 0.1 + s2_ratio * 0.3 + s3_ratio * 0.3 + s4_ratio * 0.3) * 100))
+    ca = min(100, round((s2_ratio * 0.3 + s3_ratio * 0.3 + s4_ratio * 0.4) * 100))
+    db = min(100, round((s2_ratio * 0.2 + s3_ratio * 0.4 + s4_ratio * 0.4) * 100))
+    cps = min(100, round((s1_ratio * 0.1 + s2_ratio * 0.2 + s3_ratio * 0.4 + s4_ratio * 0.3) * 100))
+
+    # Give a tiny baseline if they have started any progress so the progress bars look alive and aligned
+    total_prog = s1 + s2 + s3 + s4
+    if total_prog > 0:
+        nr = max(nr, 12 if s1 > 0 else 0)
+        lr = max(lr, 10)
+        sq = max(sq, 15 if s1 > 0 or s2 > 0 else 0)
+        pd = max(pd, 8)
+        ct = max(ct, 10 if s2 > 0 else 0)
+        ca = max(ca, 5 if s2 > 0 else 0)
+        db = max(db, 5 if s2 > 0 or s3 > 0 else 0)
+        cps = max(cps, 12)
+
+    return {
+        "numeracy_pattern_recognition": nr,
+        "logical_reasoning": lr,
+        "sequencing": sq,
+        "problem_decomposition": pd,
+        "computational_thinking": ct,
+        "coding_application": ca,
+        "debugging": db,
+        "creative_problem_solving": cps
+    }
+
+def update_student_competencies(user, profile):
+    from .models import StudentCompetency
+    s1 = profile.stage1_progress or 0
+    s2 = profile.stage2_progress or 0
+    s3 = profile.stage3_progress or 0
+    s4 = profile.stage4_progress or 0
+
+    # 1. Sequencing
+    seq_status = 'INTRODUCED'
+    if s1 >= 70 or s2 >= 6:
+        seq_status = 'MASTERED'
+    elif s1 >= 40 or s2 >= 3:
+        seq_status = 'PROFICIENT'
+    elif s1 >= 15 or s2 >= 1:
+        seq_status = 'DEVELOPING'
+    StudentCompetency.objects.update_or_create(user=user, competency='sequencing', defaults={'status': seq_status})
+
+    # 2. Pattern Recognition
+    pat_status = 'INTRODUCED'
+    if s1 >= 75 or s2 >= 5:
+        pat_status = 'MASTERED'
+    elif s1 >= 50 or s2 >= 2:
+        pat_status = 'PROFICIENT'
+    elif s1 >= 20:
+        pat_status = 'DEVELOPING'
+    StudentCompetency.objects.update_or_create(user=user, competency='patterns', defaults={'status': pat_status})
+
+    # 3. Loops
+    loop_status = 'INTRODUCED'
+    if s2 >= 10 or s3 >= 5:
+        loop_status = 'MASTERED'
+    elif s2 >= 7 or s3 >= 2:
+        loop_status = 'PROFICIENT'
+    elif s2 >= 3:
+        loop_status = 'DEVELOPING'
+    StudentCompetency.objects.update_or_create(user=user, competency='loops', defaults={'status': loop_status})
+
+    # 4. Debugging
+    deb_status = 'INTRODUCED'
+    if s2 >= 11 or s4 >= 3:
+        deb_status = 'MASTERED'
+    elif s2 >= 8 or s4 >= 1:
+        deb_status = 'PROFICIENT'
+    elif s2 >= 4:
+        deb_status = 'DEVELOPING'
+    StudentCompetency.objects.update_or_create(user=user, competency='debugging', defaults={'status': deb_status})
+
+    # 5. Conditions
+    cond_status = 'INTRODUCED'
+    if s2 >= 11 or s4 >= 5:
+        cond_status = 'MASTERED'
+    elif s2 >= 9 or s4 >= 2:
+        cond_status = 'PROFICIENT'
+    elif s1 >= 60 or s2 >= 5:
+        cond_status = 'DEVELOPING'
+    StudentCompetency.objects.update_or_create(user=user, competency='conditions', defaults={'status': cond_status})
+
+def calculate_weekly_journey(child, profile):
+    from datetime import timedelta
+    from django.utils import timezone
+    from api.models import ProgressLog
+    
+    # query database for activities completed this week
+    one_week_ago = timezone.now() - timedelta(days=7)
+    weekly_activities = ProgressLog.objects.filter(user=child, created_at__gte=one_week_ago).count()
+    
+    s1 = profile.stage1_progress or 0
+    s2 = profile.stage2_progress or 0
+    s3 = profile.stage3_progress or 0
+    s4 = profile.stage4_progress or 0
+    
+    s1_ratio = min(1.0, s1 / 80.0) if s1 > 0 else 0
+    s2_ratio = min(1.0, s2 / 11.0) if s2 > 0 else 0
+    s3_ratio = min(1.0, s3 / 10.0) if s3 > 0 else 0
+    s4_ratio = min(1.0, s4 / 10.0) if s4 > 0 else 0
+    
+    # Fallback weekly activities if there's progress but it was not logged previously
+    if weekly_activities == 0 and (s1 + s2 + s3 + s4) > 0:
+        weekly_activities = min(5, max(1, (s1 + s2 + s3 + s4) % 6))
+
+    # Calculate journey level on scale of 1 to 12
+    journey_level = min(12, max(1, 1 + int((s1_ratio * 3) + (s2_ratio * 3) + (s3_ratio * 3) + (s4_ratio * 3)))) if (s1 + s2 + s3 + s4) > 0 else 1
+    
+    journey_map = {
+        1: {
+            "biggest_improvement": "Pattern recognition",
+            "new_skill": "Number patterns & counting",
+            "project_completed": "Numbers Around Me",
+            "needs_practice": "Sequences",
+            "journey_level_label": "Level 1 of 12",
+            "journey_group": "Discoverers",
+            "journey_level_percentage": 8,
+            "try_at_home": f"Ask {child.username} to count items in the kitchen and explain what comes next in a 1-2-1 pattern!"
+        },
+        2: {
+            "biggest_improvement": "Logical reasoning",
+            "new_skill": "Bigger, Smaller, Same comparisons",
+            "project_completed": "Logic & Sorting quiz",
+            "needs_practice": "Order of operations",
+            "journey_level_label": "Level 2 of 12",
+            "journey_group": "Discoverers",
+            "journey_level_percentage": 16,
+            "try_at_home": f"Help {child.username} organize toys by size, and talk about IF-THEN rules (e.g. IF it is a block, THEN stack it)!"
+        },
+        3: {
+            "biggest_improvement": "Sequencing",
+            "new_skill": "Ordered instructions",
+            "project_completed": "Pattern Master Challenge",
+            "needs_practice": "Basic loops",
+            "journey_level_label": "Level 3 of 12",
+            "journey_group": "Discoverers",
+            "journey_level_percentage": 25,
+            "try_at_home": f"Play a 'robot' game where {child.username} gives you step-by-step commands to walk across the room!"
+        },
+        4: {
+            "biggest_improvement": "Logical reasoning",
+            "new_skill": "Conditional statements (Blockly)",
+            "project_completed": "Smart Traffic Light",
+            "needs_practice": "Debugging block errors",
+            "journey_level_label": "Level 4 of 12",
+            "journey_group": "Explorers",
+            "journey_level_percentage": 33,
+            "try_at_home": f"Ask {child.username} to explain why a traffic light needs automatic IF/THEN rules to guide traffic."
+        },
+        5: {
+            "biggest_improvement": "Computational Thinking",
+            "new_skill": "Repetitive structures / loops",
+            "project_completed": "Blocky Loop Master",
+            "needs_practice": "Variable setup",
+            "journey_level_label": "Level 5 of 12",
+            "journey_group": "Explorers",
+            "journey_level_percentage": 41,
+            "try_at_home": f"Count loops in real life: ask {child.username} how brushing their teeth has a loop (repeat brush until clean)!"
+        },
+        6: {
+            "biggest_improvement": "Coding Application",
+            "new_skill": "Function calls & sequences",
+            "project_completed": "Maze Solver",
+            "needs_practice": "Complex conditions",
+            "journey_level_label": "Level 6 of 12",
+            "journey_group": "Explorers",
+            "journey_level_percentage": 50,
+            "try_at_home": f"Ask {child.username} to explain the difference between a simple statement and a reusable routine!"
+        },
+        7: {
+            "biggest_improvement": "Problem Decomposition",
+            "new_skill": "UI Screen Designing & variables",
+            "project_completed": "App Studio Counter",
+            "needs_practice": "Function callbacks",
+            "journey_level_label": "Level 7 of 12",
+            "journey_group": "Builders",
+            "journey_level_percentage": 58,
+            "try_at_home": f"Ask {child.username} to sketch a phone screen on paper and explain where the buttons would go!"
+        },
+        8: {
+            "biggest_improvement": "Debugging",
+            "new_skill": "State management & conditions",
+            "project_completed": "Interactive Calculator App",
+            "needs_practice": "State synchronization",
+            "journey_level_label": "Level 8 of 12",
+            "journey_group": "Builders",
+            "journey_level_percentage": 66,
+            "try_at_home": f"Talk about what happens when you press buttons on a microwave, mapping inputs to microwave behavior!"
+        },
+        9: {
+            "biggest_improvement": "Creative Problem Solving",
+            "new_skill": "Event handlers & logic trees",
+            "project_completed": "Mini Arcade Game",
+            "needs_practice": "Logic speed",
+            "journey_level_label": "Level 9 of 12",
+            "journey_group": "Builders",
+            "journey_level_percentage": 75,
+            "try_at_home": f"Play a simple board game and ask {child.username} what actions lead to winning or losing points!"
+        },
+        10: {
+            "biggest_improvement": "Coding Application",
+            "new_skill": "Python Syntax & variables",
+            "project_completed": "Python Quest Part 1",
+            "needs_practice": "Syntax errors & indentation",
+            "journey_level_label": "Level 10 of 12",
+            "journey_group": "Innovators",
+            "journey_level_percentage": 83,
+            "try_at_home": f"Open a Python file and show {child.username} how clean spaces at the beginning of a line are so important!"
+        },
+        11: {
+            "biggest_improvement": "Debugging",
+            "new_skill": "Python Lists & Loops",
+            "project_completed": "Data Filter Script",
+            "needs_practice": "Array index errors",
+            "journey_level_label": "Level 11 of 12",
+            "journey_group": "Innovators",
+            "journey_level_percentage": 91,
+            "try_at_home": f"Ask {child.username} how lists store items in order, like a shopping list they can search through!"
+        },
+        12: {
+            "biggest_improvement": "Computational Thinking",
+            "new_skill": "Complex algorithms & functions",
+            "project_completed": "Python Quest Final Boss",
+            "needs_practice": "Code efficiency",
+            "journey_level_label": "Level 12 of 12",
+            "journey_group": "Innovators",
+            "journey_level_percentage": 100,
+            "try_at_home": f"Celebrate graduation! Ask {child.username} to build a Python script to say hello to everyone in the family!"
+        }
+    }
+    
+    details = journey_map.get(journey_level, journey_map[1])
+    return {
+        "title": f"{child.username}'s DolaCode Week",
+        "activities_completed": weekly_activities,
+        "biggest_improvement": details["biggest_improvement"],
+        "new_skill": details["new_skill"],
+        "project_completed": details["project_completed"],
+        "needs_practice": details["needs_practice"],
+        "journey_level_label": details["journey_level_label"],
+        "journey_group": details["journey_group"],
+        "journey_level_percentage": details["journey_level_percentage"],
+        "try_at_home": details["try_at_home"]
+    }
 
 class ParentDashboardView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -602,6 +988,11 @@ class ParentDashboardView(APIView):
                 for ub in badges
             ]
 
+            # Dynamic Weekly Journey Recommendation and Tip
+            weekly_jd = calculate_weekly_journey(child, c_profile)
+            # Dynamic standard learning competencies
+            learning_profile = calculate_skills(c_profile)
+
             if total_lessons == 0:
                 summary = f"{child.username} has registered and is ready to start learning."
                 teacher_feedback = "No submitted activities yet. Encourage student to complete Stage 1 Numeracy lessons!"
@@ -646,6 +1037,8 @@ class ParentDashboardView(APIView):
                         "teacher_feedback": teacher_feedback,
                         "ai_recommendation": ai_rec
                     },
+                    "weekly_journey": weekly_jd,
+                    "learning_profile": learning_profile,
                     "subscription": {
                         "plan": plan_name,
                         "status": plan_status,
@@ -1014,6 +1407,47 @@ class TeacherDashboardView(APIView):
         strong_students = sorted_students[:5] if len(sorted_students) >= 5 else sorted_students
         weak_students = sorted_students[-5:][::-1] if len(sorted_students) >= 5 else sorted_students[::-1]
 
+        # Calculate class averages
+        nr_list, lr_list, ct_list, ca_list, db_list = [], [], [], [], []
+        
+        for student_obj in students_qs:
+            stud_profile = getattr(student_obj, 'profile', None)
+            if stud_profile:
+                skills = calculate_skills(stud_profile)
+                nr_list.append(skills['numeracy_pattern_recognition'])
+                lr_list.append(skills['logical_reasoning'])
+                ct_list.append(skills['computational_thinking'])
+                ca_list.append(skills['coding_application'])
+                db_list.append(skills['debugging'])
+                
+        if len(students_qs) > 0:
+            avg_nr = sum(nr_list) / len(nr_list)
+            avg_lr = sum(lr_list) / len(lr_list)
+            avg_ct = sum(ct_list) / len(ct_list)
+            avg_ca = sum(ca_list) / len(ca_list)
+            
+            # Map average to list to find weakness/strongest
+            all_avg_skills = {
+                "Pattern Recognition": sum(nr_list) / len(nr_list),
+                "Logical Reasoning": sum(lr_list) / len(lr_list),
+                "Sequencing": sum(calculate_skills(getattr(st_obj, 'profile'))['sequencing'] for st_obj in students_qs if getattr(st_obj, 'profile', None)) / len(students_qs),
+                "Problem Decomposition": sum(calculate_skills(getattr(st_obj, 'profile'))['problem_decomposition'] for st_obj in students_qs if getattr(st_obj, 'profile', None)) / len(students_qs),
+                "Computational Thinking": sum(ct_list) / len(ct_list),
+                "Coding Application": sum(ca_list) / len(ca_list),
+                "Debugging": sum(db_list) / len(db_list),
+                "Creative Problem Solving": sum(calculate_skills(getattr(st_obj, 'profile'))['creative_problem_solving'] for st_obj in students_qs if getattr(st_obj, 'profile', None)) / len(students_qs),
+            }
+            
+            strongest_competency = max(all_avg_skills, key=all_avg_skills.get)
+            most_common_weakness = min(all_avg_skills, key=all_avg_skills.get)
+        else:
+            avg_nr = 78
+            avg_lr = 71
+            avg_ct = 64
+            avg_ca = 59
+            strongest_competency = "Pattern Recognition"
+            most_common_weakness = "Debugging"
+
         return Response({
             "teacher": {
                 "id": user.id,
@@ -1030,6 +1464,14 @@ class TeacherDashboardView(APIView):
                 "attendance": "96% (27/28 Present)",
                 "lesson_completion": "84%",
                 "homework": "85%",
+                "learning_profile": {
+                    "numeracy_mastery": f"{int(avg_nr)}%",
+                    "logical_reasoning": f"{int(avg_lr)}%",
+                    "computational_thinking": f"{int(avg_ct)}%",
+                    "coding_proficiency": f"{int(avg_ca)}%",
+                    "most_common_weakness": most_common_weakness,
+                    "strongest_competency": strongest_competency
+                }
             },
             "leaderboard": sorted_students,
             "strong_students": strong_students,
