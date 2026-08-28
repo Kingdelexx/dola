@@ -90,7 +90,7 @@ export default function FeedbackModal({ isOpen, stage, part, onClose }: Feedback
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md">
       <div className="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl border-4 border-indigo-200 relative overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Glow Effects */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-100 rounded-full blur-2xl opacity-50" />

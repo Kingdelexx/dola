@@ -832,7 +832,7 @@ await main()
       </div>
 
       {showReflectStep && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/55 backdrop-blur-sm">
           <div className="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl flex flex-col justify-between animate-in fade-in zoom-in duration-300 border-4 border-indigo-400">
             <div>
               <div className="flex items-center gap-2 mb-4 bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-full text-indigo-700 font-extrabold text-xs w-fit mx-auto">
@@ -895,7 +895,7 @@ await main()
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-indigo-200">
                 <div className="relative w-40 h-40 mb-6 flex items-center justify-center pointer-events-none">
                   {/* Outer glowing pulsing circles */}
@@ -948,7 +948,7 @@ await main()
 
       {/* Badge Celebration Modal */}
       {showBadgeCelebration && newlyUnlockedBadges.length > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md">
           <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-yellow-400 relative overflow-hidden text-center">
             {/* Glimmer background */}
             <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-orange-50 pointer-events-none" />
