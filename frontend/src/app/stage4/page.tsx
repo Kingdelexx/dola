@@ -69,6 +69,16 @@ export default function Stage4Page() {
   const [mobileTab, setMobileTab] = useState<'quest' | 'code'>('code');
 
   const runnerRef = useRef<any>(null);
+  const nextLevelTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto clean up next level timer if user switches levels manually
+  useEffect(() => {
+    return () => {
+      if (nextLevelTimerRef.current) {
+        clearTimeout(nextLevelTimerRef.current);
+      }
+    };
+  }, [currentLevelId]);
 
   // Initialize store and load progress on mount
   useEffect(() => {
@@ -101,6 +111,11 @@ export default function Stage4Page() {
       // If final boss completed, trigger feedback modal
       if (activeLevel.id === 'ch10_l1') {
         setTimeout(() => setShowFeedbackModal(true), 3000);
+      } else {
+        // Move to the next level automatically after the animation plays
+        nextLevelTimerRef.current = setTimeout(() => {
+          handleNextLevel();
+        }, 3400); // 3.4 seconds delay lets the student see the graphics update, and then transitions immediately
       }
     } else {
       setRunState('failed');
@@ -110,6 +125,10 @@ export default function Stage4Page() {
   };
 
   const handleNextLevel = () => {
+    if (nextLevelTimerRef.current) {
+      clearTimeout(nextLevelTimerRef.current);
+      nextLevelTimerRef.current = null;
+    }
     const currentIndex = pythonLevels.findIndex(l => l.id === activeLevel.id);
     if (currentIndex !== -1 && currentIndex < pythonLevels.length - 1) {
       const nextLevel = pythonLevels[currentIndex + 1];
@@ -121,6 +140,10 @@ export default function Stage4Page() {
   };
 
   const handlePrevLevel = () => {
+    if (nextLevelTimerRef.current) {
+      clearTimeout(nextLevelTimerRef.current);
+      nextLevelTimerRef.current = null;
+    }
     const currentIndex = pythonLevels.findIndex(l => l.id === activeLevel.id);
     if (currentIndex > 0) {
       const prevLevel = pythonLevels[currentIndex - 1];
@@ -265,7 +288,67 @@ export default function Stage4Page() {
             
             {/* Story block */}
             <div className="bg-purple-50/80 p-3.5 rounded-2xl border border-purple-200 flex gap-2.5 items-start">
-              <div className="text-2xl bg-white p-2 rounded-2xl border border-purple-200 shadow-sm shrink-0">🤖</div>
+              {/* Dynamic animatable Rover Avatar */}
+              <div className="relative shrink-0 select-none">
+                <motion.div
+                  key={runState}
+                  initial={{ scale: 0.8, rotate: runState === 'success' ? 360 : 0 }}
+                  animate={{ 
+                    scale: 1,
+                    y: runState === 'idle' ? [-3, 3, -3] : 0,
+                    x: runState === 'failed' ? [-2, 2, -2, 2, 0] : 0
+                  }}
+                  transition={{
+                    y: { repeat: Infinity, duration: 2, ease: "easeInOut" },
+                    x: { duration: 0.4 },
+                    scale: { type: "spring", stiffness: 200, damping: 10 },
+                    rotate: { duration: 0.6 }
+                  }}
+                  className={`w-12 h-12 bg-white rounded-2xl border-2 flex items-center justify-center text-2xl shadow-md transition-colors ${
+                    runState === 'success' 
+                      ? 'border-emerald-400 bg-emerald-50' 
+                      : runState === 'failed' 
+                      ? 'border-rose-400 bg-rose-50' 
+                      : runState === 'running'
+                      ? 'border-indigo-400 bg-indigo-50 animate-pulse'
+                      : 'border-purple-200'
+                  }`}
+                >
+                  {runState === 'idle' && '🤖'}
+                  {runState === 'running' && '🔌'}
+                  {runState === 'success' && '👑'}
+                  {runState === 'failed' && '💥'}
+                </motion.div>
+                
+                {/* Micro-animations around Rover */}
+                {runState === 'running' && (
+                  <motion.span 
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                    className="absolute -top-1.5 -right-1.5 text-xs"
+                  >
+                    ⚙️
+                  </motion.span>
+                )}
+                {runState === 'success' && (
+                   <motion.span 
+                     animate={{ y: [-1, -5, -1], opacity: [0, 1, 0] }}
+                     transition={{ repeat: Infinity, duration: 1.2 }}
+                     className="absolute -top-2 -right-1 text-[10px]"
+                   >
+                     ✨
+                   </motion.span>
+                )}
+                {runState === 'failed' && (
+                   <motion.span 
+                     animate={{ scale: [1, 1.2, 1] }}
+                     transition={{ repeat: Infinity, duration: 0.8 }}
+                     className="absolute -top-1 -right-1 text-xs text-rose-500"
+                   >
+                     ⚠️
+                   </motion.span>
+                )}
+              </div>
               <div className="space-y-1">
                 <p className="text-[10px] font-black text-purple-800 uppercase tracking-wider">Rover the Guide</p>
                 <p className="text-xs text-slate-800 leading-relaxed font-bold">{activeLevel.narrative}</p>

@@ -9,6 +9,7 @@ import FeedbackModal from '@/components/FeedbackModal';
 import LizzyChat from '@/components/LizzyChat';
 import { useAuth } from '@/context/AuthContext';
 import { STAGE2_BLOCK_LEVELS } from '@/data/stage2BlockLevels';
+import { Trophy } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import Lottie to avoid SSR issues
@@ -117,6 +118,34 @@ export default function Stage2Page() {
     }
   }, [currentLevelIndex, level]);
 
+  const triggerConfetti = () => {
+    import('canvas-confetti').then((confetti) => {
+      // First burst from center
+      confetti.default({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      // Side bursts
+      setTimeout(() => {
+        confetti.default({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+      }, 250);
+      setTimeout(() => {
+        confetti.default({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 400);
+    });
+  };
+
   const triggerLevelComplete = (nextLevel: number) => {
     if (nextLevel > maxUnlockedLevel && nextLevel <= STAGE2_BLOCK_LEVELS.length) {
         setMaxUnlockedLevel(nextLevel);
@@ -164,6 +193,7 @@ export default function Stage2Page() {
       setStreakCount(0);
     }
 
+    triggerConfetti();
     setShowModal(true);
   };
 
@@ -866,14 +896,17 @@ await main()
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300">
-                <div className="w-48 h-48 mb-4 pointer-events-none">
-                    {animationData ? (
-                        <Lottie animationData={animationData} loop={false} autoplay />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-green-100 rounded-full text-green-500 font-bold text-6xl">✓</div>
-                    )}
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-indigo-200">
+                <div className="relative w-40 h-40 mb-6 flex items-center justify-center pointer-events-none">
+                  {/* Outer glowing pulsing circles */}
+                  <div className="absolute inset-0 bg-yellow-400/20 rounded-full animate-ping" />
+                  <div className="absolute inset-4 bg-yellow-400/30 rounded-full animate-pulse" />
+                  <div className="absolute inset-8 bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.6)] flex items-center justify-center border-4 border-white">
+                    <Trophy size={56} className="text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)] animate-bounce duration-1000" />
+                  </div>
                 </div>
+                
+                <span className="text-indigo-600 text-xs font-black tracking-widest uppercase mb-1">Quest Completed!</span>
                 <h2 className="text-3xl font-black text-slate-800 mb-2">Level Complete!</h2>
                 
                 {pointsEarned > 0 && (

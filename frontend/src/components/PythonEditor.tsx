@@ -4,6 +4,7 @@ import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { Sparkles, Terminal, Code2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface PythonEditorProps {
   code: string;
@@ -65,20 +66,56 @@ export default function PythonEditor({ code, onChange, snippets = [], type = 'ty
 
       {/* Bright Snippet Shelf */}
       {snippets.length > 0 && (
-        <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-3.5 border-t-2 border-purple-100 flex flex-col gap-2">
+        <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-4 border-t-2 border-purple-100 flex flex-col gap-3 font-sans">
           <p className="text-[11px] font-black uppercase text-purple-900 tracking-wider flex items-center gap-1.5">
-            <Sparkles size={13} className="text-amber-500 animate-pulse" /> Magic Code Blocks (Click to insert):
+            <Sparkles size={13} className="text-amber-500 animate-pulse" /> Magic Code Deck (Click to cast):
           </p>
-          <div className="flex flex-wrap gap-2">
-            {snippets.map((snip, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleInsertSnippet(snip)}
-                className="bg-purple-600 hover:bg-purple-500 active:scale-95 transition-all text-white border-2 border-purple-400 px-3 py-1 rounded-xl text-xs font-mono font-bold shadow-md cursor-pointer"
-              >
-                {snip}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-2.5">
+            {snippets.map((snip, idx) => {
+              // Pick a cool card theme based on text contents
+              let cardBg = "from-indigo-600 via-purple-700 to-pink-600 border-indigo-400 shadow-indigo-500/10";
+              let cardIcon = "🔮";
+              let rarity = "COMMON";
+              
+              if (snip.includes('for') || snip.includes('while')) {
+                cardBg = "from-amber-600 via-orange-600 to-yellow-500 border-amber-400 shadow-amber-500/10";
+                cardIcon = "🔁";
+                rarity = "RARE";
+              } else if (snip.includes('if') || snip.includes('else')) {
+                cardBg = "from-emerald-600 via-teal-600 to-cyan-500 border-emerald-400 shadow-emerald-500/10";
+                cardIcon = "⚖️";
+                rarity = "EPIC";
+              } else if (snip.includes('fireball') || snip.includes('victory') || snip.includes('damage') || snip.includes('collect')) {
+                cardBg = "from-rose-600 via-red-600 to-orange-500 border-rose-400 shadow-rose-500/10";
+                cardIcon = "⚔️";
+                rarity = "LEGEND";
+              } else if (snip.includes('move') || snip.includes('turn')) {
+                cardBg = "from-blue-600 via-indigo-600 to-purple-500 border-blue-400 shadow-blue-500/10";
+                cardIcon = "🏃";
+                rarity = "COMMON";
+              }
+
+              return (
+                <motion.button
+                  key={idx}
+                  onClick={() => handleInsertSnippet(snip)}
+                  whileHover={{ scale: 1.06, y: -4, boxShadow: '0 10px 15px -3px rgba(167, 139, 250, 0.3)' }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`bg-gradient-to-br ${cardBg} border-2 text-white px-3.5 py-2.5 rounded-2xl flex flex-col items-center justify-between min-w-[105px] h-20 shadow-md cursor-pointer transition-shadow select-none`}
+                >
+                  <div className="w-full flex justify-between items-center text-[8.5px] font-black uppercase tracking-wider opacity-85">
+                    <span>{cardIcon} {rarity}</span>
+                    <span className="bg-white/20 px-1 rounded font-mono text-[8px]">#{idx+1}</span>
+                  </div>
+                  <div className="font-mono text-xs font-black tracking-wide my-1">
+                    {snip}
+                  </div>
+                  <div className="text-[7.5px] font-black text-yellow-250 uppercase tracking-widest leading-none">
+                    CLICK TO CAST
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
       )}

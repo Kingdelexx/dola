@@ -5,7 +5,7 @@ import { Sparkles, Swords, Trophy, ShieldAlert, Award } from 'lucide-react';
 import { getLevelById } from '../app/stage4/data/pythonLevels';
 
 interface Action {
-  type: 'move' | 'collect' | 'say' | 'fireball' | 'drink' | 'unlock' | 'forge' | 'hatch' | 'victory';
+  type: 'move' | 'collect' | 'say' | 'fireball' | 'drink' | 'unlock' | 'forge' | 'hatch' | 'victory' | 'damage_boss';
   param?: string;
 }
 
@@ -28,9 +28,10 @@ export default function GameCanvas({
   const [heroBubble, setHeroBubble] = useState<string | null>(null);
   const [collectedIds, setCollectedIds] = useState<string[]>([]);
   const [gateUnlocked, setGateUnlocked] = useState(false);
-  const [fireballs, setFireballs] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [fireballs, setFireballs] = useState<{ id: number; x: number; y: number; targetX?: number; targetY?: number }[]>([]);
   const [isDrinking, setIsDrinking] = useState(false);
   const [dragonDefeated, setDragonDefeated] = useState(false);
+  const [dragonHp, setDragonHp] = useState(100);
   const [petHatched, setPetHatched] = useState(false);
   const [isForging, setIsForging] = useState(false);
   const [bagItems, setBagItems] = useState<string[]>([]);
@@ -41,6 +42,7 @@ export default function GameCanvas({
 
   // Keep a ref to heroPos to avoid stale closures inside setTimeout
   const heroPosRef = useRef(heroPos);
+  const nextParticleIdRef = useRef(0);
   useEffect(() => {
     heroPosRef.current = heroPos;
   }, [heroPos]);
@@ -56,6 +58,7 @@ export default function GameCanvas({
       setFireballs([]);
       setIsDrinking(false);
       setDragonDefeated(false);
+      setDragonHp(100);
       setPetHatched(false);
       setIsForging(false);
       setBagItems([]);
@@ -97,6 +100,10 @@ export default function GameCanvas({
     const sequence: Action[] = [];
     
     lines.forEach(line => {
+      const isDragonLevel = level.visualSetup.targets.some(t => t.type === 'dragon');
+      const damageRegex = /(\d+)\s*(?:hp|damage|hit|critical|override)?/i;
+      const match = line.match(damageRegex);
+
       if (line.includes('open sesame!')) {
         sequence.push({ type: 'unlock' });
         sequence.push({ type: 'say', param: 'The gate is open!' });
@@ -108,9 +115,17 @@ export default function GameCanvas({
         sequence.push({ type: 'drink' });
         sequence.push({ type: 'say', param: 'Nanite repair sequence activated! 🧪' });
       }
-      else if (line.includes('fireball!')) {
+      else if (line.includes('fireball!') || line.includes('beam') || line.includes('attack')) {
         sequence.push({ type: 'fireball' });
-        sequence.push({ type: 'say', param: 'Firing Plasma Blast! 🔥' });
+        if (isDragonLevel) {
+          sequence.push({ type: 'damage_boss', param: '30' });
+        } else {
+          sequence.push({ type: 'say', param: 'Firing Plasma Blast! 🔥' });
+        }
+      }
+      else if (isDragonLevel && match) {
+        const dmg = match[1];
+        sequence.push({ type: 'damage_boss', param: dmg });
       }
       else if (line.includes('forging...')) {
         sequence.push({ type: 'forge' });
@@ -151,7 +166,7 @@ export default function GameCanvas({
           setHeroBubble(action.param);
           
           // Spawn floating text particle
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text: action.param!, x: currentX, y: currentY - 12 }]);
           setTimeout(() => {
             setFloatingTexts(p => p.filter(t => t.id !== textId));
@@ -167,7 +182,7 @@ export default function GameCanvas({
           setHeroPos({ x: 70, y: 50 });
           
           const text = "Core decrypted. Gate opened.";
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text, x: currentX, y: currentY - 12 }]);
           setPrintedLines(p => [...p, text]);
           setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -184,7 +199,7 @@ export default function GameCanvas({
               setCollectedIds(prev => [...prev, target.id]);
               
               const text = `Data packet [${target.id}] acquired.`;
-              const textId = Date.now() + idx + 100;
+              const textId = nextParticleIdRef.current++;
               setFloatingTexts(p => [...p, { id: textId, text, x: target.x, y: target.y - 12 }]);
               setPrintedLines(p => [...p, text]);
               setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -196,7 +211,7 @@ export default function GameCanvas({
           setTimeout(() => setIsDrinking(false), 1500);
           
           const text = "Nanite repairs initiated. HP restored.";
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text, x: currentX, y: currentY - 12 }]);
           setPrintedLines(p => [...p, text]);
           setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -204,12 +219,16 @@ export default function GameCanvas({
         else if (action.type === 'fireball') {
           const startX = currentX + 8;
           const startY = currentY + 4;
-          const fireballId = Date.now() + idx;
+          const fireballId = nextParticleIdRef.current++;
           
-          setFireballs(prev => [...prev, { id: fireballId, x: startX, y: startY }]);
+          const dragonTarget = level.visualSetup.targets.find(t => t.type === 'dragon');
+          const targetX = dragonTarget ? dragonTarget.x : startX + 55;
+          const targetY = dragonTarget ? dragonTarget.y - 2 : startY;
+
+          setFireballs(prev => [...prev, { id: fireballId, x: startX, y: startY, targetX, targetY }]);
           
           const text = "Plasma beam discharging...";
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text, x: currentX, y: currentY - 12 }]);
           setPrintedLines(p => [...p, text]);
           setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -222,11 +241,38 @@ export default function GameCanvas({
             }
           }, 800);
         }
+        else if (action.type === 'damage_boss') {
+          const damageAmount = parseInt(action.param || '20', 10);
+          setDragonHp(currentHp => {
+            const nextHp = Math.max(0, currentHp - damageAmount);
+            if (nextHp === 0) {
+              setDragonDefeated(true);
+            }
+            return nextHp;
+          });
+
+          // Spawn floating critical damage hit text particle near the dragon core target
+          const dragonTarget = level.visualSetup.targets.find(t => t.type === 'dragon');
+          if (dragonTarget) {
+            const textId = nextParticleIdRef.current++;
+            const floatingMessage = `CRITICAL DECRYPTION -${damageAmount} HP! 💥`;
+            setFloatingTexts(p => [...p, { 
+              id: textId, 
+              text: floatingMessage, 
+              x: dragonTarget.x, 
+              y: dragonTarget.y - 15 
+            }]);
+            setPrintedLines(p => [...p, `🔥 Rogue core decrypting: -${damageAmount} HP`]);
+            setTimeout(() => {
+              setFloatingTexts(p => p.filter(t => t.id !== textId));
+            }, 1800);
+          }
+        }
         else if (action.type === 'forge') {
           setIsForging(true);
           
           const text = "Fabrication protocols running...";
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text, x: currentX, y: currentY - 12 }]);
           setPrintedLines(p => [...p, text]);
           setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -240,7 +286,7 @@ export default function GameCanvas({
           setPetHatched(true);
           
           const text = "Companion AI online.";
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text, x: currentX, y: currentY - 12 }]);
           setPrintedLines(p => [...p, text]);
           setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -249,7 +295,7 @@ export default function GameCanvas({
           setDragonDefeated(true);
           
           const text = "Core threat neutralized. Mainframe secure.";
-          const textId = Date.now() + idx;
+          const textId = nextParticleIdRef.current++;
           setFloatingTexts(p => [...p, { id: textId, text, x: currentX, y: currentY - 12 }]);
           setPrintedLines(p => [...p, text]);
           setTimeout(() => setFloatingTexts(p => p.filter(t => t.id !== textId)), 1500);
@@ -284,12 +330,31 @@ export default function GameCanvas({
             <Trophy size={13} className="text-amber-500" />
             <span>Chapter {level.chapter}: {level.chapterTitle}</span>
           </div>
-          {bagItems.length > 0 && (
-            <div className="bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-700/50 flex items-center gap-1.5 text-xs text-amber-200 font-bold">
-              <span>🎒 Bag:</span>
-              <span className="font-mono text-[10px] text-slate-300">{bagItems.join(', ')}</span>
+        </div>
+
+        {/* Dynamic Visual Inventory Overlay */}
+        <div className="absolute top-4 right-4 z-20 flex gap-2">
+          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-2 flex items-center gap-2 shadow-xl backdrop-blur-md">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">🎒 BACKPACK</span>
+            <div className="flex gap-1.5">
+              {Array.from({ length: 4 }).map((_, slotIdx) => {
+                const item = bagItems[slotIdx]; // e.g. "🗡️ Sword", "🛡️ Shield", "🧪 Potion", "🔋 Battery"
+                return (
+                  <div 
+                    key={slotIdx} 
+                    className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center text-lg bg-slate-900/80 transition-all ${
+                      item 
+                        ? 'border-indigo-400 bg-indigo-950/40 shadow-inner scale-105 animate-pulse'
+                        : 'border-slate-800 border-dashed text-slate-650'
+                    }`}
+                    title={item || 'Empty Slot'}
+                  >
+                    {item ? item.split(' ')[0] : ''}
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Stage Visualization Elements */}
@@ -335,8 +400,10 @@ export default function GameCanvas({
                     strokeWidth="0.5"
                     opacity="0.8"
                     animate={{
-                      transform: gateUnlocked ? 'scaleY(0)' : 'scaleY(1)',
-                      transformOrigin: 'top'
+                      scaleY: gateUnlocked ? 0 : 1
+                    }}
+                    style={{
+                      originY: 0
                     }}
                     transition={{ duration: 1 }}
                   />
@@ -410,18 +477,38 @@ export default function GameCanvas({
                     )}
 
                     {target.type === 'dragon' && !dragonDefeated && (
-                      <motion.g
-                        animate={{ y: [-3, 3, -3] }}
-                        transition={{ repeat: Infinity, duration: 3 }}
-                      >
-                        {/* Rogue Security Core Mech */}
-                        <path d={`M ${target.x - 8} ${target.y - 8} Q ${target.x - 18} ${target.y - 16} ${target.x - 16} ${target.y}`} fill="#3b82f6" opacity="0.6" />
-                        <path d={`M ${target.x + 8} ${target.y - 8} Q ${target.x + 18} ${target.y - 16} ${target.x + 16} ${target.y}`} fill="#3b82f6" opacity="0.6" />
-                        <circle cx={target.x} cy={target.y} r="8" fill="#1e293b" stroke="#3b82f6" strokeWidth="1" />
-                        <circle cx={target.x + 5} cy={target.y - 6} r="4" fill="#334155" />
-                        <polygon points={`${target.x + 4},${target.y - 9} ${target.x + 8},${target.y - 11} ${target.x + 6},${target.y - 6}`} fill="#60a5fa" />
-                        <circle cx={target.x + 6.2} cy={target.y - 7} r="0.6" fill="#ef4444" />
-                      </motion.g>
+                      <g key={target.id}>
+                        {/* Interactive Boss HP Bar */}
+                        <g transform={`translate(${target.x - 10}, ${target.y - 15})`}>
+                          <rect x="0" y="0" width="20" height="2.2" rx="0.5" fill="#0f172a" stroke="#1e293b" strokeWidth="0.3" />
+                          <rect 
+                            x="0.2" 
+                            y="0.2" 
+                            width={Math.max(0, 19.6 * (dragonHp / 100))} 
+                            height="1.8" 
+                            rx="0.4" 
+                            fill={dragonHp > 50 ? '#10b981' : dragonHp > 20 ? '#f59e0b' : '#ef4444'} 
+                            className="transition-all duration-300"
+                          />
+                          {/* HP text banner */}
+                          <text x="10" y="1.5" fill="#ffffff" fontSize="1.1" fontWeight="black" textAnchor="middle" opacity="0.95" style={{ fontSize: '1.2px', fontFamily: 'monospace' }}>
+                            {dragonHp > 0 ? `${dragonHp}% CORE` : 'OVERRIDDEN'}
+                          </text>
+                        </g>
+
+                        <motion.g
+                          animate={{ y: [-3, 3, -3] }}
+                          transition={{ repeat: Infinity, duration: 3 }}
+                        >
+                          {/* Rogue Security Core Mech */}
+                          <path d={`M ${target.x - 8} ${target.y - 8} Q ${target.x - 18} ${target.y - 16} ${target.x - 16} ${target.y}`} fill="#3b82f6" opacity="0.6" />
+                          <path d={`M ${target.x + 8} ${target.y - 8} Q ${target.x + 18} ${target.y - 16} ${target.x + 16} ${target.y}`} fill="#3b82f6" opacity="0.6" />
+                          <circle cx={target.x} cy={target.y} r="8" fill="#1e293b" stroke="#3b82f6" strokeWidth="1" />
+                          <circle cx={target.x + 5} cy={target.y - 6} r="4" fill="#334155" />
+                          <polygon points={`${target.x + 4},${target.y - 9} ${target.x + 8},${target.y - 11} ${target.x + 6},${target.y - 6}`} fill="#60a5fa" />
+                          <circle cx={target.x + 6.2} cy={target.y - 7} r="0.6" fill="#ef4444" />
+                        </motion.g>
+                      </g>
                     )}
                   </motion.g>
                 )}
@@ -436,7 +523,11 @@ export default function GameCanvas({
             <motion.div
               key={fb.id}
               initial={{ x: `${fb.x}%`, y: `${fb.y}%`, scale: 0.8 }}
-              animate={{ x: '60%', y: '50%', scale: 1.4 }}
+              animate={{ 
+                x: fb.targetX !== undefined ? `${fb.targetX}%` : '60%', 
+                y: fb.targetY !== undefined ? `${fb.targetY}%` : '50%',
+                scale: 1.4 
+              }}
               exit={{ scale: 0 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className="absolute z-10 w-4 h-4 bg-orange-500 rounded-full shadow-lg shadow-orange-600/50 flex items-center justify-center border-2 border-amber-300"
