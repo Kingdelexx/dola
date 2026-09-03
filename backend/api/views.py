@@ -611,22 +611,22 @@ class SchoolDashboardView(APIView):
             strongest_competency = max(all_avg_skills, key=all_avg_skills.get)
             most_common_weakness = min(all_avg_skills, key=all_avg_skills.get)
         else:
-            avg_nr = 78
-            avg_lr = 71
-            avg_ct = 64
-            avg_ca = 59
-            strongest_competency = "Pattern Recognition"
-            most_common_weakness = "Debugging"
+            avg_nr = 0
+            avg_lr = 0
+            avg_ct = 0
+            avg_ca = 0
+            strongest_competency = "N/A"
+            most_common_weakness = "N/A"
 
         metrics = {
-            "students_count": students.count() if students.count() > 0 else 328,
-            "teachers_count": teachers.count() if teachers.count() > 0 else 12,
-            "completed_lessons": total_lessons if total_lessons > 0 else 2340,
+            "students_count": students.count(),
+            "teachers_count": teachers.count(),
+            "completed_lessons": total_lessons,
             "avg_numeracy_score": f"{int(avg_nr)}%",
             "coding_progress": f"{int(avg_ca)}%",
-            "ai_activities": 1221,
-            "girls_count": girls_count if girls_count > 0 else 168,
-            "boys_count": boys_count if boys_count > 0 else 160,
+            "ai_activities": 0,
+            "girls_count": girls_count,
+            "boys_count": boys_count,
             "learning_profile": {
                 "numeracy_mastery": f"{int(avg_nr)}%",
                 "logical_reasoning": f"{int(avg_lr)}%",
@@ -1387,8 +1387,8 @@ class TeacherDashboardView(APIView):
             classroom = Classroom.objects.filter(school=profile.school).first()
 
         if not classroom:
-            class_name = "Year 5"
-            students_qs = User.objects.filter(profile__role='student')[:28]
+            class_name = "No Classroom Assigned"
+            students_qs = User.objects.none()
         else:
             class_name = classroom.name
             students_qs = User.objects.filter(profile__classroom=classroom, profile__role='student')
@@ -1396,7 +1396,7 @@ class TeacherDashboardView(APIView):
                 students_qs = User.objects.filter(profile__school=profile.school, profile__role='student')
 
         students_data = UserSerializer(students_qs, many=True).data
-        total_students = students_qs.count() if students_qs.count() > 0 else 28
+        total_students = students_qs.count()
 
         sorted_students = sorted(
             students_data, 
@@ -1404,8 +1404,8 @@ class TeacherDashboardView(APIView):
             reverse=True
         )
 
-        strong_students = sorted_students[:5] if len(sorted_students) >= 5 else sorted_students
-        weak_students = sorted_students[-5:][::-1] if len(sorted_students) >= 5 else sorted_students[::-1]
+        strong_students = [s for s in sorted_students if (s.get('profile', {}).get('points', 0) or 0) > 0][:5]
+        weak_students = [s for s in reversed(sorted_students) if (s.get('profile', {}).get('points', 0) or 0) < 50][:5]
 
         # Calculate class averages
         nr_list, lr_list, ct_list, ca_list, db_list = [], [], [], [], []
@@ -1440,13 +1440,34 @@ class TeacherDashboardView(APIView):
             
             strongest_competency = max(all_avg_skills, key=all_avg_skills.get)
             most_common_weakness = min(all_avg_skills, key=all_avg_skills.get)
+
+            from django.db.models import Sum
+            lesson_sum = UserProfile.objects.filter(classroom=classroom, role='student').aggregate(
+                s1=Sum('stage1_progress'),
+                s2=Sum('stage2_progress'),
+                s3=Sum('stage3_progress'),
+                s4=Sum('stage4_progress')
+            ) if classroom else {'s1': 0, 's2': 0, 's3': 0, 's4': 0}
+            total_lessons = (lesson_sum['s1'] or 0) + (lesson_sum['s2'] or 0) + (lesson_sum['s3'] or 0) + (lesson_sum['s4'] or 0)
+            avg_completion_pct = min(100, round((total_lessons / (total_students * 40)) * 100)) if total_students > 0 else 0
+            lesson_comp_str = f"{avg_completion_pct}%"
+            homework_str = f"{avg_completion_pct}%"
+
+            from django.utils import timezone
+            today = timezone.now().date()
+            active_today = UserProfile.objects.filter(classroom=classroom, role='student', last_active_date=today).count() if classroom else 0
+            attendance_pct = round((active_today / total_students) * 100) if total_students > 0 else 0
+            attendance_str = f"{attendance_pct}% ({active_today}/{total_students} Active)"
         else:
-            avg_nr = 78
-            avg_lr = 71
-            avg_ct = 64
-            avg_ca = 59
-            strongest_competency = "Pattern Recognition"
-            most_common_weakness = "Debugging"
+            avg_nr = 0
+            avg_lr = 0
+            avg_ct = 0
+            avg_ca = 0
+            strongest_competency = "N/A"
+            most_common_weakness = "N/A"
+            attendance_str = "0% (0 Present)"
+            lesson_comp_str = "0%"
+            homework_str = "0%"
 
         return Response({
             "teacher": {
@@ -1455,15 +1476,15 @@ class TeacherDashboardView(APIView):
                 "email": user.email,
             },
             "classroom": {
-                "id": classroom.id if classroom else 1,
+                "id": classroom.id if classroom else None,
                 "name": class_name,
-                "grade_level": classroom.grade_level if classroom else "Year 5",
+                "grade_level": classroom.grade_level if classroom else "N/A",
                 "students_count": total_students,
             },
             "metrics": {
-                "attendance": "96% (27/28 Present)",
-                "lesson_completion": "84%",
-                "homework": "85%",
+                "attendance": attendance_str,
+                "lesson_completion": lesson_comp_str,
+                "homework": homework_str,
                 "learning_profile": {
                     "numeracy_mastery": f"{int(avg_nr)}%",
                     "logical_reasoning": f"{int(avg_lr)}%",

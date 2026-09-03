@@ -101,8 +101,8 @@ export default function TeacherDashboardPage() {
     fetchTeacherData();
   }, [fetchTeacherData]);
 
-  const cls = classroom || { name: 'Year 5', grade_level: 'Year 5', students_count: 28 };
-  const met = metrics || { attendance: '96% (27/28 Present)', lesson_completion: '84%', homework: '85%' };
+  const cls = classroom || { name: 'No Classroom Assigned', grade_level: 'N/A', students_count: 0 };
+  const met = metrics || { attendance: '0% (0 Present)', lesson_completion: '0%', homework: '0%' };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">

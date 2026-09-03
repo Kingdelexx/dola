@@ -348,14 +348,14 @@ export default function SchoolDashboardPage() {
 
   const school = data?.school;
   const metrics = data?.metrics || {
-    students_count: 328,
-    teachers_count: 12,
-    completed_lessons: 2340,
-    avg_numeracy_score: "71%",
-    coding_progress: "64%",
-    ai_activities: 1221,
-    girls_count: 168,
-    boys_count: 160
+    students_count: 0,
+    teachers_count: 0,
+    completed_lessons: 0,
+    avg_numeracy_score: "0%",
+    coding_progress: "0%",
+    ai_activities: 0,
+    girls_count: 0,
+    boys_count: 0
   };
 
   const classrooms = data?.classrooms || [];
@@ -376,7 +376,7 @@ export default function SchoolDashboardPage() {
             </div>
             <div>
               <h1 className="font-extrabold text-lg leading-tight text-white flex items-center gap-1.5">
-                {school?.name || "Greenfield School"} <Sparkles className="w-4 h-4 text-indigo-400" />
+                {school?.name || "School Dashboard"} <Sparkles className="w-4 h-4 text-indigo-400" />
               </h1>
               <p className="text-xs text-slate-400 font-medium">Principal Dashboard & Management</p>
             </div>
@@ -574,7 +574,7 @@ export default function SchoolDashboardPage() {
                         style={{ width: metrics.learning_profile.numeracy_mastery }}
                       ></div>
                     </div>
-                    <p className="text-[10px] text-slate-405 text-slate-450 text-slate-400">Greenfield basic and advanced numeracy</p>
+                    <p className="text-[10px] text-slate-400">School basic and advanced numeracy</p>
                   </div>
 
                   {/* Logical Reasoning */}
