@@ -197,3 +197,22 @@ class FeedbackSerializer(serializers.ModelSerializer):
         model = Feedback
         fields = ('id', 'user', 'stage', 'part', 'rating', 'difficulty', 'enjoyment', 'comments', 'created_at')
         read_only_fields = ('id', 'user', 'created_at')
+
+
+from .models import WebChallenge, StudentChallengeProgress
+
+class WebChallengeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WebChallenge
+        fields = (
+            'id', 'slug', 'title', 'stage_order', 'instructions_markdown',
+            'starter_html', 'starter_css', 'solution_criteria', 'reward_xp'
+        )
+
+class StudentChallengeProgressSerializer(serializers.ModelSerializer):
+    challenge = WebChallengeSerializer(read_only=True)
+
+    class Meta:
+        model = StudentChallengeProgress
+        fields = ('id', 'challenge', 'saved_html', 'saved_css', 'is_completed', 'completed_at')
+

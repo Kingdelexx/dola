@@ -154,3 +154,33 @@ class ProgressLog(models.Model):
         return f"{self.user.username} - Stage {self.stage} Prog {self.progress} (+{self.points_earned} XP)"
 
 
+class WebChallenge(models.Model):
+    slug = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=200)
+    stage_order = models.PositiveIntegerField(default=1)
+    instructions_markdown = models.TextField()
+    starter_html = models.TextField(blank=True, default='')
+    starter_css = models.TextField(blank=True, default='')
+    solution_criteria = models.JSONField(default=dict)
+    reward_xp = models.IntegerField(default=50)
+
+    def __str__(self):
+        return f"{self.stage_order}. {self.title} ({self.slug})"
+
+
+class StudentChallengeProgress(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='web_challenge_progresses')
+    challenge = models.ForeignKey(WebChallenge, on_delete=models.CASCADE, related_name='student_progresses')
+    saved_html = models.TextField(blank=True, null=True)
+    saved_css = models.TextField(blank=True, null=True)
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('student', 'challenge')
+
+    def __str__(self):
+        return f"{self.student.username} - {self.challenge.title} ({'Completed' if self.is_completed else 'In Progress'})"
+
+
+

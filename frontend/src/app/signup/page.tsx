@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
-import { Rocket, Mail, User, Lock, ChevronRight, Calendar, Code, Sparkles, Zap } from 'lucide-react';
+import { Rocket, Mail, User, Lock, ChevronRight, Calendar, Code, Sparkles, Zap, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import RocketLoader from '@/components/RocketLoader';
@@ -15,7 +15,7 @@ export default function SignUpPage() {
   const titleRef = useRef(null);
   
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  const [role, setRole] = useState<'student' | 'parent' | 'school_admin'>('student');
+  const [role, setRole] = useState<'student' | 'parent' | 'teacher' | 'school_admin'>('student');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -72,7 +72,8 @@ export default function SignUpPage() {
           const userRole = data.user?.profile?.role || role;
           const hasClassroom = !!data.user?.profile?.classroom;
           if (userRole === 'super_admin') router.push('/super-admin');
-          else if (userRole === 'school_admin' || userRole === 'teacher') router.push('/school-dashboard');
+          else if (userRole === 'teacher') router.push('/teacher-dashboard');
+          else if (userRole === 'school_admin') router.push('/school-dashboard');
           else if (userRole === 'parent') router.push('/parent-dashboard');
           else if (userRole === 'student' && !hasClassroom) router.push('/onboarding/challenge');
           else router.push('/dashboard');
@@ -239,49 +240,33 @@ export default function SignUpPage() {
             <p className="text-slate-500 font-medium text-sm">Choose how you want to join DolaCode.</p>
           </div>
 
-          {/* Role Selection */}
-          <div className="grid grid-cols-3 gap-2.5 mb-6">
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => setRole('student')}
-              className={`p-3 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
-                role === 'student'
-                  ? 'border-sky-500 bg-sky-50 text-sky-700 shadow-md scale-105'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-sky-200'
-              }`}
-            >
-              <span className="text-2xl">👧‍💻</span>
-              <span>Student</span>
-            </button>
-
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => setRole('parent')}
-              className={`p-3 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
-                role === 'parent'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-md scale-105'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-purple-200'
-              }`}
-            >
-              <span className="text-2xl">👨‍👩‍👧</span>
-              <span>Parent</span>
-            </button>
-
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => setRole('school_admin')}
-              className={`p-3 rounded-2xl border-2 font-bold text-xs flex flex-col items-center gap-1.5 transition-all ${
-                role === 'school_admin'
-                  ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-md scale-105'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-200'
-              }`}
-            >
-              <span className="text-2xl">🏫</span>
-              <span>School / Teacher</span>
-            </button>
+          {/* Role Selection Dropdown */}
+          <div className="mb-6 input-group">
+            <label className="block text-xs font-black uppercase tracking-wide text-slate-600 mb-2 flex items-center justify-between">
+              <span>Account Type / Role</span>
+              <span className="text-purple-600 font-bold normal-case text-xs">
+                {role === 'student' && '👧‍💻 Student Account'}
+                {role === 'parent' && '👨‍👩‍👧 Parent Account'}
+                {role === 'teacher' && '👩‍🏫 Teacher Account'}
+                {role === 'school_admin' && '🏫 School Admin Account'}
+              </span>
+            </label>
+            <div className="relative">
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as 'student' | 'parent' | 'teacher' | 'school_admin')}
+                disabled={isLoading}
+                className="w-full bg-white border-2 border-purple-300 rounded-2xl py-3.5 px-4 pr-10 text-sm font-extrabold text-slate-800 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all shadow-sm appearance-none cursor-pointer"
+              >
+                <option value="student">👧‍💻 Student Learner</option>
+                <option value="parent">👨‍👩‍👧 Parent / Guardian</option>
+                <option value="teacher">👩‍🏫 Teacher / Educator</option>
+                <option value="school_admin">🏫 School Administrator</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-purple-500">
+                <ChevronDown size={20} />
+              </div>
+            </div>
           </div>
 
           {/* Google Sign Up Buttons */}
@@ -314,7 +299,11 @@ export default function SignUpPage() {
               </div>
               <input 
                 type="text" 
-                placeholder={role === 'school_admin' ? "Full Name (Admin / Teacher)" : "Name"} 
+                placeholder={
+                  role === 'school_admin' ? "Full Name (School Principal / Admin)" :
+                  role === 'teacher' ? "Teacher Full Name (e.g. Mrs. Sarah Johnson)" :
+                  "Name"
+                } 
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 required
@@ -481,16 +470,16 @@ export default function SignUpPage() {
               </div>
             )}
 
-            {/* School Code option for Students */}
-            {role === 'student' && (
+            {/* School Code option for Students & Teachers */}
+            {(role === 'student' || role === 'teacher') && (
               <div className="input-group">
                 <input 
                   type="text" 
-                  placeholder="School Code (Optional, e.g. SCH-DOL-101)" 
+                  placeholder={role === 'teacher' ? "School Code (Optional - to link to your school)" : "School Code (Optional, e.g. SCH-DOL-101)"} 
                   value={formData.school_code}
                   onChange={(e) => setFormData({...formData, school_code: e.target.value})}
                   disabled={isLoading}
-                  className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all shadow-sm"
+                  className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all shadow-sm"
                 />
               </div>
             )}

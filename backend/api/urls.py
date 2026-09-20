@@ -5,7 +5,9 @@ from .views import (
     SuperAdminDashboardView, SchoolDashboardView, CreateClassroomView,
     ParentDashboardView, LinkChildView, ApproveSchoolView, AddSchoolTeacherView,
     AddSchoolStudentView, InviteParentView, BulkUploadStudentsView, TeacherDashboardView,
-    ClaimParentAccountView, GoogleAuthView, SubmitOnboardingDiagnosticView
+    ClaimParentAccountView, GoogleAuthView, SubmitOnboardingDiagnosticView,
+    WebChallengeDetailView, WebChallengeSaveDraftView, WebChallengeSubmitView,
+    WebChallengeProjectsListView
 )
 
 urlpatterns = [
@@ -31,7 +33,14 @@ urlpatterns = [
     path('parent/dashboard/', ParentDashboardView.as_view(), name='parent_dashboard'),
     path('parent/link-child/', LinkChildView.as_view(), name='link_child'),
     path('parent/claim-account/', ClaimParentAccountView.as_view(), name='claim_parent_account'),
+
+    # Web Dev Studio Endpoints
+    path('web-studio/projects/', WebChallengeProjectsListView.as_view(), name='web_challenge_projects'),
+    path('web-studio/challenges/<str:slug>/', WebChallengeDetailView.as_view(), name='web_challenge_detail'),
+    path('web-studio/save-draft/', WebChallengeSaveDraftView.as_view(), name='web_challenge_save_draft'),
+    path('web-studio/submit/', WebChallengeSubmitView.as_view(), name='web_challenge_submit'),
 ]
+
 
 
 

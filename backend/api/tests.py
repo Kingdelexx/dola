@@ -90,3 +90,80 @@ class DolaCodeCurriculumTests(TestCase):
         comp = StudentCompetency.objects.filter(user=self.student).first()
         self.assertIsNotNone(comp)
         self.assertEqual(comp.status, 'INTRODUCED')
+
+
+class WebDevStudioAPITests(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from api.models import WebChallenge
+
+        self.client = APIClient()
+        self.student = User.objects.create_user(username="web_kid", email="kid@dola.com", password="password123")
+        self.profile = UserProfile.objects.create(user=self.student, role="student", points=10)
+        self.client.force_authenticate(user=self.student)
+
+        self.challenge = WebChallenge.objects.create(
+            slug="hero-badge",
+            title="Superhero Badge Challenge",
+            stage_order=1,
+            instructions_markdown="Build a card with an `<h1>` and a `<button>`",
+            starter_html="<div class='card'></div>",
+            starter_css=".card { background: black; }",
+            solution_criteria={"required_tags": ["h1", "button"], "required_classes": ["card"]},
+            reward_xp=50
+        )
+
+    def test_get_web_challenge_detail(self):
+        response = self.client.get('/api/web-studio/challenges/hero-badge/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+        self.assertEqual(response.data['challenge']['slug'], 'hero-badge')
+
+    def test_save_draft(self):
+        payload = {
+            "slug": "hero-badge",
+            "saved_html": "<div class='card'><h1>Draft</h1></div>",
+            "saved_css": ".card { color: red; }"
+        }
+        response = self.client.post('/api/web-studio/save-draft/', payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+
+        # Verify DB state
+        from api.models import StudentChallengeProgress
+        prog = StudentChallengeProgress.objects.get(student=self.student, challenge=self.challenge)
+        self.assertEqual(prog.saved_html, "<div class='card'><h1>Draft</h1></div>")
+
+    def test_submit_valid_solution(self):
+        payload = {
+            "slug": "hero-badge",
+            "html": "<div class='card'><h1>HERO LEO</h1><button>GO</button></div>",
+            "css": ".card { background: gold; }"
+        }
+        response = self.client.post('/api/web-studio/submit/', payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+        self.assertTrue(response.data.get('is_completed'))
+        self.assertEqual(response.data.get('reward_xp'), 50)
+
+        # Check XP awarded to profile
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.points, 60) # 10 + 50 = 60
+
+    def test_submit_empty_malformed_and_nested_html(self):
+        # 1. Empty code
+        res_empty = self.client.post('/api/web-studio/submit/', {"slug": "hero-badge", "html": "", "css": ""}, format='json')
+        self.assertEqual(res_empty.status_code, 200)
+        self.assertFalse(res_empty.data.get('success'))
+
+        # 2. Malformed HTML
+        res_malformed = self.client.post('/api/web-studio/submit/', {"slug": "hero-badge", "html": "<div class='card'<h1<button>invalid>>", "css": "invalid {"}, format='json')
+        self.assertEqual(res_malformed.status_code, 200)
+        self.assertIsInstance(res_malformed.data.get('criteria_results'), list)
+
+        # 3. Deeply nested HTML
+        nested_html = "<div><div><div class='card'><h1>Nested</h1><button>Press</button></div></div></div>"
+        res_nested = self.client.post('/api/web-studio/submit/', {"slug": "hero-badge", "html": nested_html, "css": ".card { }"}, format='json')
+        self.assertEqual(res_nested.status_code, 200)
+        self.assertTrue(res_nested.data.get('success'))
+

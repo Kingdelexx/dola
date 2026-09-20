@@ -1501,6 +1501,255 @@ class TeacherDashboardView(APIView):
         })
 
 
+from html.parser import HTMLParser
+
+class RobustHTMLTagExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.tags = set()
+        self.classes = set()
+        self.ids = set()
+
+    def handle_starttag(self, tag, attrs):
+        self.tags.add(tag.lower())
+        for attr, val in attrs:
+            if attr == 'class' and val:
+                for cls in val.split():
+                    self.classes.add(cls.strip())
+            elif attr == 'id' and val:
+                self.ids.add(val.strip())
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+
+def validate_html_solution(html_code, css_code, criteria):
+    """
+    Safely validates HTML & CSS against solution criteria without throwing exceptions on empty, malformed, or nested code.
+    Returns: (is_passed: bool, results: list of dicts)
+    """
+    results = []
+    if not isinstance(criteria, dict):
+        criteria = {}
+
+    req_tags = criteria.get('required_tags', [])
+    req_classes = criteria.get('required_classes', [])
+    req_css = criteria.get('required_css_rules', [])
+
+    extractor = RobustHTMLTagExtractor()
+    if html_code:
+        try:
+            extractor.feed(str(html_code))
+        except Exception:
+            pass
+
+    passed_all = True
+
+    # 1. Check required HTML tags
+    for tag in req_tags:
+        tag_lower = str(tag).lower()
+        has_tag = tag_lower in extractor.tags
+        results.append({
+            "criterion": f"Must contain <{tag_lower}> element",
+            "passed": has_tag
+        })
+        if not has_tag:
+            passed_all = False
+
+    # 2. Check required classes
+    for cls in req_classes:
+        has_cls = cls in extractor.classes
+        results.append({
+            "criterion": f"Must contain class '.{cls}'",
+            "passed": has_cls
+        })
+        if not has_cls:
+            passed_all = False
+
+    # 3. Check required CSS rules/selectors
+    css_str = str(css_code or '')
+    for css_rule in req_css:
+        has_rule = css_rule.lower() in css_str.lower()
+        results.append({
+            "criterion": f"Must contain CSS property or selector '{css_rule}'",
+            "passed": has_rule
+        })
+        if not has_rule:
+            passed_all = False
+
+    return passed_all, results
+
+
+from django.utils import timezone
+from .models import WebChallenge, StudentChallengeProgress, ProgressLog
+from .serializers import WebChallengeSerializer, StudentChallengeProgressSerializer
+
+class WebChallengeDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request, slug):
+        challenge = WebChallenge.objects.filter(slug=slug).first()
+        if not challenge:
+            # Create a default initial challenge if not found in DB
+            challenge = WebChallenge.objects.create(
+                slug=slug,
+                title="Build Your Superhero Badge",
+                stage_order=1,
+                instructions_markdown="## Mission Goal\nCreate an awesome superhero card! Add an `<h1>` header, an `<img>` sticker, and a `<button>` tag!",
+                starter_html='<div class="card">\n  <h1 class="sparkle">EXPLORER LEO</h1>\n  <img src="/assets/hero.png" width="120">\n  <button class="btn font-bold">START MISSION!</button>\n</div>',
+                starter_css='.card { background: #1a1a2e; border: 4px solid #f9a826; border-radius: 16px; padding: 20px; text-align: center; color: white; }\n.sparkle { color: #f9a826; text-shadow: 0 0 12px #f9a826; }',
+                solution_criteria={"required_tags": ["h1", "img", "button"], "required_classes": ["card", "btn"]},
+                reward_xp=50
+            )
+
+        student_progress_data = None
+        if request.user and request.user.is_authenticated:
+            progress, _ = StudentChallengeProgress.objects.get_or_create(
+                student=request.user,
+                challenge=challenge
+            )
+            student_progress_data = {
+                "saved_html": progress.saved_html,
+                "saved_css": progress.saved_css,
+                "is_completed": progress.is_completed,
+                "completed_at": progress.completed_at
+            }
+
+        return Response({
+            "success": True,
+            "challenge": WebChallengeSerializer(challenge).data,
+            "student_progress": student_progress_data
+        })
+
+
+class WebChallengeSaveDraftView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        slug = request.data.get('slug')
+        saved_html = request.data.get('saved_html', '')
+        saved_css = request.data.get('saved_css', '')
+
+        if not slug:
+            return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            challenge = WebChallenge.objects.get(slug=slug)
+        except WebChallenge.DoesNotExist:
+            return Response({"error": f"Web challenge '{slug}' not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        progress, _ = StudentChallengeProgress.objects.get_or_create(
+            student=request.user,
+            challenge=challenge
+        )
+        progress.saved_html = saved_html
+        progress.saved_css = saved_css
+        progress.save()
+
+        return Response({
+            "success": True,
+            "message": "Draft saved successfully!"
+        })
+
+
+class WebChallengeSubmitView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        slug = request.data.get('slug')
+        html_code = request.data.get('html', '')
+        css_code = request.data.get('css', '')
+
+        if not slug:
+            return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            challenge = WebChallenge.objects.get(slug=slug)
+        except WebChallenge.DoesNotExist:
+            return Response({"error": f"Web challenge '{slug}' not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        progress, _ = StudentChallengeProgress.objects.get_or_create(
+            student=request.user,
+            challenge=challenge
+        )
+
+        passed, criteria_results = validate_html_solution(
+            html_code,
+            css_code,
+            challenge.solution_criteria
+        )
+
+        progress.saved_html = html_code
+        progress.saved_css = css_code
+
+        reward_xp = 0
+        if passed:
+            if not progress.is_completed:
+                progress.is_completed = True
+                progress.completed_at = timezone.now()
+                reward_xp = challenge.reward_xp
+                
+                # Award XP to user profile
+                if hasattr(request.user, 'profile'):
+                    request.user.profile.points += reward_xp
+                    request.user.profile.save()
+
+                # Log progress
+                ProgressLog.objects.create(
+                    user=request.user,
+                    stage=4,
+                    progress=challenge.stage_order,
+                    points_earned=reward_xp
+                )
+            else:
+                reward_xp = challenge.reward_xp
+
+        progress.save()
+
+        return Response({
+            "success": passed,
+            "is_completed": progress.is_completed,
+            "reward_xp": reward_xp,
+            "message": "Mission Accomplished! You built a superhero badge! 🎉" if passed else "Almost there! Keep tweaking your code to complete all mission goals.",
+            "criteria_results": criteria_results
+        })
+
+
+class WebChallengeProjectsListView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        challenges = WebChallenge.objects.all().order_by('stage_order')
+        projects = []
+
+        progress_map = {}
+        if request.user and request.user.is_authenticated:
+            all_progress = StudentChallengeProgress.objects.filter(student=request.user)
+            for p in all_progress:
+                progress_map[p.challenge_id] = p
+
+        for c in challenges:
+            p = progress_map.get(c.id)
+            projects.append({
+                "id": c.id,
+                "slug": c.slug,
+                "title": c.title,
+                "stage_order": c.stage_order,
+                "reward_xp": c.reward_xp,
+                "saved_html": p.saved_html if p and p.saved_html else c.starter_html,
+                "saved_css": p.saved_css if p and p.saved_css else c.starter_css,
+                "is_completed": p.is_completed if p else False,
+                "completed_at": p.completed_at if p else None,
+                "has_draft": True if (p and p.saved_html) else False
+            })
+
+        return Response({
+            "success": True,
+            "projects": projects
+        })
+
+
+
+
 
 
 

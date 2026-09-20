@@ -271,31 +271,18 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* World 4: App Studio (Moved & Locked) */}
+          {/* World 4: Web Dev Studio */}
           <div className="dash-element">
-            {isStage4Unlocked ? (
-              <Link href="/stage3" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(56,189,248,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(56,189,248,0.5)] hover:border-sky-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-sky-50 to-transparent"></div>
-                <div className="w-20 h-20 bg-gradient-to-br from-sky-400 to-blue-500 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
-                  <span className="text-3xl">📱</span>
-                </div>
-                <h3 className="text-xl font-black mb-1 text-slate-800">World 4</h3>
-                <p className="text-sky-600 font-bold bg-sky-50 px-3 py-0.5 rounded-full mb-3 text-sm">App Studio</p>
-                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Design user interfaces, add buttons and sliders, and write code to build real apps.</p>
-                <div className="mt-4 bg-sky-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#0284c7] group-hover:bg-sky-400 transition-colors">Play Now</div>
-              </Link>
-            ) : (
-              <div className="h-full bg-slate-100/70 border-4 border-dashed border-slate-200 p-6 rounded-[2rem] flex flex-col items-center text-center relative overflow-hidden opacity-75">
-                <div className="absolute top-4 right-4 bg-slate-200 text-slate-500 font-bold px-2 py-0.5 rounded text-xs flex items-center gap-1"><Lock size={12} /> Locked</div>
-                <div className="w-20 h-20 bg-slate-200 rounded-3xl flex items-center justify-center mb-4 border-4 border-white relative z-10 text-slate-400 shadow-inner">
-                  <span className="text-3xl">📱</span>
-                </div>
-                <h3 className="text-xl font-black mb-1 text-slate-600">World 4</h3>
-                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">App Studio</p>
-                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 3: Python Pro to unlock your App Designer studio!</p>
-                <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
+            <Link href="/web-studio" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(245,158,11,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(245,158,11,0.5)] hover:border-amber-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-50 to-transparent"></div>
+              <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-amber-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
+                <span className="text-3xl">🌐</span>
               </div>
-            )}
+              <h3 className="text-xl font-black mb-1 text-slate-800">World 4</h3>
+              <p className="text-amber-600 font-bold bg-amber-50 px-3 py-0.5 rounded-full mb-3 text-sm">Web Dev Studio</p>
+              <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Write HTML & CSS side-by-side to design magical websites with real-time live previews!</p>
+              <div className="mt-4 bg-amber-500 text-slate-950 w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#b45309] group-hover:bg-amber-400 transition-colors">Play Now</div>
+            </Link>
           </div>
         </div>
 

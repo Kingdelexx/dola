@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
-import { Mail, Lock, ChevronRight, Gamepad2, Star, Rocket, Zap } from 'lucide-react';
+import { Mail, Lock, ChevronRight, Gamepad2, Star, Rocket, Zap, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import RocketLoader from '@/components/RocketLoader';
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const titleRef = useRef(null);
   
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [portalRole, setPortalRole] = useState<'auto' | 'teacher' | 'school_admin' | 'parent' | 'student'>('auto');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -39,11 +40,18 @@ export default function LoginPage() {
         if (res.ok) {
           login(data.token, data.user);
           const role = data.user?.profile?.role;
-          if (role === 'super_admin') router.push('/super-admin');
-          else if (role === 'teacher') router.push('/teacher-dashboard');
-          else if (role === 'school_admin') router.push('/school-dashboard');
-          else if (role === 'parent') router.push('/parent-dashboard');
-          else router.push('/dashboard');
+          if (portalRole !== 'auto') {
+            if (portalRole === 'teacher') router.push('/teacher-dashboard');
+            else if (portalRole === 'school_admin') router.push('/school-dashboard');
+            else if (portalRole === 'parent') router.push('/parent-dashboard');
+            else router.push('/dashboard');
+          } else {
+            if (role === 'super_admin') router.push('/super-admin');
+            else if (role === 'teacher') router.push('/teacher-dashboard');
+            else if (role === 'school_admin') router.push('/school-dashboard');
+            else if (role === 'parent') router.push('/parent-dashboard');
+            else router.push('/dashboard');
+          }
         } else {
           setError(data.non_field_errors?.[0] || 'Invalid email or password.');
           setIsLoading(false);
@@ -218,6 +226,37 @@ export default function LoginPage() {
           <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
             {error && <div className="text-red-600 text-sm font-bold bg-red-100 p-4 rounded-xl border-2 border-red-200 shadow-sm">{error}</div>}
             
+            {/* Target Portal Selection Dropdown */}
+            <div className="input-group relative">
+              <label className="block text-xs font-black text-slate-600 mb-2 uppercase tracking-wide flex items-center justify-between">
+                <span>Portal Access</span>
+                <span className="text-sky-600 font-bold normal-case text-xs">
+                  {portalRole === 'auto' && '✨ Auto-Detect Role'}
+                  {portalRole === 'teacher' && '👩‍🏫 Teacher Portal'}
+                  {portalRole === 'school_admin' && '🏫 School Portal'}
+                  {portalRole === 'parent' && '👨‍👩‍👧 Parent Portal'}
+                  {portalRole === 'student' && '👧‍💻 Student Portal'}
+                </span>
+              </label>
+              <div className="relative">
+                <select
+                  value={portalRole}
+                  onChange={(e) => setPortalRole(e.target.value as any)}
+                  disabled={isLoading}
+                  className="w-full bg-white border-2 border-sky-200 rounded-xl py-3 px-4 pr-10 text-sm font-extrabold text-slate-800 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-100 transition-all shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="auto">✨ Auto-Detect Portal from Account</option>
+                  <option value="teacher">👩‍🏫 Teacher Portal</option>
+                  <option value="school_admin">🏫 School Administrator Portal</option>
+                  <option value="parent">👨‍👩‍👧 Parent / Guardian Dashboard</option>
+                  <option value="student">👧‍💻 Student Learning Dashboard</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-sky-500">
+                  <ChevronDown size={18} />
+                </div>
+              </div>
+            </div>
+
             {/* Email */}
             <div className="input-group relative">
               <label className="block text-sm font-black text-slate-600 mb-2 uppercase tracking-wide">Email Address</label>

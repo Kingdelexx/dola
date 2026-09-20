@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <path d="M50 10 Q70 35 65 70 L35 70 Q30 35 50 10 Z" fill="#ef4444" />
+  <path d="M50 10 Q60 30 58 70 L42 70 Q40 30 50 10 Z" fill="#f87171" />
+  <circle cx="50" cy="40" r="9" fill="#0f172a" stroke="#38bdf8" stroke-width="3" />
+  <circle cx="50" cy="40" r="4" fill="#38bdf8" />
+  <!-- Fins -->
+  <path d="M35 55 L18 75 L35 70 Z" fill="#dc2626" />
+  <path d="M65 55 L82 75 L65 70 Z" fill="#dc2626" />
+  <!-- Flames -->
+  <path d="M40 70 Q50 95 60 70 Q55 88 50 82 Q45 88 40 70 Z" fill="#f59e0b" />
+  <path d="M44 70 Q50 90 56 70 Q53 82 50 78 Q47 82 44 70 Z" fill="#facc15" />
+</svg>
