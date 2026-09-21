@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+import random
+import string
 
 class School(models.Model):
     STATUS_CHOICES = (
@@ -29,10 +31,25 @@ class Classroom(models.Model):
     name = models.CharField(max_length=100)
     grade_level = models.CharField(max_length=50, blank=True, null=True)
     teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='managed_classes')
+    join_code = models.CharField(max_length=20, unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        if not self.join_code:
+            loop_count = 0
+            while True:
+                code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+                if not Classroom.objects.filter(join_code=code).exists():
+                    self.join_code = code
+                    break
+                loop_count += 1
+                if loop_count > 100:
+                    self.join_code = f"CLS-{''.join(random.choices(string.ascii_uppercase + string.digits, k=6))}"
+                    break
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.name} - {self.school.name}"
+        return f"{self.name} ({self.join_code}) - {self.school.name}"
 
 class UserProfile(models.Model):
     ROLE_CHOICES = (

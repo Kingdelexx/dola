@@ -8,7 +8,7 @@ import {
   Plus, ArrowLeft, Copy, Check, 
   GraduationCap, BookOpen, Sparkles, RefreshCw, ShieldAlert,
   Clock, CheckCircle2, UserPlus, Users, Award, Brain, Calculator, Code,
-  FileSpreadsheet, Upload, Download
+  FileSpreadsheet, Upload, Download, Key
 } from 'lucide-react';
 
 interface SchoolData {
@@ -29,7 +29,9 @@ interface ClassroomData {
   id: number;
   name: string;
   grade_level?: string;
+  teacher?: number | null;
   teacher_name?: string;
+  join_code?: string;
 }
 
 interface UserItem {
@@ -85,7 +87,10 @@ export default function SchoolDashboardPage() {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [copiedSchoolCode, setCopiedSchoolCode] = useState(false);
+  const [copiedTeacherLink, setCopiedTeacherLink] = useState(false);
+  const [copiedClassCode, setCopiedClassCode] = useState<number | null>(null);
+
   const [activeTab, setActiveTab] = useState<'classes' | 'teachers' | 'students' | 'parents'>('classes');
 
   // Modals state
@@ -98,17 +103,18 @@ export default function SchoolDashboardPage() {
   // Form states
   const [className, setClassName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
+  const [classTeacherId, setClassTeacherId] = useState('');
   const [teacherEmail, setTeacherEmail] = useState('');
   const [teacherName, setTeacherName] = useState('');
 
-  // Option 1 Manual Student Addition state
+  // Manual Student Addition state
   const [studentName, setStudentName] = useState('');
   const [studentAge, setStudentAge] = useState('');
   const [studentGender, setStudentGender] = useState('girl');
   const [selectedClassId, setSelectedClassId] = useState('');
   const [studentParentEmail, setStudentParentEmail] = useState('');
 
-  // Option 2 Excel Upload state
+  // Excel Upload state
   const [excelFile, setExcelFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
@@ -163,12 +169,17 @@ export default function SchoolDashboardPage() {
           'Authorization': `Token ${authToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name: className, grade_level: gradeLevel })
+        body: JSON.stringify({ 
+          name: className, 
+          grade_level: gradeLevel,
+          teacher_id: classTeacherId || null 
+        })
       });
 
       if (res.ok) {
         setClassName('');
         setGradeLevel('');
+        setClassTeacherId('');
         setShowClassModal(false);
         fetchSchoolData();
       } else {
@@ -178,6 +189,27 @@ export default function SchoolDashboardPage() {
       console.error(err);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAssignTeacher = async (classId: number, teacherId: string) => {
+    const authToken = token || localStorage.getItem('token');
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/school/assign-teacher-class/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ classroom_id: classId, teacher_id: teacherId || null })
+      });
+      if (res.ok) {
+        fetchSchoolData();
+      } else {
+        alert('Failed to assign teacher to classroom.');
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -214,7 +246,6 @@ export default function SchoolDashboardPage() {
     }
   };
 
-  // Option 1 Manual Student Addition Handler
   const handleManualAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentName.trim()) return;
@@ -256,7 +287,6 @@ export default function SchoolDashboardPage() {
     }
   };
 
-  // Option 2 Excel Bulk Upload Handler
   const handleBulkUploadExcel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!excelFile) return;
@@ -341,8 +371,25 @@ export default function SchoolDashboardPage() {
   const copySchoolCode = () => {
     if (data?.school?.code) {
       navigator.clipboard.writeText(data.school.code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopiedSchoolCode(true);
+      setTimeout(() => setCopiedSchoolCode(false), 2000);
+    }
+  };
+
+  const copyTeacherInviteLink = () => {
+    if (data?.school?.code) {
+      const url = `${window.location.origin}/join/${data.school.code}`;
+      navigator.clipboard.writeText(url);
+      setCopiedTeacherLink(true);
+      setTimeout(() => setCopiedTeacherLink(false), 2000);
+    }
+  };
+
+  const copyClassJoinCode = (classId: number, code?: string) => {
+    if (code) {
+      navigator.clipboard.writeText(code);
+      setCopiedClassCode(classId);
+      setTimeout(() => setCopiedClassCode(null), 2000);
     }
   };
 
@@ -378,7 +425,7 @@ export default function SchoolDashboardPage() {
               <h1 className="font-extrabold text-lg leading-tight text-white flex items-center gap-1.5">
                 {school?.name || "School Dashboard"} <Sparkles className="w-4 h-4 text-indigo-400" />
               </h1>
-              <p className="text-xs text-slate-400 font-medium">Principal Dashboard & Management</p>
+              <p className="text-xs text-slate-400 font-medium">Principal Dashboard & Hierarchical Management</p>
             </div>
           </div>
         </div>
@@ -398,64 +445,76 @@ export default function SchoolDashboardPage() {
           </div>
         )}
 
-        {/* STEP 3: Pending Approval Banner */}
+        {/* Pending Approval Banner */}
         {school && school.status === 'PENDING' && (
           <div className="p-8 rounded-3xl bg-gradient-to-r from-amber-950 via-slate-900 to-indigo-950 border border-amber-500/40 shadow-2xl space-y-4">
             <div className="flex items-center gap-3 text-amber-400 font-black text-xl">
               <Clock className="w-8 h-8 animate-pulse" /> Status: ⏳ Pending Approval by Devnaija
             </div>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Your school application for <strong className="text-white">{school.name}</strong> is currently being reviewed by Devnaija Super Admin. 
-              Once approved, full Google Classroom capabilities (Add Teachers, Classes, Students, Parents) will unlock automatically!
+              Your school application for <strong className="text-white">{school.name}</strong> is currently being reviewed.
             </p>
             <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 text-xs text-slate-400 space-y-1">
               <p>📍 <strong>School Code:</strong> <span className="font-mono text-amber-300">{school.code}</span></p>
-              <p>👤 <strong>Contact Person:</strong> {school.contact_person || 'N/A'} | 📞 {school.phone_number || 'N/A'}</p>
-              <p>✉️ <strong>Principal Email:</strong> {school.principal_email || school.contact_email}</p>
             </div>
           </div>
         )}
 
-        {/* STEP 4: Approved Google Classroom Style Dashboard */}
+        {/* Approved School Dashboard */}
         {(!school || school.status === 'APPROVED') && (
           <div className="space-y-8">
             
-            {/* Approved Header */}
+            {/* Approved Header with Teacher Invitation Link */}
             <div className="p-6 rounded-3xl bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 border border-indigo-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
               <div className="space-y-1">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/30 text-xs font-black">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ✅ Approved Partner School
                 </span>
-                <h2 className="text-3xl font-black text-white">{school?.name || "Greenfield School"}</h2>
+                <h2 className="text-3xl font-black text-white">{school?.name || "Greenfield Academy"}</h2>
                 <p className="text-xs text-slate-300">Principal Executive Dashboard & Learning Analytics</p>
               </div>
 
               {school && (
-                <div className="flex items-center gap-3 bg-slate-950/80 p-3 rounded-2xl border border-indigo-500/30">
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-slate-400">School Join Code</p>
-                    <p className="text-xl font-mono font-black text-indigo-300">{school.code}</p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex items-center gap-3 bg-slate-950/80 p-3 rounded-2xl border border-indigo-500/30">
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-slate-400">School Code</p>
+                      <p className="text-xl font-mono font-black text-indigo-300">{school.code}</p>
+                    </div>
+                    <button
+                      onClick={copySchoolCode}
+                      className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedSchoolCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copiedSchoolCode ? 'Copied' : 'Copy'}
+                    </button>
                   </div>
-                  <button
-                    onClick={copySchoolCode}
-                    className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all flex items-center gap-1 text-xs cursor-pointer"
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copied ? 'Copied!' : 'Copy Code'}
-                  </button>
+
+                  <div className="flex items-center gap-3 bg-slate-950/80 p-3 rounded-2xl border border-purple-500/30">
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-purple-300">Teacher Invite Link</p>
+                      <p className="text-xs font-mono font-bold text-slate-300">/join/{school.code}</p>
+                    </div>
+                    <button
+                      onClick={copyTeacherInviteLink}
+                      className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedTeacherLink ? <Check className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                      {copiedTeacherLink ? 'Link Copied!' : 'Copy Invite Link'}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Principal LOVES This - Dashboard Analytics Summary Bar */}
+            {/* Dashboard Analytics Bar */}
             <div className="space-y-3">
               <h3 className="text-lg font-black text-white flex items-center gap-2">
                 <Award className="w-5 h-5 text-indigo-400" /> Principal Summary Dashboard
               </h3>
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                {/* Students */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-indigo-500/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-indigo-400">
                     <GraduationCap className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Total</span>
@@ -466,8 +525,7 @@ export default function SchoolDashboardPage() {
                   </div>
                 </div>
 
-                {/* Teachers */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-purple-500/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-purple-400">
                     <Users className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Faculty</span>
@@ -478,8 +536,7 @@ export default function SchoolDashboardPage() {
                   </div>
                 </div>
 
-                {/* Completed Lessons */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-sky-500/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-sky-400">
                     <BookOpen className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Lessons</span>
@@ -490,8 +547,7 @@ export default function SchoolDashboardPage() {
                   </div>
                 </div>
 
-                {/* Avg Numeracy Score */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-emerald-500/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-emerald-400">
                     <Calculator className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Stage 1</span>
@@ -502,8 +558,7 @@ export default function SchoolDashboardPage() {
                   </div>
                 </div>
 
-                {/* Coding Progress */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-pink-500/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-pink-400">
                     <Code className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Stages 2-4</span>
@@ -514,8 +569,7 @@ export default function SchoolDashboardPage() {
                   </div>
                 </div>
 
-                {/* AI Activities */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-amber-500/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-amber-400">
                     <Brain className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Lizzy AI</span>
@@ -526,8 +580,7 @@ export default function SchoolDashboardPage() {
                   </div>
                 </div>
 
-                {/* Demographics */}
-                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2 hover:border-indigo-400/50 transition-all">
+                <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col justify-between space-y-2">
                   <div className="flex items-center justify-between text-indigo-300">
                     <Users className="w-5 h-5" />
                     <span className="text-[10px] font-black uppercase text-slate-400">Ratio</span>
@@ -539,92 +592,6 @@ export default function SchoolDashboardPage() {
                 </div>
               </div>
             </div>
-
-            {/* School-Wide Competency aggregates */}
-            {metrics.learning_profile && (
-              <div className="p-6 rounded-3xl bg-slate-800/60 border border-slate-700/80 space-y-6 shadow-xl">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700 pb-4">
-                  <div>
-                    <h3 className="text-lg font-black text-white flex items-center gap-2">
-                      <Award className="w-5 h-5 text-indigo-400" /> School-Wide Competency Aggregates
-                    </h3>
-                    <p className="text-xs text-slate-400">School-wide learning indices based on active student achievements</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 rounded-full bg-indigo-950/60 border border-indigo-500/20 text-indigo-305 text-indigo-300 text-[11px] font-bold">
-                      Top Area: {metrics.learning_profile.strongest_competency} 🚀
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/20 text-rose-300 text-[11px] font-bold">
-                      Focus Area: {metrics.learning_profile.most_common_weakness} 💡
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  
-                  {/* Numeracy Mastery */}
-                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
-                    <div className="flex justify-between text-xs font-bold text-slate-300">
-                      <span>Numeracy Index</span>
-                      <span className="text-indigo-400">{metrics.learning_profile.numeracy_mastery}</span>
-                    </div>
-                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-indigo-500 to-purple-400 h-full rounded-full"
-                        style={{ width: metrics.learning_profile.numeracy_mastery }}
-                      ></div>
-                    </div>
-                    <p className="text-[10px] text-slate-400">School basic and advanced numeracy</p>
-                  </div>
-
-                  {/* Logical Reasoning */}
-                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
-                    <div className="flex justify-between text-xs font-bold text-slate-300">
-                      <span>Logical Reasoning</span>
-                      <span className="text-purple-400">{metrics.learning_profile.logical_reasoning}</span>
-                    </div>
-                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-purple-500 to-pink-400 h-full rounded-full"
-                        style={{ width: metrics.learning_profile.logical_reasoning }}
-                      ></div>
-                    </div>
-                    <p className="text-[10px] text-slate-405 text-slate-450 text-slate-400">Logic puzzles and sequence patterns</p>
-                  </div>
-
-                  {/* Computational Thinking */}
-                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
-                    <div className="flex justify-between text-xs font-bold text-slate-300">
-                      <span>Computational Thinking</span>
-                      <span className="text-pink-400">{metrics.learning_profile.computational_thinking}</span>
-                    </div>
-                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-pink-500 to-rose-455 to-rose-400 h-full rounded-full"
-                        style={{ width: metrics.learning_profile.computational_thinking }}
-                      ></div>
-                    </div>
-                    <p className="text-[10px] text-slate-405 text-slate-450 text-slate-400">Algorithmic planning and problem splitting</p>
-                  </div>
-
-                  {/* Coding Proficiency */}
-                  <div className="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60">
-                    <div className="flex justify-between text-xs font-bold text-slate-300">
-                      <span>Coding Index</span>
-                      <span className="text-sky-400">{metrics.learning_profile.coding_proficiency}</span>
-                    </div>
-                    <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-sky-505 to-blue-400 h-full rounded-full"
-                        style={{ width: metrics.learning_profile.coding_proficiency }}
-                      ></div>
-                    </div>
-                    <p className="text-[10px] text-slate-450 text-slate-400">Active Blockly & Python achievements</p>
-                  </div>
-
-                </div>
-              </div>
-            )}
 
             {/* Google Classroom Navigation Tabs */}
             <div className="flex border-b border-slate-800 gap-2 overflow-x-auto">
@@ -677,7 +644,7 @@ export default function SchoolDashboardPage() {
             {activeTab === 'classes' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-black text-white">Classrooms & Grades</h3>
+                  <h3 className="text-xl font-black text-white">Classrooms & Student Join Codes</h3>
                   <button
                     onClick={() => setShowClassModal(true)}
                     className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
@@ -694,9 +661,48 @@ export default function SchoolDashboardPage() {
                           <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-500/30">
                             {c.grade_level || 'General'}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-medium">Teacher: {c.teacher_name || 'Assigned'}</span>
                         </div>
+
                         <h4 className="text-lg font-black text-white">{c.name}</h4>
+
+                        {/* Assigned Teacher Selector */}
+                        <div className="pt-2 border-t border-slate-700/60 space-y-1">
+                          <label className="text-[10px] uppercase font-black text-indigo-400 block">Assigned Teacher</label>
+                          <select
+                            value={c.teacher || ''}
+                            onChange={(e) => handleAssignTeacher(c.id, e.target.value)}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-lg py-1.5 px-2.5 text-xs text-slate-200 font-semibold focus:outline-none focus:border-indigo-500"
+                          >
+                            <option value="">-- No Teacher Assigned --</option>
+                            {teachers.map((t) => (
+                              <option key={t.id} value={t.id}>
+                                👩‍🏫 {t.username} ({t.email})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Class Join Code Badge */}
+                        {c.join_code && (
+                          <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] uppercase font-black text-amber-400 flex items-center gap-1">
+                                <Key size={12} /> Student Class Join Code
+                              </span>
+                              <span className="text-sm font-mono font-black text-amber-300 tracking-wider">
+                                {c.join_code}
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={() => copyClassJoinCode(c.id, c.join_code)}
+                              className="px-2.5 py-1 bg-amber-950 hover:bg-amber-900 border border-amber-500/40 text-amber-300 text-[11px] font-extrabold rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              {copiedClassCode === c.id ? <Check size={12} /> : <Copy size={12} />}
+                              {copiedClassCode === c.id ? 'Copied' : 'Copy'}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
@@ -736,7 +742,7 @@ export default function SchoolDashboardPage() {
                     ))
                   ) : (
                     <div className="col-span-full p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-500 text-xs italic">
-                      No teachers added yet. Click &quot;Add Teacher&quot; to invite educators!
+                      No teachers added yet. Share your school invite link or click &quot;Add Teacher&quot;!
                     </div>
                   )}
                 </div>
@@ -801,7 +807,7 @@ export default function SchoolDashboardPage() {
                       ) : (
                         <tr>
                           <td colSpan={7} className="py-8 text-center text-slate-500 italic">
-                            No students enrolled yet. Use &quot;Option 2: Upload Excel&quot; to import your roster!
+                            No students enrolled yet. Use Class Join Codes or &quot;Option 2: Upload Excel&quot; to import your roster!
                           </td>
                         </tr>
                       )}
@@ -857,6 +863,21 @@ export default function SchoolDashboardPage() {
                   onChange={(e) => setGradeLevel(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-indigo-500"
                 />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-300 block mb-1">Assign Teacher (Optional)</label>
+                <select
+                  value={classTeacherId}
+                  onChange={(e) => setClassTeacherId(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="">-- Select Teacher from Faculty --</option>
+                  {teachers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      👩‍🏫 {t.username} ({t.email})
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="button" onClick={() => setShowClassModal(false)} className="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">Cancel</button>

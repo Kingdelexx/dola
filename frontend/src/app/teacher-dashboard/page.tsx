@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { 
   ArrowLeft, RefreshCw, ShieldAlert, Sparkles,
-  Users, CheckCircle2, BookOpen, FileText, Award, AlertTriangle, TrendingUp
+  Users, CheckCircle2, BookOpen, FileText, Award, AlertTriangle, TrendingUp,
+  Key, Copy, Check
 } from 'lucide-react';
 
 interface StudentProfile {
@@ -31,6 +32,7 @@ interface ClassroomInfo {
   id: number;
   name: string;
   grade_level?: string;
+  join_code?: string;
   students_count: number;
 }
 
@@ -62,6 +64,7 @@ export default function TeacherDashboardPage() {
   const [strongStudents, setStrongStudents] = useState<StudentUser[]>([]);
   const [weakStudents, setWeakStudents] = useState<StudentUser[]>([]);
   const [teacherName, setTeacherName] = useState('');
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const fetchTeacherData = useCallback(async () => {
     const authToken = token || localStorage.getItem('token');
@@ -101,7 +104,15 @@ export default function TeacherDashboardPage() {
     fetchTeacherData();
   }, [fetchTeacherData]);
 
-  const cls = classroom || { name: 'No Classroom Assigned', grade_level: 'N/A', students_count: 0 };
+  const copyJoinCode = () => {
+    if (classroom?.join_code) {
+      navigator.clipboard.writeText(classroom.join_code);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    }
+  };
+
+  const cls = classroom || { name: 'No Classroom Assigned', grade_level: 'N/A', join_code: 'P5A7KD', students_count: 0 };
   const met = metrics || { attendance: '0% (0 Present)', lesson_completion: '0%', homework: '0%' };
 
   return (
@@ -141,7 +152,7 @@ export default function TeacherDashboardPage() {
           </div>
         )}
 
-        {/* Hero Class Banner */}
+        {/* Hero Class Banner with Class Join Code */}
         <div className="p-8 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 border border-emerald-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-1">
             <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase tracking-wider border border-emerald-400/30">
@@ -153,11 +164,31 @@ export default function TeacherDashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-950/80 p-4 rounded-2xl border border-emerald-500/30">
-            <Users className="w-8 h-8 text-emerald-400" />
-            <div>
-              <p className="text-[10px] uppercase font-black text-slate-400">Class Roster</p>
-              <p className="text-2xl font-black text-white">{cls.students_count} Students</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Student Class Join Code Card */}
+            {cls.join_code && (
+              <div className="bg-amber-950/80 p-4 rounded-2xl border border-amber-500/40 flex items-center gap-3">
+                <Key className="w-7 h-7 text-amber-400" />
+                <div>
+                  <p className="text-[10px] uppercase font-black text-amber-300">Student Class Join Code</p>
+                  <p className="text-2xl font-mono font-black text-amber-200 tracking-wider">{cls.join_code}</p>
+                </div>
+                <button
+                  onClick={copyJoinCode}
+                  className="p-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1 transition-all cursor-pointer"
+                >
+                  {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copiedCode ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 bg-slate-950/80 p-4 rounded-2xl border border-emerald-500/30">
+              <Users className="w-8 h-8 text-emerald-400" />
+              <div>
+                <p className="text-[10px] uppercase font-black text-slate-400">Class Roster</p>
+                <p className="text-2xl font-black text-white">{cls.students_count} Students</p>
+              </div>
             </div>
           </div>
         </div>
@@ -231,8 +262,6 @@ export default function TeacherDashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              
-              {/* Numeracy Mastery */}
               <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
                 <div className="flex justify-between text-xs font-bold text-slate-300">
                   <span>Numeracy Mastery</span>
@@ -247,22 +276,20 @@ export default function TeacherDashboardPage() {
                 <p className="text-[10px] text-slate-500">Stage 1 basic and advanced math concepts</p>
               </div>
 
-              {/* Logical Reasoning */}
               <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
                 <div className="flex justify-between text-xs font-bold text-slate-300">
                   <span>Logical Reasoning</span>
-                  <span className="text-indigo-405 text-indigo-400">{met.learning_profile.logical_reasoning}</span>
+                  <span className="text-indigo-400">{met.learning_profile.logical_reasoning}</span>
                 </div>
                 <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-indigo-505 to-purple-400 h-full rounded-full"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-400 h-full rounded-full"
                     style={{ width: met.learning_profile.logical_reasoning }}
                   ></div>
                 </div>
                 <p className="text-[10px] text-slate-500">Pattern sequencing and logic deduction</p>
               </div>
 
-              {/* Computational Thinking */}
               <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
                 <div className="flex justify-between text-xs font-bold text-slate-300">
                   <span>Computational Thinking</span>
@@ -277,7 +304,6 @@ export default function TeacherDashboardPage() {
                 <p className="text-[10px] text-slate-500">Algorithmic planning & decomposition</p>
               </div>
 
-              {/* Coding Proficiency */}
               <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
                 <div className="flex justify-between text-xs font-bold text-slate-300">
                   <span>Coding Proficiency</span>
@@ -285,13 +311,12 @@ export default function TeacherDashboardPage() {
                 </div>
                 <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-sky-505 to-blue-400 h-full rounded-full"
+                    className="bg-gradient-to-r from-sky-500 to-blue-400 h-full rounded-full"
                     style={{ width: met.learning_profile.coding_proficiency }}
                   ></div>
                 </div>
-                <p className="text-[10px] text-slate-400 text-slate-500">Blockly & Python coding stages</p>
+                <p className="text-[10px] text-slate-500">Blockly & Python coding stages</p>
               </div>
-
             </div>
           </div>
         )}
@@ -337,11 +362,6 @@ export default function TeacherDashboardPage() {
                           {st.username}
                           {st.profile?.gender === 'girl' && <span className="ml-1.5 text-pink-400 text-[10px]">👧</span>}
                           {st.profile?.gender === 'boy' && <span className="ml-1.5 text-sky-400 text-[10px]">👦</span>}
-                          {st.profile?.learning_band && (
-                            <span className="ml-2 px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/20 text-emerald-400 text-[9px] uppercase font-black">
-                              {st.profile.learning_band}
-                            </span>
-                          )}
                         </td>
                         <td className="py-3.5 px-4 space-x-1.5">
                           <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px]">
@@ -365,7 +385,7 @@ export default function TeacherDashboardPage() {
                   ) : (
                     <tr>
                       <td colSpan={4} className="py-8 text-center text-slate-500 italic">
-                        No students found in this class yet.
+                        No students found in this class yet. Ask students to join with code: <strong className="text-amber-300">{cls.join_code}</strong>
                       </td>
                     </tr>
                   )}
@@ -377,7 +397,7 @@ export default function TeacherDashboardPage() {
           {/* Right Column: Weak Students vs Strong Students */}
           <div className="space-y-6">
             
-            {/* Weak Students (Needs Focus 💡) */}
+            {/* Weak Students */}
             <div className="rounded-3xl bg-slate-900/80 border border-amber-500/30 p-6 space-y-4 shadow-xl">
               <div className="flex items-center gap-2 text-amber-400 font-black text-lg">
                 <AlertTriangle className="w-5 h-5 text-amber-400" /> Weak Students (Needs Focus)
@@ -405,7 +425,7 @@ export default function TeacherDashboardPage() {
               </div>
             </div>
 
-            {/* Strong Students (Top Performers 🌟) */}
+            {/* Strong Students */}
             <div className="rounded-3xl bg-slate-900/80 border border-emerald-500/30 p-6 space-y-4 shadow-xl">
               <div className="flex items-center gap-2 text-emerald-400 font-black text-lg">
                 <TrendingUp className="w-5 h-5 text-emerald-400" /> Strong Students (Star Achievers)

@@ -105,6 +105,11 @@ class GoogleAuthView(APIView):
                     status='PENDING',
                     contact_email=email
                 )
+                try:
+                    from .emails import send_school_registration_email
+                    send_school_registration_email(school_obj, email)
+                except Exception as e:
+                    print("Error sending google auth registration email:", e)
 
             if email.endswith('@devnaija.com'):
                 role = 'super_admin'
@@ -662,21 +667,64 @@ class CreateClassroomView(APIView):
 
         name = request.data.get('name')
         grade_level = request.data.get('grade_level', '')
+        teacher_id = request.data.get('teacher_id')
 
         if not name:
             return Response({"error": "Classroom name is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        assigned_teacher = user
+        if teacher_id:
+            found_teacher = User.objects.filter(id=teacher_id, profile__school=school).first()
+            if found_teacher:
+                assigned_teacher = found_teacher
 
         classroom = Classroom.objects.create(
             school=school,
             name=name,
             grade_level=grade_level,
-            teacher=user
+            teacher=assigned_teacher
         )
 
         return Response({
             "success": True,
             "classroom": ClassroomSerializer(classroom).data
         }, status=status.HTTP_201_CREATED)
+
+class AssignTeacherToClassView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['school_admin', 'super_admin']:
+            return Response({"error": "School Admin permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school = profile.school
+        if not school:
+            return Response({"error": "School must be registered first."}, status=status.HTTP_400_BAD_REQUEST)
+
+        classroom_id = request.data.get('classroom_id')
+        teacher_id = request.data.get('teacher_id')
+
+        try:
+            classroom = Classroom.objects.get(id=classroom_id, school=school)
+        except Classroom.DoesNotExist:
+            return Response({"error": "Classroom not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if teacher_id:
+            try:
+                teacher_user = User.objects.get(id=teacher_id, profile__school=school)
+                classroom.teacher = teacher_user
+            except User.DoesNotExist:
+                return Response({"error": "Teacher not found in this school."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            classroom.teacher = None
+
+        classroom.save()
+        return Response({
+            "success": True,
+            "classroom": ClassroomSerializer(classroom).data
+        })
 
 def calculate_skills(profile):
     s1 = profile.stage1_progress or 0
@@ -1123,8 +1171,23 @@ class ApproveSchoolView(APIView):
 
         try:
             school = School.objects.get(id=school_id)
+            previous_status = school.status
             school.status = new_status
             school.save()
+
+            if new_status == 'APPROVED' and previous_status != 'APPROVED':
+                try:
+                    from .emails import send_school_approval_email
+                    recipient = school.contact_email or school.principal_email
+                    if not recipient:
+                        admin_member = school.members.filter(role='school_admin').first()
+                        if admin_member and admin_member.user:
+                            recipient = admin_member.user.email
+                    if recipient:
+                        send_school_approval_email(school, recipient)
+                except Exception as e:
+                    print("Error sending approval email:", e)
+
             return Response({
                 "success": True,
                 "message": f"School '{school.name}' status updated to {new_status}!",
@@ -1746,6 +1809,110 @@ class WebChallengeProjectsListView(APIView):
             "success": True,
             "projects": projects
         })
+
+
+class SchoolJoinInfoView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        code = request.query_params.get('code', '').strip()
+        if not code:
+            return Response({"error": "School code parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        school = School.objects.filter(code__iexact=code).first()
+        if not school:
+            return Response({"error": f"No school found with code '{code}'."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            "success": True,
+            "school": SchoolSerializer(school).data
+        })
+
+
+class ClassJoinInfoView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        code = request.query_params.get('code', '').strip()
+        if not code:
+            return Response({"error": "Class join code parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        classroom = Classroom.objects.filter(join_code__iexact=code).first()
+        if not classroom:
+            return Response({"error": f"No class found with join code '{code}'."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            "success": True,
+            "classroom": ClassroomSerializer(classroom).data,
+            "school": SchoolSerializer(classroom.school).data
+        })
+
+
+class StudentJoinClassView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        code = request.data.get('class_code', '').strip()
+        student_name = request.data.get('student_name') or request.data.get('username') or request.data.get('name')
+        password = request.data.get('password', 'Student123!')
+        age = request.data.get('age')
+        gender = request.data.get('gender')
+
+        if not code:
+            return Response({"error": "Class join code is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not student_name or not student_name.strip():
+            return Response({"error": "Student name is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        classroom = Classroom.objects.filter(join_code__iexact=code).first()
+        if not classroom:
+            return Response({"error": f"Invalid class join code '{code}'."}, status=status.HTTP_404_NOT_FOUND)
+
+        base_username = student_name.strip()
+        username = base_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}_{counter}"
+            counter += 1
+
+        email = f"{username.lower().replace(' ', '_')}@student.dolacode.com"
+        user = User.objects.create_user(username=username, email=email, password=password)
+
+        parsed_age = None
+        if age:
+            try:
+                parsed_age = int(age)
+            except (ValueError, TypeError):
+                pass
+
+        learning_band = None
+        if parsed_age:
+            if parsed_age <= 8:
+                learning_band = 'Discoverer'
+            elif parsed_age <= 11:
+                learning_band = 'Explorer'
+            elif parsed_age <= 14:
+                learning_band = 'Builder'
+            else:
+                learning_band = 'Innovator'
+
+        UserProfile.objects.create(
+            user=user,
+            role='student',
+            school=classroom.school,
+            classroom=classroom,
+            age=parsed_age,
+            gender=gender,
+            learning_band=learning_band
+        )
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({
+            "success": True,
+            "token": token.key,
+            "user": UserSerializer(user).data
+        }, status=status.HTTP_201_CREATED)
+
 
 
 

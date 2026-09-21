@@ -31,7 +31,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Classroom
-        fields = ('id', 'school', 'school_name', 'name', 'grade_level', 'teacher', 'teacher_name', 'created_at')
+        fields = ('id', 'school', 'school_name', 'name', 'grade_level', 'teacher', 'teacher_name', 'join_code', 'created_at')
 
 from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild, StudentCompetency
 
@@ -117,6 +117,13 @@ class UserSerializer(serializers.ModelSerializer):
                     phone_number=request.data.get('phone_number', ''),
                     expected_classes=request.data.get('expected_classes', '')
                 )
+
+                try:
+                    from .emails import send_school_registration_email
+                    recipient = school_obj.contact_email or school_obj.principal_email or validated_data.get('email')
+                    send_school_registration_email(school_obj, recipient)
+                except Exception as e:
+                    print("Error triggering registration email:", e)
 
 
         username = validated_data.get('username') or validated_data.get('email')
