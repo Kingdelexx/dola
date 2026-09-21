@@ -1,9 +1,53 @@
 import os
 import logging
-from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+def _dispatch_email(subject, recipient_email, text_content, html_content):
+    """
+    Dispatches email using Resend API if RESEND_API_KEY is configured,
+    otherwise falls back to Django's configured Email backend (SMTP / Console).
+    """
+    if not recipient_email:
+        return False
+
+    resend_api_key = os.environ.get("RESEND_API_KEY") or getattr(settings, "RESEND_API_KEY", "")
+    from_email = os.environ.get("DEFAULT_FROM_EMAIL") or getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <no-reply@dolacode.com.ng>')
+
+    if resend_api_key:
+        try:
+            import resend
+            resend.api_key = resend_api_key
+            
+            response = resend.Emails.send({
+                "from": from_email,
+                "to": [recipient_email],
+                "subject": subject,
+                "html": html_content,
+                "text": text_content
+            })
+            logger.info(f"Resend API email sent to {recipient_email}: {response}")
+            print(f"[Resend Email Sent] From: {from_email} | To: {recipient_email} | Subject: {subject} | Response: {response}")
+            return True
+        except Exception as e:
+            logger.error(f"Resend API delivery failed for {recipient_email}: {e}")
+            print(f"[Resend Delivery Error]: {e}")
+
+    # Fallback to Django core EmailMultiAlternatives
+    try:
+        from django.core.mail import EmailMultiAlternatives
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [recipient_email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
+        logger.info(f"Django email sent to {recipient_email}")
+        print(f"[Django Email Sent] From: {from_email} | To: {recipient_email} | Subject: {subject}")
+        return True
+    except Exception as e:
+        logger.error(f"Django email delivery failed for {recipient_email}: {e}")
+        print(f"[Django Email Delivery Error]: {e}")
+        return False
+
 
 def send_school_registration_email(school, recipient_email):
     """
@@ -13,8 +57,6 @@ def send_school_registration_email(school, recipient_email):
         return False
 
     subject = f"🏫 School Application Received - {school.name}"
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <no-reply@dolacode.com>')
-    to = [recipient_email]
 
     text_content = (
         f"Hello,\n\n"
@@ -26,7 +68,7 @@ def send_school_registration_email(school, recipient_email):
         f"Applications are typically reviewed within 24-48 hours. Once approved, you will receive a welcome email with full access to your Principal Dashboard.\n\n"
         f"Best regards,\n"
         f"The DolaCode Team\n"
-        f"https://dolacode.com"
+        f"https://dolacode.com.ng"
     )
 
     html_content = f"""
@@ -41,9 +83,6 @@ def send_school_registration_email(school, recipient_email):
         .header h1 {{ font-size: 24px; color: #ffffff; margin: 8px 0 0 0; font-weight: 800; }}
         .badge {{ display: inline-block; padding: 6px 16px; background: #3b82f620; color: #60a5fa; border: 1px solid #3b82f640; border-radius: 9999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }}
         .info-box {{ background: #0f172a; border-radius: 16px; border: 1px solid #334155; padding: 20px; margin: 24px 0; }}
-        .info-row {{ display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }}
-        .info-label {{ color: #94a3b8; font-weight: 600; }}
-        .info-val {{ color: #f8fafc; font-weight: 800; font-family: monospace; }}
         .code-highlight {{ background: #f59e0b20; color: #fbbf24; border: 1px solid #f59e0b40; padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 16px; }}
         .footer {{ text-align: center; margin-top: 32px; font-size: 12px; color: #64748b; line-height: 1.5; }}
       </style>
@@ -81,22 +120,14 @@ def send_school_registration_email(school, recipient_email):
 
         <div class="footer">
           <p>© {school.created_at.year if hasattr(school, 'created_at') and school.created_at else 2026} DolaCode Platform. All rights reserved.<br>
-          If you have questions, contact us at <a href="mailto:support@devnaija.com" style="color: #60a5fa;">support@devnaija.com</a>.</p>
+          If you have questions, contact us at <a href="mailto:support@dolacode.com.ng" style="color: #60a5fa;">support@dolacode.com.ng</a>.</p>
         </div>
       </div>
     </body>
     </html>
     """
 
-    try:
-        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-        msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=False)
-        logger.info(f"Sent registration email to {recipient_email} for school {school.name}")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to send school registration email: {e}")
-        return False
+    return _dispatch_email(subject, recipient_email, text_content, html_content)
 
 
 def send_school_approval_email(school, recipient_email):
@@ -107,11 +138,9 @@ def send_school_approval_email(school, recipient_email):
         return False
 
     subject = f"🎉 Welcome to DolaCode! {school.name} is Approved!"
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <no-reply@dolacode.com>')
-    to = [recipient_email]
 
-    dashboard_url = "https://dolacode.com/school-dashboard"
-    teacher_invite_url = f"https://dolacode.com/join/{school.code}"
+    dashboard_url = "https://dolacode.com.ng/school-dashboard"
+    teacher_invite_url = f"https://dolacode.com.ng/join/{school.code}"
 
     text_content = (
         f"Congratulations!\n\n"
@@ -191,19 +220,11 @@ def send_school_approval_email(school, recipient_email):
 
         <div class="footer">
           <p>© {school.created_at.year if hasattr(school, 'created_at') and school.created_at else 2026} DolaCode Platform. All rights reserved.<br>
-          Need assistance? Contact our team at <a href="mailto:support@devnaija.com" style="color: #60a5fa;">support@devnaija.com</a>.</p>
+          Need assistance? Contact our team at <a href="mailto:support@dolacode.com.ng" style="color: #60a5fa;">support@dolacode.com.ng</a>.</p>
         </div>
       </div>
     </body>
     </html>
     """
 
-    try:
-        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-        msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=False)
-        logger.info(f"Sent approval email to {recipient_email} for school {school.name}")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to send school approval email: {e}")
-        return False
+    return _dispatch_email(subject, recipient_email, text_content, html_content)
