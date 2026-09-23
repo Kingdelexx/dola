@@ -150,9 +150,7 @@ class Command(BaseCommand):
             try:
                 # If Resend API is in sandbox test mode, it requires sending to verified emails, or onboarding@resend.dev
                 # If they use verified domain DolaCode, it will send normally
-                from_email = "DolaCode Reports <onboarding@resend.dev>"
-                if "onboarding@resend.dev" in api_key: # Resend token check
-                     from_email = "DolaCode Reports <onboarding@resend.dev>"
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <no-reply@dolacode.com.ng>')
 
                 response = httpx.post(
                     "https://api.resend.com/emails",
