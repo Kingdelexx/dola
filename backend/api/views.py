@@ -1178,13 +1178,12 @@ class ApproveSchoolView(APIView):
             if new_status == 'APPROVED' and previous_status != 'APPROVED':
                 try:
                     from .emails import send_school_approval_email
-                    recipient = school.contact_email or school.principal_email
-                    if not recipient:
-                        admin_member = school.members.filter(role='school_admin').first()
-                        if admin_member and admin_member.user:
-                            recipient = admin_member.user.email
-                    if recipient:
-                        send_school_approval_email(school, recipient)
+                    recipients = [school.contact_email, school.principal_email]
+                    admin_members = school.members.filter(role='school_admin')
+                    for member in admin_members:
+                        if member.user and member.user.email:
+                            recipients.append(member.user.email)
+                    send_school_approval_email(school, recipients)
                 except Exception as e:
                     print("Error sending approval email:", e)
 

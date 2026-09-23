@@ -4,12 +4,39 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+def _normalize_recipients(recipient_input):
+    """
+    Normalizes single string or list/tuple of email addresses into a unique,
+    clean list of valid email strings.
+    """
+    if not recipient_input:
+        return []
+    
+    raw_list = []
+    if isinstance(recipient_input, str):
+        raw_list = [e.strip() for e in recipient_input.split(',') if e.strip()]
+    elif isinstance(recipient_input, (list, tuple, set)):
+        for item in recipient_input:
+            if isinstance(item, str):
+                raw_list.extend([e.strip() for e in item.split(',') if e.strip()])
+    
+    clean_list = []
+    for email in raw_list:
+        if email and '@' in email and email not in clean_list:
+            clean_list.append(email)
+            
+    return clean_list
+
+
 def _dispatch_email(subject, recipient_email, text_content, html_content):
     """
     Dispatches email using Resend API if RESEND_API_KEY is configured,
     otherwise falls back to Django's configured Email backend (SMTP / Console).
     """
-    if not recipient_email:
+    recipients = _normalize_recipients(recipient_email)
+    if not recipients:
+        logger.warning(f"No valid recipients provided for email: {subject}")
+        print(f"[Email Warning]: No valid recipients provided for email subject: '{subject}'")
         return False
 
     resend_api_key = os.environ.get("RESEND_API_KEY") or getattr(settings, "RESEND_API_KEY", "")
@@ -22,38 +49,102 @@ def _dispatch_email(subject, recipient_email, text_content, html_content):
             
             response = resend.Emails.send({
                 "from": from_email,
-                "to": [recipient_email],
+                "to": recipients,
                 "subject": subject,
                 "html": html_content,
                 "text": text_content
             })
-            logger.info(f"Resend API email sent to {recipient_email}: {response}")
-            print(f"[Resend Email Sent] From: {from_email} | To: {recipient_email} | Subject: {subject} | Response: {response}")
+            logger.info(f"Resend API email sent to {recipients}: {response}")
+            print(f"[Resend Email Sent] From: {from_email} | To: {recipients} | Subject: {subject} | Response: {response}")
             return True
         except Exception as e:
-            logger.error(f"Resend API delivery failed for {recipient_email}: {e}")
-            print(f"[Resend Delivery Error]: {e}")
+            logger.error(f"Resend API delivery failed for {recipients}: {e}")
+            print(f"[Resend Delivery Error for {recipients}]: {e}")
 
     # Fallback to Django core EmailMultiAlternatives
     try:
         from django.core.mail import EmailMultiAlternatives
-        msg = EmailMultiAlternatives(subject, text_content, from_email, [recipient_email])
+        msg = EmailMultiAlternatives(subject, text_content, from_email, recipients)
         msg.attach_alternative(html_content, "text/html")
         msg.send(fail_silently=False)
-        logger.info(f"Django email sent to {recipient_email}")
-        print(f"[Django Email Sent] From: {from_email} | To: {recipient_email} | Subject: {subject}")
+        logger.info(f"Django email sent to {recipients}")
+        print(f"[Django Email Sent] From: {from_email} | To: {recipients} | Subject: {subject}")
         return True
     except Exception as e:
-        logger.error(f"Django email delivery failed for {recipient_email}: {e}")
-        print(f"[Django Email Delivery Error]: {e}")
+        logger.error(f"Django email delivery failed for {recipients}: {e}")
+        print(f"[Django Email Delivery Error for {recipients}]: {e}")
         return False
 
 
-def send_school_registration_email(school, recipient_email):
+def send_admin_new_school_alert(school):
+    """
+    Notifies Super Admins that a new school has registered and is pending approval.
+    """
+    admin_emails = ["devnaijaacademy@gmail.com", "support@dolacode.com.ng"]
+    subject = f"🔔 [ACTION REQUIRED] New School Registered: {school.name}"
+    
+    text_content = (
+        f"A new school has registered on DolaCode and requires review:\n\n"
+        f"School Name: {school.name}\n"
+        f"School Code: {school.code}\n"
+        f"Contact Person: {school.contact_person or 'N/A'}\n"
+        f"Contact Email: {school.contact_email or 'N/A'}\n"
+        f"Principal Email: {school.principal_email or 'N/A'}\n"
+        f"Phone Number: {school.phone_number or 'N/A'}\n"
+        f"Est. Pupils: {school.number_of_pupils or 'N/A'}\n\n"
+        f"Log into Super Admin Dashboard to approve or reject this school:\n"
+        f"https://dolacode.com.ng/super-admin"
+    )
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }}
+        .card {{ max-width: 600px; margin: 0 auto; background: #1e293b; border-radius: 20px; border: 1px solid #f59e0b40; padding: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }}
+        .badge {{ background: #f59e0b20; color: #fbbf24; border: 1px solid #f59e0b40; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 800; display: inline-block; text-transform: uppercase; }}
+        h1 {{ font-size: 22px; color: #ffffff; margin-top: 14px; margin-bottom: 8px; font-weight: 900; }}
+        .box {{ background: #0f172a; border-radius: 12px; border: 1px solid #334155; padding: 16px; margin: 20px 0; font-size: 14px; color: #cbd5e1; line-height: 1.6; }}
+        .btn {{ display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-top: 12px; box-shadow: 0 4px 12px rgba(99,102,241,0.4); }}
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <span class="badge">🔔 New School Application</span>
+        <h1>{school.name} has applied on DolaCode</h1>
+        <div class="box">
+          <p style="margin:4px 0;"><strong>School Code:</strong> <span style="color:#fbbf24; font-weight:bold;">{school.code}</span></p>
+          <p style="margin:4px 0;"><strong>Contact Person:</strong> {school.contact_person or 'N/A'}</p>
+          <p style="margin:4px 0;"><strong>Contact Email:</strong> {school.contact_email or 'N/A'}</p>
+          <p style="margin:4px 0;"><strong>Principal Email:</strong> {school.principal_email or 'N/A'}</p>
+          <p style="margin:4px 0;"><strong>Phone:</strong> {school.phone_number or 'N/A'}</p>
+          <p style="margin:4px 0;"><strong>Est. Pupils:</strong> {school.number_of_pupils or 'N/A'}</p>
+        </div>
+        <div style="text-align: center;">
+          <a href="https://dolacode.com.ng/super-admin" class="btn">Open Super Admin Dashboard →</a>
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+    
+    return _dispatch_email(subject, admin_emails, text_content, html_content)
+
+
+def send_school_registration_email(school, recipient_email=None):
     """
     Sends a confirmation email when a school registers and is pending approval.
+    Also notifies Devnaija super admins.
     """
-    if not recipient_email:
+    recipients = _normalize_recipients([
+        recipient_email,
+        getattr(school, 'contact_email', None),
+        getattr(school, 'principal_email', None)
+    ])
+
+    if not recipients:
         return False
 
     subject = f"🏫 School Application Received - {school.name}"
@@ -127,14 +218,26 @@ def send_school_registration_email(school, recipient_email):
     </html>
     """
 
-    return _dispatch_email(subject, recipient_email, text_content, html_content)
+    # Dispatch super admin alert concurrently
+    try:
+        send_admin_new_school_alert(school)
+    except Exception as e:
+        logger.error(f"Failed to dispatch admin new school alert: {e}")
+
+    return _dispatch_email(subject, recipients, text_content, html_content)
 
 
-def send_school_approval_email(school, recipient_email):
+def send_school_approval_email(school, recipient_email=None):
     """
     Sends a welcome / approval email when a school status is updated to APPROVED.
     """
-    if not recipient_email:
+    recipients = _normalize_recipients([
+        recipient_email,
+        getattr(school, 'contact_email', None),
+        getattr(school, 'principal_email', None)
+    ])
+
+    if not recipients:
         return False
 
     subject = f"🎉 Welcome to DolaCode! {school.name} is Approved!"
@@ -227,4 +330,4 @@ def send_school_approval_email(school, recipient_email):
     </html>
     """
 
-    return _dispatch_email(subject, recipient_email, text_content, html_content)
+    return _dispatch_email(subject, recipients, text_content, html_content)

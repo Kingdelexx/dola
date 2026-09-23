@@ -10,16 +10,24 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from dotenv import load_dotenv
-
 import dj_database_url
-import os
-
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables explicitly from backend/.env or root .env
+env_backend = BASE_DIR / '.env'
+env_root = BASE_DIR.parent / '.env'
+
+if env_backend.exists():
+    load_dotenv(dotenv_path=env_backend)
+elif env_root.exists():
+    load_dotenv(dotenv_path=env_root)
+else:
+    load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production

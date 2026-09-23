@@ -120,8 +120,12 @@ class UserSerializer(serializers.ModelSerializer):
 
                 try:
                     from .emails import send_school_registration_email
-                    recipient = school_obj.contact_email or school_obj.principal_email or validated_data.get('email')
-                    send_school_registration_email(school_obj, recipient)
+                    recipients = [
+                        school_obj.contact_email,
+                        school_obj.principal_email,
+                        validated_data.get('email')
+                    ]
+                    send_school_registration_email(school_obj, recipients)
                 except Exception as e:
                     print("Error triggering registration email:", e)
 
