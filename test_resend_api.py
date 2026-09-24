@@ -11,7 +11,7 @@ import resend
 resend.api_key = key
 
 try:
-    from_email = os.environ.get("DEFAULT_FROM_EMAIL", "DolaCode <no-reply@dolacode.com.ng>")
+    from_email = os.environ.get("DEFAULT_FROM_EMAIL", "DolaCode <hello@dolacode.com.ng>")
     resp = resend.Emails.send({
         "from": from_email,
         "to": ["devnaijaacademy@gmail.com"],

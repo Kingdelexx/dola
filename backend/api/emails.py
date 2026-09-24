@@ -40,7 +40,7 @@ def _dispatch_email(subject, recipient_email, text_content, html_content):
         return False
 
     resend_api_key = os.environ.get("RESEND_API_KEY") or getattr(settings, "RESEND_API_KEY", "")
-    from_email = os.environ.get("DEFAULT_FROM_EMAIL") or getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <no-reply@dolacode.com.ng>')
+    from_email = os.environ.get("DEFAULT_FROM_EMAIL") or getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <hello@dolacode.com.ng>')
 
     if resend_api_key:
         try:
