@@ -7,18 +7,23 @@ logger = logging.getLogger(__name__)
 def _normalize_recipients(recipient_input):
     """
     Normalizes single string or list/tuple of email addresses into a unique,
-    clean list of valid email strings.
+    clean list of valid email strings. Handles nested lists/tuples recursively.
     """
     if not recipient_input:
         return []
     
     raw_list = []
-    if isinstance(recipient_input, str):
-        raw_list = [e.strip() for e in recipient_input.split(',') if e.strip()]
-    elif isinstance(recipient_input, (list, tuple, set)):
-        for item in recipient_input:
-            if isinstance(item, str):
-                raw_list.extend([e.strip() for e in item.split(',') if e.strip()])
+    
+    def _extract(item):
+        if not item:
+            return
+        if isinstance(item, str):
+            raw_list.extend([e.strip() for e in item.split(',') if e.strip()])
+        elif isinstance(item, (list, tuple, set)):
+            for sub_item in item:
+                _extract(sub_item)
+
+    _extract(recipient_input)
     
     clean_list = []
     for email in raw_list:
@@ -80,7 +85,7 @@ def send_admin_new_school_alert(school):
     """
     Notifies Super Admins that a new school has registered and is pending approval.
     """
-    admin_emails = ["devnaijaacademy@gmail.com", "support@dolacode.com.ng"]
+    admin_emails = ["devnaijaacademy@gmail.com"]
     subject = f"🔔 [ACTION REQUIRED] New School Registered: {school.name}"
     
     text_content = (
