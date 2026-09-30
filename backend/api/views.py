@@ -1195,6 +1195,36 @@ class ApproveSchoolView(APIView):
         except School.DoesNotExist:
             return Response({"error": "School not found."}, status=status.HTTP_404_NOT_FOUND)
 
+class DeleteSchoolView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        return self._delete_school(request)
+
+    def delete(self, request):
+        return self._delete_school(request)
+
+    def _delete_school(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not user.is_superuser and (not profile or profile.role != 'super_admin'):
+            return Response({"error": "Super Admin permission required."}, status=status.HTTP_403_FORBIDDEN)
+
+        school_id = request.data.get('school_id') or request.query_params.get('school_id')
+        if not school_id:
+            return Response({"error": "School ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            school = School.objects.get(id=school_id)
+            school_name = school.name
+            school.delete()
+            return Response({
+                "success": True,
+                "message": f"School '{school_name}' deleted successfully!"
+            })
+        except School.DoesNotExist:
+            return Response({"error": "School not found."}, status=status.HTTP_404_NOT_FOUND)
+
 class AddSchoolTeacherView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

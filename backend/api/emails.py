@@ -33,10 +33,75 @@ def _normalize_recipients(recipient_input):
     return clean_list
 
 
+def _parse_sender(from_email):
+    """
+    Parses 'Name <email@domain.com>' or 'email@domain.com' into dict {'name': ..., 'email': ...}
+    """
+    if not from_email:
+        return {"name": "DolaCode", "email": "hello@dolacode.com.ng"}
+    if "<" in from_email and ">" in from_email:
+        name_part, email_part = from_email.split("<", 1)
+        name = name_part.strip().strip("\"'")
+        email = email_part.split(">", 1)[0].strip()
+        return {"name": name or "DolaCode", "email": email}
+    return {"name": "DolaCode", "email": from_email.strip()}
+
+
+def _send_via_brevo(subject, recipients, text_content, html_content, from_email, brevo_api_key):
+    """
+    Sends email via Brevo REST API v3 endpoint.
+    """
+    import urllib.request
+    import json
+    import ssl
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": brevo_api_key,
+        "content-type": "application/json"
+    }
+
+    sender = _parse_sender(from_email)
+    to_list = [{"email": email} for email in recipients]
+
+    payload = {
+        "sender": sender,
+        "to": to_list,
+        "subject": subject,
+        "htmlContent": html_content,
+        "textContent": text_content
+    }
+
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+
+    try:
+        with urllib.request.urlopen(req, context=context, timeout=15) as resp:
+            body = resp.read().decode("utf-8")
+            logger.info(f"Brevo API email sent to {recipients}: status={resp.status} response={body}")
+            print(f"[Brevo Email Sent] From: {sender.get('email')} | To: {recipients} | Subject: '{subject}' | Status: {resp.status}")
+            return True
+    except Exception as e:
+        if hasattr(e, "read"):
+            err_body = e.read().decode("utf-8")
+            logger.error(f"Brevo API HTTP Error {getattr(e, 'code', 'N/A')}: {err_body}")
+            print(f"[Brevo API HTTP Error for {recipients}]: {getattr(e, 'code', 'N/A')} - {err_body}")
+        else:
+            logger.error(f"Brevo API delivery failed for {recipients}: {e}")
+            print(f"[Brevo Delivery Error for {recipients}]: {e}")
+        return False
+
+
 def _dispatch_email(subject, recipient_email, text_content, html_content):
     """
-    Dispatches email using Resend API if RESEND_API_KEY is configured,
-    otherwise falls back to Django's configured Email backend (SMTP / Console).
+    Dispatches email using Brevo API if BREVO_API_KEY is configured,
+    falling back to Resend API if RESEND_API_KEY is configured,
+    and finally falling back to Django's configured Email backend (SMTP / Console).
     """
     recipients = _normalize_recipients(recipient_email)
     if not recipients:
@@ -44,9 +109,17 @@ def _dispatch_email(subject, recipient_email, text_content, html_content):
         print(f"[Email Warning]: No valid recipients provided for email subject: '{subject}'")
         return False
 
+    brevo_api_key = os.environ.get("BREVO_API_KEY") or getattr(settings, "BREVO_API_KEY", "")
     resend_api_key = os.environ.get("RESEND_API_KEY") or getattr(settings, "RESEND_API_KEY", "")
     from_email = os.environ.get("DEFAULT_FROM_EMAIL") or getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <hello@dolacode.com.ng>')
 
+    # 1. Primary: Brevo API
+    if brevo_api_key:
+        if _send_via_brevo(subject, recipients, text_content, html_content, from_email, brevo_api_key):
+            return True
+        logger.warning("Brevo delivery failed, attempting fallback...")
+
+    # 2. Secondary Fallback: Resend API
     if resend_api_key:
         try:
             import resend
@@ -60,20 +133,20 @@ def _dispatch_email(subject, recipient_email, text_content, html_content):
                 "text": text_content
             })
             logger.info(f"Resend API email sent to {recipients}: {response}")
-            print(f"[Resend Email Sent] From: {from_email} | To: {recipients} | Subject: {subject} | Response: {response}")
+            print(f"[Resend Email Sent] From: {from_email} | To: {recipients} | Subject: '{subject}' | Response: {response}")
             return True
         except Exception as e:
             logger.error(f"Resend API delivery failed for {recipients}: {e}")
             print(f"[Resend Delivery Error for {recipients}]: {e}")
 
-    # Fallback to Django core EmailMultiAlternatives
+    # 3. Tertiary Fallback: Django core EmailMultiAlternatives
     try:
         from django.core.mail import EmailMultiAlternatives
         msg = EmailMultiAlternatives(subject, text_content, from_email, recipients)
         msg.attach_alternative(html_content, "text/html")
         msg.send(fail_silently=False)
         logger.info(f"Django email sent to {recipients}")
-        print(f"[Django Email Sent] From: {from_email} | To: {recipients} | Subject: {subject}")
+        print(f"[Django Email Sent] From: {from_email} | To: {recipients} | Subject: '{subject}'")
         return True
     except Exception as e:
         logger.error(f"Django email delivery failed for {recipients}: {e}")

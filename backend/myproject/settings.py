@@ -162,6 +162,7 @@ import dotenv
 dotenv.load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 
 # Email Configuration
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')

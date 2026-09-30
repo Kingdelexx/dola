@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { 
   Building2, Users, GraduationCap, Award, ShieldAlert, 
-  Sparkles, ArrowLeft, Search, CheckCircle2, RefreshCw 
+  Sparkles, ArrowLeft, Search, CheckCircle2, RefreshCw, Trash2, AlertTriangle 
 } from 'lucide-react';
 
 interface SchoolItem {
@@ -32,6 +32,8 @@ export default function SuperAdminPage() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [approvingId, setApprovingId] = useState<number | null>(null);
+  const [deletingSchool, setDeletingSchool] = useState<SchoolItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchSuperAdminStats = useCallback(async () => {
     const authToken = token || localStorage.getItem('token');
@@ -89,6 +91,36 @@ export default function SuperAdminPage() {
       console.error(err);
     } finally {
       setApprovingId(null);
+    }
+  };
+
+  const confirmDeleteSchool = async () => {
+    if (!deletingSchool) return;
+    setIsDeleting(true);
+    const authToken = token || localStorage.getItem('token');
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/super-admin/delete-school/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ school_id: deletingSchool.id })
+      });
+
+      if (res.ok) {
+        setDeletingSchool(null);
+        fetchSuperAdminStats();
+      } else {
+        const errJson = await res.json();
+        alert(errJson.error || 'Failed to delete school account.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred while deleting the school.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -289,7 +321,7 @@ export default function SuperAdminPage() {
                           {s.status !== 'APPROVED' && (
                             <button
                               onClick={() => handleApproveSchool(s.id, 'APPROVED')}
-                              disabled={approvingId === s.id}
+                              disabled={approvingId === s.id || isDeleting}
                               className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer"
                             >
                               Approve
@@ -298,12 +330,20 @@ export default function SuperAdminPage() {
                           {s.status !== 'REJECTED' && (
                             <button
                               onClick={() => handleApproveSchool(s.id, 'REJECTED')}
-                              disabled={approvingId === s.id}
+                              disabled={approvingId === s.id || isDeleting}
                               className="px-3 py-1.5 rounded-xl bg-rose-600/80 hover:bg-rose-600 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer"
                             >
                               Reject
                             </button>
                           )}
+                          <button
+                            onClick={() => setDeletingSchool(s)}
+                            disabled={approvingId === s.id || isDeleting}
+                            className="p-1.5 rounded-xl bg-slate-800 hover:bg-rose-950/80 text-rose-400 hover:text-rose-300 border border-slate-700 hover:border-rose-500/50 transition-all cursor-pointer"
+                            title="Delete School Account"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -321,6 +361,57 @@ export default function SuperAdminPage() {
         </div>
 
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {deletingSchool && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-900 border border-rose-500/30 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+            <div className="flex items-center gap-3 text-rose-400">
+              <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+                <AlertTriangle className="w-6 h-6 text-rose-500" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-lg text-white">Delete School Account?</h4>
+                <p className="text-xs text-slate-400">Irreversible Action</p>
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-300 space-y-2 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+              <p>
+                Are you sure you want to permanently delete <strong className="text-white font-bold">{deletingSchool.name}</strong> (<span className="font-mono text-purple-300">{deletingSchool.code}</span>)?
+              </p>
+              <p className="text-rose-400 font-medium text-[11px]">
+                ⚠️ This will remove all classrooms and dissociate associated teacher/student profiles.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setDeletingSchool(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteSchool}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-600/20 flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" /> Permanently Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
