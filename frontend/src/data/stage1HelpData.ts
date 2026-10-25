@@ -739,5 +739,66 @@ export const STAGE1_HELP_DATA: Record<string, HelpContent> = {
       "Count how many times it needs to repeat to reach the destination.",
       "Select the loop structure that matches this count (Repeat 3 times)."
     ]
+  },
+  'pizza-shop': {
+    title: "Dola's Pizza Shop Chef Guide",
+    concept: "Run your pizza kitchen! Drag delicious pizza slices to customer plates to count, add, subtract, and build coding loops.",
+    steps: [
+      "Check the customer's speech bubble to see how many slices they want.",
+      "Drag or tap pizza slices from the tray onto the customer's plate.",
+      "Hit the SERVE bell when the order is ready, and listen to Lizzy's friendly tips if you need a hand!"
+    ]
+  },
+  'robot-maze': {
+    title: "Robot Maze Mission Guide",
+    concept: "Program Robo the friendly robot! Arrange visual arrow commands and repeat loops in sequence, then press GO to navigate through the maze to charging stations.",
+    steps: [
+      "Look at the maze grid to trace a clear path from Robo to the target.",
+      "Tap the visual directional blocks (UP, DOWN, LEFT, RIGHT, or REPEAT) to build Robo's sequence.",
+      "Press the big green GO button to watch Robo execute the commands step-by-step!",
+      "If Robo bumps an obstacle, don't worry! Lizzy will give a friendly hint so you can tweak any step and try again."
+    ]
+  },
+  'my-little-shop': {
+    title: "My Little Shopkeeper Guide",
+    concept: "Run your colourful Nigerian neighbourhood shop! Select customer items, add up Naira prices, dispense exact change, manage shop stock, and automate repeated orders with code loops.",
+    steps: [
+      "Read or listen to what the customer wants from your shop shelves.",
+      "Tap the items to place them on the checkout counter and calculate the total in Naira (₦).",
+      "When customers hand you money, count and return the exact change using the Naira notes on the till.",
+      "Use repeat loops when multiple customers order the same snacks!"
+    ]
+  },
+  'frog-adventure': {
+    title: "Frog Adventure Explorer Guide",
+    concept: "Guide Hoppy the Frog through colourful ponds, rivers, and rainforests! Count jumps, turn directions, solve leap patterns, read grid coordinates, and fix buggy leaps.",
+    steps: [
+      "Look at the grid to find Hoppy and your goal (a lily pad, fruit, treasure, or a friendly animal).",
+      "Add movement commands (JUMP FORWARD, TURN LEFT, TURN RIGHT, or JUMP 2 SPACES) to your action tray.",
+      "Press the green GO LEAP button to watch Hoppy hop across the lily pads and rocks!",
+      "If you bump a bush or rock, Lizzy will give a friendly hint so you can adjust your code and leap again."
+    ]
+  },
+  'traffic-rescue': {
+    title: "Traffic Rescue Controller Guide",
+    concept: "Be the chief traffic controller! Guide cars, buses, bikes, and pedestrians safely through colourful miniature city junctions using traffic signals, timing, and IF/THEN rules.",
+    steps: [
+      "Look at the street intersection to see which vehicles and pedestrians are waiting.",
+      "Switch traffic lights between RED (Stop), YELLOW (Caution), and GREEN (Go) to control traffic flow.",
+      "Activate the zebra crossing signal so pedestrians can cross safely before cars move.",
+      "Build coding sequences with IF/THEN conditions (like IF PEDESTRIAN WAITING -> STOP CARS) and WAIT timers to automate the city traffic!"
+    ]
+  },
+  'pet-rescue': {
+    title: "Pet Rescue Centre Caretaker Guide",
+    concept: "Care for cute rescue animals! Feed puppies, match treats for kittens, rabbits, and parrots, sort toys, build daily care routines, solve toy patterns, and program automated care rules with loops and conditionals.",
+    steps: [
+      "Listen to what each cute animal needs (food, water, clean bath, or sweet nap).",
+      "Count food treats into the bowls and match the right food for each pet.",
+      "Sort items into food trays and toy boxes to keep the shelter tidy.",
+      "Arrange care routines in logical order and use IF/THEN condition rules and loops to automate animal care!"
+    ]
   }
 };
+
+

@@ -33,7 +33,74 @@ class ClassroomSerializer(serializers.ModelSerializer):
         model = Classroom
         fields = ('id', 'school', 'school_name', 'name', 'grade_level', 'teacher', 'teacher_name', 'join_code', 'created_at')
 
-from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild, StudentCompetency
+from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild, StudentCompetency, PizzaShopProgress, RobotMazeProgress, MyLittleShopProgress, FrogAdventureProgress, TrafficRescueProgress, PetRescueProgress
+
+class PetRescueProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetRescueProgress
+        fields = (
+            'current_level', 'stars_earned', 'dola_coins', 'xp_earned',
+            'happiness_points', 'accuracy', 'attempts', 'pets_helped',
+            'counting_accuracy', 'classification_accuracy', 'sequence_accuracy',
+            'pattern_accuracy', 'condition_usage', 'loops_completed',
+            'debugging_accuracy', 'hints_used', 'time_spent_seconds',
+            'unlocked_pets', 'unlocked_accessories', 'badges', 'updated_at'
+        )
+
+class PizzaShopProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PizzaShopProgress
+        fields = (
+            'current_level', 'stars_earned', 'dola_coins', 'xp_earned',
+            'accuracy', 'attempts', 'correct_orders', 'time_spent_seconds',
+            'counting_accuracy', 'addition_accuracy', 'subtraction_accuracy',
+            'problem_solving_accuracy', 'hints_used', 'coding_concepts_completed',
+            'badges', 'updated_at'
+        )
+
+class RobotMazeProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RobotMazeProgress
+        fields = (
+            'current_level', 'stars_earned', 'dola_coins', 'xp_earned',
+            'accuracy', 'attempts', 'missions_completed', 'commands_used',
+            'hints_used', 'debugging_attempts', 'loops_completed',
+            'time_spent_seconds', 'badges', 'updated_at'
+        )
+
+class MyLittleShopProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyLittleShopProgress
+        fields = (
+            'current_level', 'stars_earned', 'dola_coins', 'xp_earned',
+            'accuracy', 'attempts', 'customers_served', 'addition_accuracy',
+            'subtraction_accuracy', 'money_recognition_accuracy', 'change_accuracy',
+            'multiplication_accuracy', 'profit_accuracy', 'stock_accuracy',
+            'problem_solving_accuracy', 'hints_used', 'time_spent_seconds',
+            'shop_upgrades', 'badges', 'updated_at'
+        )
+
+class FrogAdventureProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FrogAdventureProgress
+        fields = (
+            'current_level', 'stars_earned', 'dola_coins', 'xp_earned',
+            'accuracy', 'attempts', 'fruits_collected', 'counting_accuracy',
+            'sequence_accuracy', 'pattern_accuracy', 'coordinates_accuracy',
+            'route_planning_accuracy', 'loops_completed', 'debugging_attempts',
+            'hints_used', 'time_spent_seconds', 'unlocked_costumes', 'badges', 'updated_at'
+        )
+
+class TrafficRescueProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrafficRescueProgress
+        fields = (
+            'current_level', 'stars_earned', 'dola_coins', 'xp_earned',
+            'city_points', 'accuracy', 'attempts', 'vehicles_guided',
+            'pedestrians_saved', 'sequencing_ability', 'logical_reasoning',
+            'condition_usage', 'timing_accuracy', 'debugging_accuracy',
+            'hints_used', 'time_spent_seconds', 'city_upgrades', 'badges', 'updated_at'
+        )
 
 class StudentCompetencySerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,10 +124,16 @@ class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
     earned_badges = serializers.SerializerMethodField()
     competencies = serializers.SerializerMethodField()
+    pizza_shop_progress = serializers.SerializerMethodField()
+    robot_maze_progress = serializers.SerializerMethodField()
+    my_little_shop_progress = serializers.SerializerMethodField()
+    frog_adventure_progress = serializers.SerializerMethodField()
+    traffic_rescue_progress = serializers.SerializerMethodField()
+    pet_rescue_progress = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies')
+        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies', 'pizza_shop_progress', 'robot_maze_progress', 'my_little_shop_progress', 'frog_adventure_progress', 'traffic_rescue_progress', 'pet_rescue_progress')
         extra_kwargs = {
             'password': {'write_only': True},
             'is_superuser': {'read_only': True}
@@ -79,6 +152,42 @@ class UserSerializer(serializers.ModelSerializer):
     def get_competencies(self, obj):
         competencies = StudentCompetency.objects.filter(user=obj)
         return StudentCompetencySerializer(competencies, many=True).data
+
+    def get_pizza_shop_progress(self, obj):
+        prog = getattr(obj, 'pizza_shop_progress', None)
+        if prog:
+            return PizzaShopProgressSerializer(prog).data
+        return None
+
+    def get_robot_maze_progress(self, obj):
+        prog = getattr(obj, 'robot_maze_progress', None)
+        if prog:
+            return RobotMazeProgressSerializer(prog).data
+        return None
+
+    def get_my_little_shop_progress(self, obj):
+        prog = getattr(obj, 'my_little_shop_progress', None)
+        if prog:
+            return MyLittleShopProgressSerializer(prog).data
+        return None
+
+    def get_frog_adventure_progress(self, obj):
+        prog = getattr(obj, 'frog_adventure_progress', None)
+        if prog:
+            return FrogAdventureProgressSerializer(prog).data
+        return None
+
+    def get_traffic_rescue_progress(self, obj):
+        prog = getattr(obj, 'traffic_rescue_progress', None)
+        if prog:
+            return TrafficRescueProgressSerializer(prog).data
+        return None
+
+    def get_pet_rescue_progress(self, obj):
+        prog = getattr(obj, 'pet_rescue_progress', None)
+        if prog:
+            return PetRescueProgressSerializer(prog).data
+        return None
 
     def create(self, validated_data):
         request = self.context.get('request')

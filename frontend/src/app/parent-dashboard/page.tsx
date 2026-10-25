@@ -52,6 +52,126 @@ interface WeeklyJourney {
   try_at_home: string;
 }
 
+interface PizzaShopStats {
+  current_level: number;
+  stars_earned: number;
+  dola_coins: number;
+  xp_earned: number;
+  accuracy: number;
+  counting_accuracy: number;
+  addition_accuracy: number;
+  subtraction_accuracy: number;
+  problem_solving_accuracy: number;
+  hints_used: number;
+  coding_concepts_completed: number;
+  correct_orders: number;
+  time_spent_seconds: number;
+  badges: string[];
+}
+
+interface RobotMazeStats {
+  current_level: number;
+  stars_earned: number;
+  dola_coins: number;
+  xp_earned: number;
+  accuracy: number;
+  attempts: number;
+  missions_completed: number;
+  commands_used: number;
+  hints_used: number;
+  debugging_attempts: number;
+  loops_completed: number;
+  time_spent_seconds: number;
+  badges: string[];
+}
+
+interface MyLittleShopStats {
+  current_level: number;
+  stars_earned: number;
+  dola_coins: number;
+  xp_earned: number;
+  accuracy: number;
+  attempts: number;
+  customers_served: number;
+  addition_accuracy: number;
+  subtraction_accuracy: number;
+  money_recognition_accuracy: number;
+  change_accuracy: number;
+  multiplication_accuracy: number;
+  profit_accuracy: number;
+  stock_accuracy: number;
+  problem_solving_accuracy: number;
+  hints_used: number;
+  time_spent_seconds: number;
+  shop_upgrades: string[];
+  badges: string[];
+}
+
+interface FrogAdventureStats {
+  current_level: number;
+  stars_earned: number;
+  dola_coins: number;
+  xp_earned: number;
+  accuracy: number;
+  attempts: number;
+  fruits_collected: number;
+  counting_accuracy: number;
+  sequence_accuracy: number;
+  pattern_accuracy: number;
+  coordinates_accuracy: number;
+  route_planning_accuracy: number;
+  loops_completed: number;
+  debugging_attempts: number;
+  hints_used: number;
+  time_spent_seconds: number;
+  unlocked_costumes: string[];
+  badges: string[];
+}
+
+interface TrafficRescueStats {
+  current_level: number;
+  stars_earned: number;
+  dola_coins: number;
+  xp_earned: number;
+  city_points: number;
+  accuracy: number;
+  attempts: number;
+  vehicles_guided: number;
+  pedestrians_saved: number;
+  sequencing_ability: number;
+  logical_reasoning: number;
+  condition_usage: number;
+  timing_accuracy: number;
+  debugging_accuracy: number;
+  hints_used: number;
+  time_spent_seconds: number;
+  city_upgrades: string[];
+  badges: string[];
+}
+
+interface PetRescueStats {
+  current_level: number;
+  stars_earned: number;
+  dola_coins: number;
+  xp_earned: number;
+  happiness_points: number;
+  accuracy: number;
+  attempts: number;
+  pets_helped: number;
+  counting_accuracy: number;
+  classification_accuracy: number;
+  sequence_accuracy: number;
+  pattern_accuracy: number;
+  condition_usage: number;
+  loops_completed: number;
+  debugging_accuracy: number;
+  hints_used: number;
+  time_spent_seconds: number;
+  unlocked_pets: string[];
+  unlocked_accessories: string[];
+  badges: string[];
+}
+
 interface ChildAnalytics {
   lessons_completed: number;
   homework_submitted: string;
@@ -59,6 +179,12 @@ interface ChildAnalytics {
   coding_score: string;
   time_spent: string;
   achievements: Achievement[];
+  pizza_shop_stats?: PizzaShopStats;
+  robot_maze_stats?: RobotMazeStats;
+  my_little_shop_stats?: MyLittleShopStats;
+  frog_adventure_stats?: FrogAdventureStats;
+  traffic_rescue_stats?: TrafficRescueStats;
+  pet_rescue_stats?: PetRescueStats;
   weekly_report: WeeklyReport;
   weekly_journey?: WeeklyJourney;
   learning_profile?: LearningProfile;
@@ -613,6 +739,654 @@ export default function ParentDashboardPage() {
                       
                     </div>
                   )}
+
+                  {/* Dola's Pizza Shop (Stage 1 Mini-Game) Early Numeracy & Coding Metrics */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-amber-50/60 via-orange-50/40 to-white border-2 border-orange-200/80 space-y-6 shadow-xs mt-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-orange-100 pb-4 gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-xl shadow-xs">
+                          🍕
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                            Dola&apos;s Pizza Shop
+                            <span className="text-[10px] bg-orange-100 text-orange-800 font-black px-2 py-0.5 rounded-full uppercase border border-orange-200">
+                              Stage 1 Mini-Game (Ages 5–8)
+                            </span>
+                          </h4>
+                          <p className="text-xs text-slate-500 font-medium">Early numeracy, slice arithmetic, sharing &amp; loop foundations</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-yellow-400 text-slate-900 font-black text-xs shadow-xs border border-yellow-300 flex items-center gap-1">
+                          <span>🪙</span> {analytics.pizza_shop_stats?.dola_coins ?? 0} DolaCoins
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-orange-500 text-white font-bold text-xs shadow-xs">
+                          Level {analytics.pizza_shop_stats?.current_level ?? 1}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Numeracy & Coding Competency Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-white border border-orange-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Counting</span>
+                        <div className="text-base font-black text-orange-600">
+                          {analytics.pizza_shop_stats?.counting_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Accuracy</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-orange-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Addition</span>
+                        <div className="text-base font-black text-emerald-600">
+                          {analytics.pizza_shop_stats?.addition_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Accuracy</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-orange-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Subtraction</span>
+                        <div className="text-base font-black text-blue-600">
+                          {analytics.pizza_shop_stats?.subtraction_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Accuracy</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-orange-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Problem-Solving</span>
+                        <div className="text-base font-black text-purple-600">
+                          {analytics.pizza_shop_stats?.problem_solving_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Accuracy</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-orange-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Hints Used</span>
+                        <div className="text-base font-black text-amber-600">
+                          {analytics.pizza_shop_stats?.hints_used ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Lizzy Helps</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-orange-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Coding Loops</span>
+                        <div className="text-base font-black text-indigo-600">
+                          {analytics.pizza_shop_stats?.coding_concepts_completed ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Completed</span>
+                      </div>
+                    </div>
+
+                    {/* Customer Orders & Badges */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-orange-50/70 rounded-2xl border border-orange-200/60 text-xs gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🍕</span>
+                        <span className="text-slate-700 font-bold">
+                          Orders Served: <strong className="text-orange-950 font-black">{analytics.pizza_shop_stats?.correct_orders ?? 0}</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-slate-500 font-bold text-[11px] mr-1">Earned Badges:</span>
+                        {(analytics.pizza_shop_stats?.badges && analytics.pizza_shop_stats.badges.length > 0) ? (
+                          analytics.pizza_shop_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-white text-orange-800 font-bold text-[10px] border border-orange-200 shadow-2xs">
+                              ⭐ {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">Ready to earn &quot;Pizza Rookie&quot;!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Robot Maze Mini-Game Progress Card */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-cyan-50/70 border border-teal-200 space-y-4 shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-teal-200/60">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center text-2xl shadow-md text-white">
+                          🤖
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                            Robot Maze
+                            <span className="text-[10px] bg-teal-100 text-teal-800 font-black px-2 py-0.5 rounded-full uppercase border border-teal-200">
+                              Stage 1 Mini-Game (Ages 5–8)
+                            </span>
+                          </h4>
+                          <p className="text-xs text-slate-500 font-medium">Directional sequencing, algorithms, loop mastery &amp; playful debugging</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-yellow-400 text-slate-900 font-black text-xs shadow-xs border border-yellow-300 flex items-center gap-1">
+                          <span>🪙</span> {analytics.robot_maze_stats?.dola_coins ?? 0} DolaCoins
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-teal-600 text-white font-bold text-xs shadow-xs">
+                          Level {analytics.robot_maze_stats?.current_level ?? 1}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Robot Maze Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-white border border-teal-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Missions</span>
+                        <div className="text-base font-black text-teal-700">
+                          {analytics.robot_maze_stats?.missions_completed ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Completed</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-teal-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Accuracy</span>
+                        <div className="text-base font-black text-emerald-600">
+                          {analytics.robot_maze_stats?.accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Navigation</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-teal-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Commands</span>
+                        <div className="text-base font-black text-blue-600">
+                          {analytics.robot_maze_stats?.commands_used ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Arranged</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-teal-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Repeat Loops</span>
+                        <div className="text-base font-black text-purple-600">
+                          {analytics.robot_maze_stats?.loops_completed ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Executed</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-teal-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Debugging</span>
+                        <div className="text-base font-black text-rose-600">
+                          {analytics.robot_maze_stats?.debugging_attempts ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Bugs Fixed</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-teal-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Hints Used</span>
+                        <div className="text-base font-black text-amber-600">
+                          {analytics.robot_maze_stats?.hints_used ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Lizzy Helps</span>
+                      </div>
+                    </div>
+
+                    {/* Robot Maze Badges */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-teal-50/70 rounded-2xl border border-teal-200/60 text-xs gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🤖</span>
+                        <span className="text-slate-700 font-bold">
+                          Total Attempts: <strong className="text-teal-950 font-black">{analytics.robot_maze_stats?.attempts ?? 0}</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-slate-500 font-bold text-[11px] mr-1">Robot Badges:</span>
+                        {(analytics.robot_maze_stats?.badges && analytics.robot_maze_stats.badges.length > 0) ? (
+                          analytics.robot_maze_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-white text-teal-800 font-bold text-[10px] border border-teal-200 shadow-2xs">
+                              ⭐ {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">Ready to earn &quot;Robo Rookie&quot;!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* My Little Shop Mini-Game Progress Card */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-amber-50/70 via-emerald-50/40 to-yellow-50/60 border-2 border-amber-300/80 space-y-4 shadow-xs mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/60">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-emerald-600 flex items-center justify-center text-2xl shadow-md text-white">
+                          🏪
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                            My Little Shop
+                            <span className="text-[10px] bg-amber-100 text-amber-900 font-black px-2 py-0.5 rounded-full uppercase border border-amber-300">
+                              Stage 1 Mini-Game (Ages 5–8)
+                            </span>
+                          </h4>
+                          <p className="text-xs text-slate-500 font-medium">Nigerian Naira (₦) numeracy, change giving, stock, profit &amp; shop automation</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-yellow-400 text-slate-900 font-black text-xs shadow-xs border border-yellow-300 flex items-center gap-1">
+                          <span>🪙</span> {analytics.my_little_shop_stats?.dola_coins ?? 0} DolaCoins
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-emerald-600 text-white font-bold text-xs shadow-xs">
+                          Level {analytics.my_little_shop_stats?.current_level ?? 1}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* My Little Shop Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-white border border-amber-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Money Recognition</span>
+                        <div className="text-base font-black text-emerald-600">
+                          {analytics.my_little_shop_stats?.money_recognition_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Naira Notes</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-amber-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Addition Math</span>
+                        <div className="text-base font-black text-amber-600">
+                          {analytics.my_little_shop_stats?.addition_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Order Totals</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-amber-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Giving Change</span>
+                        <div className="text-base font-black text-blue-600">
+                          {analytics.my_little_shop_stats?.change_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Accuracy</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-amber-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Multiplication</span>
+                        <div className="text-base font-black text-indigo-600">
+                          {analytics.my_little_shop_stats?.multiplication_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Repeated Sales</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-amber-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Stock &amp; Profit</span>
+                        <div className="text-base font-black text-purple-600">
+                          {analytics.my_little_shop_stats?.profit_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Shop Logic</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-amber-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Hints Used</span>
+                        <div className="text-base font-black text-rose-500">
+                          {analytics.my_little_shop_stats?.hints_used ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Lizzy Helps</span>
+                      </div>
+                    </div>
+
+                    {/* Customers & Badges */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-amber-50/80 rounded-2xl border border-amber-200/70 text-xs gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🛍️</span>
+                        <span className="text-slate-700 font-bold">
+                          Customers Served: <strong className="text-amber-950 font-black">{analytics.my_little_shop_stats?.customers_served ?? 0}</strong>
+                        </span>
+                        <span className="text-slate-300">|</span>
+                        <span className="text-slate-700 font-bold">
+                          Upgrades: <strong className="text-emerald-700 font-black">{analytics.my_little_shop_stats?.shop_upgrades?.length ?? 0} unlocked</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-slate-500 font-bold text-[11px] mr-1">Shop Badges:</span>
+                        {(analytics.my_little_shop_stats?.badges && analytics.my_little_shop_stats.badges.length > 0) ? (
+                          analytics.my_little_shop_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-white text-amber-900 font-bold text-[10px] border border-amber-300 shadow-2xs">
+                              ⭐ {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">Ready to earn &quot;Shop Helper&quot;!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Frog Adventure Mini-Game Progress Card */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-lime-50/70 via-emerald-50/40 to-teal-50/60 border-2 border-emerald-300/80 space-y-4 shadow-xs mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-200/60">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-lime-500 via-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-md text-white">
+                          🐸
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                            Frog Adventure
+                            <span className="text-[10px] bg-emerald-100 text-emerald-900 font-black px-2 py-0.5 rounded-full uppercase border border-emerald-300">
+                              Stage 1 Mini-Game (Ages 5–8)
+                            </span>
+                          </h4>
+                          <p className="text-xs text-slate-500 font-medium">Jump counting, spatial directions, patterns, grid coordinates, loops &amp; debugging</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-yellow-400 text-slate-900 font-black text-xs shadow-xs border border-yellow-300 flex items-center gap-1">
+                          <span>🪙</span> {analytics.frog_adventure_stats?.dola_coins ?? 0} DolaCoins
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-emerald-600 text-white font-bold text-xs shadow-xs">
+                          Level {analytics.frog_adventure_stats?.current_level ?? 1}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Frog Adventure Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-white border border-emerald-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Counting</span>
+                        <div className="text-base font-black text-emerald-600">
+                          {analytics.frog_adventure_stats?.counting_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Jump Steps</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-emerald-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Sequencing</span>
+                        <div className="text-base font-black text-sky-600">
+                          {analytics.frog_adventure_stats?.sequence_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Directions</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-emerald-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Patterns</span>
+                        <div className="text-base font-black text-purple-600">
+                          {analytics.frog_adventure_stats?.pattern_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Rhythm Leap</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-emerald-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Coordinates</span>
+                        <div className="text-base font-black text-indigo-600">
+                          {analytics.frog_adventure_stats?.coordinates_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">2D Grid (X, Y)</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-emerald-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Coding Loops</span>
+                        <div className="text-base font-black text-amber-600">
+                          {analytics.frog_adventure_stats?.loops_completed ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Repeats Used</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-white border border-emerald-100 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Hints Used</span>
+                        <div className="text-base font-black text-rose-500">
+                          {analytics.frog_adventure_stats?.hints_used ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Lizzy Helps</span>
+                      </div>
+                    </div>
+
+                    {/* Fruits & Badges */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-200/70 text-xs gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🥭</span>
+                        <span className="text-slate-700 font-bold">
+                          Fruits Harvested: <strong className="text-emerald-950 font-black">{analytics.frog_adventure_stats?.fruits_collected ?? 0}</strong>
+                        </span>
+                        <span className="text-slate-300">|</span>
+                        <span className="text-slate-700 font-bold">
+                          Wardrobe: <strong className="text-teal-700 font-black">{analytics.frog_adventure_stats?.unlocked_costumes?.length ?? 1} outfits</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-slate-500 font-bold text-[11px] mr-1">Frog Badges:</span>
+                        {(analytics.frog_adventure_stats?.badges && analytics.frog_adventure_stats.badges.length > 0) ? (
+                          analytics.frog_adventure_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-white text-emerald-900 font-bold text-[10px] border border-emerald-300 shadow-2xs">
+                              ⭐ {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">Ready to earn &quot;Little Jumper&quot;!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Traffic Rescue (Mini-Game Analytics) */}
+                  <div className="p-6 rounded-3xl bg-slate-900 border border-slate-700 space-y-4 text-white shadow-md">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl shrink-0">
+                          🚦
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
+                            <span>Traffic Rescue Controller Report</span>
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                              Part 13 (Ages 5–8)
+                            </span>
+                          </h4>
+                          <p className="text-xs text-slate-400">Logic, sequencing, timing, and conditional IF/THEN traffic mastery.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-900 font-black text-xs shadow-xs border border-amber-300 flex items-center gap-1">
+                          <span>🏙️</span> {analytics.traffic_rescue_stats?.city_points ?? 0} City Pts
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-amber-600 text-white font-bold text-xs shadow-xs">
+                          Level {analytics.traffic_rescue_stats?.current_level ?? 1}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Traffic Rescue Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Sequencing</span>
+                        <div className="text-base font-black text-sky-400">
+                          {analytics.traffic_rescue_stats?.sequencing_ability ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Step Order</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Logic</span>
+                        <div className="text-base font-black text-amber-400">
+                          {analytics.traffic_rescue_stats?.logical_reasoning ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Crossroads</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Conditions</span>
+                        <div className="text-base font-black text-purple-400">
+                          {analytics.traffic_rescue_stats?.condition_usage ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">IF / THEN</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Timing</span>
+                        <div className="text-base font-black text-emerald-400">
+                          {analytics.traffic_rescue_stats?.timing_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Delays</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Vehicles Safe</span>
+                        <div className="text-base font-black text-indigo-400">
+                          {analytics.traffic_rescue_stats?.vehicles_guided ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Guided</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Pedestrians</span>
+                        <div className="text-base font-black text-rose-400">
+                          {analytics.traffic_rescue_stats?.pedestrians_saved ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Crossed</span>
+                      </div>
+                    </div>
+
+                    {/* Upgrades & Badges */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-slate-800/80 rounded-2xl border border-slate-700 text-xs gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🏙️</span>
+                        <span className="text-slate-300 font-bold">
+                          City Upgrades: <strong className="text-amber-300 font-black">{analytics.traffic_rescue_stats?.city_upgrades?.length ?? 0} unlocked</strong>
+                        </span>
+                        <span className="text-slate-500">|</span>
+                        <span className="text-slate-300 font-bold">
+                          DolaCoins: <strong className="text-amber-400 font-black">{analytics.traffic_rescue_stats?.dola_coins ?? 0} 🪙</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-slate-400 font-bold text-[11px] mr-1">Traffic Badges:</span>
+                        {(analytics.traffic_rescue_stats?.badges && analytics.traffic_rescue_stats.badges.length > 0) ? (
+                          analytics.traffic_rescue_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-slate-700 text-amber-300 font-bold text-[10px] border border-amber-500/30 shadow-2xs">
+                              ⭐ {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-500 text-[11px]">Ready to earn &quot;Road Helper&quot;!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6. Pet Rescue Centre Report Card */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-rose-950 via-slate-900 to-pink-950 border border-rose-800/50 shadow-md space-y-4 text-white">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/30">
+                          🐶
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-black text-base text-white">Pet Rescue Centre</h4>
+                            <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-rose-500/30 text-rose-300 border border-rose-400/30">
+                              Stage 1 Part 14 • Ages 5–8
+                            </span>
+                          </div>
+                          <p className="text-xs text-rose-200/80 font-medium">
+                            Counting food, sorting items, care sequence, pattern logic &amp; IF/THEN rules
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <span className="text-[11px] text-slate-400 font-bold uppercase block">Rescue Missions</span>
+                          <span className="text-lg font-black text-rose-400">
+                            Level {analytics.pet_rescue_stats?.current_level ?? 1}/8
+                          </span>
+                        </div>
+                        <div className="text-right pl-3 border-l border-slate-700">
+                          <span className="text-[11px] text-slate-400 font-bold uppercase block">Stars</span>
+                          <span className="text-lg font-black text-amber-400 flex items-center justify-end gap-1">
+                            ⭐ {analytics.pet_rescue_stats?.stars_earned ?? 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-300">
+                        <span>Rescue Centre Mastery</span>
+                        <span className="text-rose-300">
+                          {Math.round(((analytics.pet_rescue_stats?.current_level ?? 1) / 8) * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                        <div
+                          className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 h-2.5 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min(100, Math.round(((analytics.pet_rescue_stats?.current_level ?? 1) / 8) * 100))}%`
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Core Learning Outcomes */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-1">
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Happiness</span>
+                        <div className="text-base font-black text-rose-400">
+                          {analytics.pet_rescue_stats?.happiness_points ?? 85}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Care Meter</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Counting</span>
+                        <div className="text-base font-black text-amber-400">
+                          {analytics.pet_rescue_stats?.counting_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Food Quantities</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Sorting</span>
+                        <div className="text-base font-black text-cyan-400">
+                          {analytics.pet_rescue_stats?.classification_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Categories</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Sequence</span>
+                        <div className="text-base font-black text-emerald-400">
+                          {analytics.pet_rescue_stats?.sequence_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Care Routines</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Patterns</span>
+                        <div className="text-base font-black text-purple-400">
+                          {analytics.pet_rescue_stats?.pattern_accuracy ?? 100}%
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Predictions</span>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-center shadow-xs">
+                        <span className="text-[10px] text-slate-400 font-black uppercase block mb-1">Pets Helped</span>
+                        <div className="text-base font-black text-pink-400">
+                          {analytics.pet_rescue_stats?.pets_helped ?? 0}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">Total Rescued</span>
+                      </div>
+                    </div>
+
+                    {/* Upgrades & Badges */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-slate-800/80 rounded-2xl border border-slate-700 text-xs gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🏡</span>
+                        <span className="text-slate-300 font-bold">
+                          Unlocked Pets: <strong className="text-pink-300 font-black">{analytics.pet_rescue_stats?.unlocked_pets?.length ?? 1} friends</strong>
+                        </span>
+                        <span className="text-slate-500">|</span>
+                        <span className="text-slate-300 font-bold">
+                          DolaCoins: <strong className="text-amber-400 font-black">{analytics.pet_rescue_stats?.dola_coins ?? 0} 🪙</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-slate-400 font-bold text-[11px] mr-1">Pet Badges:</span>
+                        {(analytics.pet_rescue_stats?.badges && analytics.pet_rescue_stats.badges.length > 0) ? (
+                          analytics.pet_rescue_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-slate-700 text-pink-300 font-bold text-[10px] border border-pink-500/30 shadow-2xs">
+                              ⭐ {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-500 text-[11px]">Ready to earn &quot;Pet Helper&quot;!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Narrative Weekly Report & Lizzy AI Recommendations */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">

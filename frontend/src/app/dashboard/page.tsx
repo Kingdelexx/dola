@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain } from 'lucide-react';
+import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, Bot, Store } from 'lucide-react';
 import { gsap } from 'gsap';
 
 export default function DashboardPage() {
@@ -195,6 +195,203 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Interactive Mini-Games Showcase for Younger Kids (Ages 5–8) */}
+        <div className="dash-element mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* 1. Dola's Pizza Shop */}
+            <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
+                🍕
+              </div>
+              <div className="relative z-10 mb-4">
+                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={13} className="text-yellow-300" /> Stage 1 Part 9 • Ages 5–8
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
+                    🍕
+                  </div>
+                  <h3 className="text-xl font-black drop-shadow-sm">
+                    Dola&apos;s Pizza Shop
+                  </h3>
+                </div>
+                <p className="text-orange-100 text-xs sm:text-sm font-semibold leading-relaxed">
+                  Serve friendly customers, drag and count slices, share with friends, and discover computational loops through cooking!
+                </p>
+              </div>
+              <div className="relative z-10 pt-2">
+                <Link
+                  href="/stage1/pizza-shop"
+                  className="w-full py-3 rounded-2xl bg-white text-orange-600 hover:text-orange-700 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Play Pizza Shop</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* 2. Robot Maze */}
+            <div className="bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
+                🤖
+              </div>
+              <div className="relative z-10 mb-4">
+                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={13} className="text-cyan-200" /> Stage 1 Part 10 • Ages 5–8
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
+                    <Bot className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-black drop-shadow-sm">
+                    Robot Maze
+                  </h3>
+                </div>
+                <p className="text-teal-100 text-xs sm:text-sm font-semibold leading-relaxed">
+                  Program Robo the friendly robot! Arrange visual arrows, master repeat loops, dodge obstacles, and debug code!
+                </p>
+              </div>
+              <div className="relative z-10 pt-2">
+                <Link
+                  href="/stage1/robot-maze"
+                  className="w-full py-3 rounded-2xl bg-white text-teal-700 hover:text-teal-800 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Play Robot Maze</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* 3. My Little Shop */}
+            <div className="bg-gradient-to-r from-amber-500 via-emerald-600 to-teal-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
+                🏪
+              </div>
+              <div className="relative z-10 mb-4">
+                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 11 • Ages 5–8
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
+                    <Store className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-black drop-shadow-sm">
+                    My Little Shop
+                  </h3>
+                </div>
+                <p className="text-emerald-100 text-xs sm:text-sm font-semibold leading-relaxed">
+                  Run a colourful Nigerian neighbourhood shop! Count Naira, give exact change, manage stock, and use coding loops!
+                </p>
+              </div>
+              <div className="relative z-10 pt-2">
+                <Link
+                  href="/stage1/my-little-shop"
+                  className="w-full py-3 rounded-2xl bg-white text-emerald-800 hover:text-emerald-900 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Play Little Shop</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* 4. Frog Adventure */}
+            <div className="bg-gradient-to-r from-lime-500 via-emerald-600 to-teal-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
+                🐸
+              </div>
+              <div className="relative z-10 mb-4">
+                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={13} className="text-lime-200" /> Stage 1 Part 12 • Ages 5–8
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
+                    🐸
+                  </div>
+                  <h3 className="text-xl font-black drop-shadow-sm">
+                    Frog Adventure
+                  </h3>
+                </div>
+                <p className="text-lime-100 text-xs sm:text-sm font-semibold leading-relaxed">
+                  Guide Hoppy through ponds &amp; rainforests! Count jumps, turn directions, solve patterns, and debug code!
+                </p>
+              </div>
+              <div className="relative z-10 pt-2">
+                <Link
+                  href="/stage1/frog-adventure"
+                  className="w-full py-3 rounded-2xl bg-white text-emerald-800 hover:text-emerald-900 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Play Frog Adventure</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* 5. Traffic Rescue */}
+            <div className="bg-gradient-to-r from-amber-500 via-rose-600 to-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
+                🚦
+              </div>
+              <div className="relative z-10 mb-4">
+                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 13 • Ages 5–8
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
+                    🚦
+                  </div>
+                  <h3 className="text-xl font-black drop-shadow-sm">
+                    Traffic Rescue
+                  </h3>
+                </div>
+                <p className="text-amber-100 text-xs sm:text-sm font-semibold leading-relaxed">
+                  Control miniature city traffic! Coordinate traffic lights, protect zebra crossings, and automate roads with IF/THEN rules!
+                </p>
+              </div>
+              <div className="relative z-10 pt-2">
+                <Link
+                  href="/stage1/traffic-rescue"
+                  className="w-full py-3 rounded-2xl bg-white text-indigo-900 hover:text-indigo-950 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Play Traffic Rescue</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* 6. Pet Rescue */}
+            <div className="bg-gradient-to-r from-rose-500 via-pink-600 to-amber-500 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
+                🐶
+              </div>
+              <div className="relative z-10 mb-4">
+                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={13} className="text-pink-200" /> Stage 1 Part 14 • Ages 5–8
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
+                    🐶
+                  </div>
+                  <h3 className="text-xl font-black drop-shadow-sm">
+                    Pet Rescue
+                  </h3>
+                </div>
+                <p className="text-pink-100 text-xs sm:text-sm font-semibold leading-relaxed">
+                  Help friendly rescue animals! Count food, sort treats, build care routines, recognize patterns, and use IF/THEN rules!
+                </p>
+              </div>
+              <div className="relative z-10 pt-2">
+                <Link
+                  href="/stage1/pet-rescue"
+                  className="w-full py-3 rounded-2xl bg-white text-rose-700 hover:text-rose-800 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Play Pet Rescue</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Worlds/Stages Section */}
         <h2 className="text-3xl font-black mb-6 text-slate-800 flex items-center gap-3 dash-element">
           <Gamepad2 className="text-pink-500" size={32} /> Choose Your World
@@ -211,7 +408,7 @@ export default function DashboardPage() {
               <h3 className="text-xl font-black mb-1 text-slate-800">World 1</h3>
               <p className="text-indigo-600 font-bold bg-indigo-50 px-3 py-0.5 rounded-full mb-3 text-sm">DolaCode Numeracy</p>
               <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Maths for coding readiness—numbers, logic, patterns, and digital thinking.</p>
-              <div className="mt-4 text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{Math.min(stage1Progress, 80)}/80 Complete</div>
+              <div className="mt-4 text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{Math.min(stage1Progress, 140)}/140 Complete</div>
               <div className="mt-4 bg-indigo-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#4338ca] group-hover:bg-indigo-400 transition-colors">Play Now</div>
             </Link>
           </div>

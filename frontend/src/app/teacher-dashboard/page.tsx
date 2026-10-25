@@ -21,11 +21,98 @@ interface StudentProfile {
   learning_band?: string;
 }
 
+interface PizzaShopStats {
+  current_level?: number;
+  dola_coins?: number;
+  counting_accuracy?: number;
+  addition_accuracy?: number;
+  subtraction_accuracy?: number;
+  problem_solving_accuracy?: number;
+  hints_used?: number;
+  coding_concepts_completed?: number;
+  correct_orders?: number;
+}
+
+interface RobotMazeStats {
+  current_level?: number;
+  dola_coins?: number;
+  accuracy?: number;
+  missions_completed?: number;
+  commands_used?: number;
+  loops_completed?: number;
+  debugging_attempts?: number;
+}
+
+interface MyLittleShopStats {
+  current_level?: number;
+  dola_coins?: number;
+  customers_served?: number;
+  accuracy?: number;
+  addition_accuracy?: number;
+  money_recognition_accuracy?: number;
+  change_accuracy?: number;
+  multiplication_accuracy?: number;
+  profit_accuracy?: number;
+  stock_accuracy?: number;
+  hints_used?: number;
+}
+
+interface FrogAdventureStats {
+  current_level?: number;
+  dola_coins?: number;
+  fruits_collected?: number;
+  accuracy?: number;
+  counting_accuracy?: number;
+  sequence_accuracy?: number;
+  pattern_accuracy?: number;
+  coordinates_accuracy?: number;
+  loops_completed?: number;
+  debugging_attempts?: number;
+  hints_used?: number;
+}
+
+interface TrafficRescueStats {
+  current_level?: number;
+  dola_coins?: number;
+  city_points?: number;
+  vehicles_guided?: number;
+  pedestrians_saved?: number;
+  accuracy?: number;
+  sequencing_ability?: number;
+  logical_reasoning?: number;
+  condition_usage?: number;
+  timing_accuracy?: number;
+  debugging_accuracy?: number;
+  hints_used?: number;
+}
+
+interface PetRescueStats {
+  current_level?: number;
+  dola_coins?: number;
+  happiness_points?: number;
+  pets_helped?: number;
+  accuracy?: number;
+  counting_accuracy?: number;
+  classification_accuracy?: number;
+  sequence_accuracy?: number;
+  pattern_accuracy?: number;
+  condition_usage?: number;
+  loops_completed?: number;
+  debugging_accuracy?: number;
+  hints_used?: number;
+}
+
 interface StudentUser {
   id: number;
   username: string;
   email: string;
   profile?: StudentProfile;
+  pizza_shop_progress?: PizzaShopStats;
+  robot_maze_progress?: RobotMazeStats;
+  my_little_shop_progress?: MyLittleShopStats;
+  frog_adventure_progress?: FrogAdventureStats;
+  traffic_rescue_progress?: TrafficRescueStats;
+  pet_rescue_progress?: PetRescueStats;
 }
 
 interface ClassroomInfo {
@@ -376,6 +463,36 @@ export default function TeacherDashboardPage() {
                           <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px]">
                             P:{st.profile?.stage4_progress || 0}
                           </span>
+                          {st.pizza_shop_progress && (
+                            <span className="px-2 py-0.5 rounded bg-orange-950/80 text-orange-300 font-mono text-[11px] border border-orange-500/30" title={`Pizza Shop: Lvl ${st.pizza_shop_progress.current_level} (${st.pizza_shop_progress.correct_orders || 0} orders, ${st.pizza_shop_progress.dola_coins || 0} coins)`}>
+                              🍕 L{st.pizza_shop_progress.current_level || 1}
+                            </span>
+                          )}
+                          {st.robot_maze_progress && (
+                            <span className="px-2 py-0.5 rounded bg-teal-950/80 text-teal-300 font-mono text-[11px] border border-teal-500/30" title={`Robot Maze: Lvl ${st.robot_maze_progress.current_level} (${st.robot_maze_progress.missions_completed || 0} missions, ${st.robot_maze_progress.dola_coins || 0} coins)`}>
+                              🤖 L{st.robot_maze_progress.current_level || 1}
+                            </span>
+                          )}
+                          {st.my_little_shop_progress && (
+                            <span className="px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 font-mono text-[11px] border border-amber-500/30" title={`My Little Shop: Lvl ${st.my_little_shop_progress.current_level} (${st.my_little_shop_progress.customers_served || 0} customers, ${st.my_little_shop_progress.dola_coins || 0} coins)`}>
+                              🏪 L{st.my_little_shop_progress.current_level || 1}
+                            </span>
+                          )}
+                          {st.frog_adventure_progress && (
+                            <span className="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 font-mono text-[11px] border border-emerald-500/30" title={`Frog Adventure: Lvl ${st.frog_adventure_progress.current_level} (${st.frog_adventure_progress.fruits_collected || 0} fruits, ${st.frog_adventure_progress.dola_coins || 0} coins)`}>
+                              🐸 L{st.frog_adventure_progress.current_level || 1}
+                            </span>
+                          )}
+                          {st.traffic_rescue_progress && (
+                            <span className="px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 font-mono text-[11px] border border-indigo-500/30" title={`Traffic Rescue: Lvl ${st.traffic_rescue_progress.current_level} (${st.traffic_rescue_progress.vehicles_guided || 0} vehicles, ${st.traffic_rescue_progress.city_points || 0} pts)`}>
+                              🚦 L{st.traffic_rescue_progress.current_level || 1}
+                            </span>
+                          )}
+                          {st.pet_rescue_progress && (
+                            <span className="px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 font-mono text-[11px] border border-rose-500/30" title={`Pet Rescue: Lvl ${st.pet_rescue_progress.current_level} (${st.pet_rescue_progress.pets_helped || 0} pets, ${st.pet_rescue_progress.dola_coins || 0} coins)`}>
+                              🐶 L{st.pet_rescue_progress.current_level || 1}
+                            </span>
+                          )}
                         </td>
                         <td className="py-3.5 px-4 text-right font-black text-amber-400 text-sm">
                           {st.profile?.points || 0} ⭐

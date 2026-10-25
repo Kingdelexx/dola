@@ -7,6 +7,12 @@ import LizzyChat from '@/components/LizzyChat';
 import { useAuth } from '@/context/AuthContext';
 import { STAGE1_NUMERACY_PARTS, NumeracyLevel, NumeracyPart } from '@/data/stage1NumeracyLevels';
 import { STAGE1_HELP_DATA } from '@/data/stage1HelpData';
+import DolaPizzaShop from '@/components/pizza-shop/DolaPizzaShop';
+import RobotMaze from '@/components/robot-maze/RobotMaze';
+import MyLittleShop from '@/components/little-shop/MyLittleShop';
+import FrogAdventure from '@/components/frog-adventure/FrogAdventure';
+import TrafficRescue from '@/components/traffic-rescue/TrafficRescue';
+import PetRescue from '@/components/pet-rescue/PetRescue';
 import { 
   Rocket, Star, Sparkles, Trophy, Brain, Lightbulb, Play, CheckCircle, 
   ArrowRight, AlertTriangle, RefreshCw, Cpu, ShieldAlert, Binary, HelpCircle, Lock, Gamepad2, Info
@@ -25,6 +31,12 @@ const PART_COLORS = [
   'from-fuchsia-400 to-violet-500 shadow-fuchsia-200',
   'from-cyan-400 to-teal-500 shadow-cyan-200',
   'from-red-400 to-rose-500 shadow-rose-200',
+  'from-amber-500 via-orange-500 to-rose-500 shadow-orange-300',
+  'from-emerald-500 via-teal-500 to-cyan-500 shadow-teal-300',
+  'from-amber-500 via-emerald-500 to-teal-500 shadow-amber-300',
+  'from-lime-500 via-emerald-500 to-teal-500 shadow-lime-300',
+  'from-amber-500 via-rose-500 to-indigo-600 shadow-amber-300',
+  'from-rose-500 via-pink-500 to-amber-500 shadow-rose-300',
 ];
 
 export default function Stage1Page() {
@@ -5051,6 +5063,54 @@ export default function Stage1Page() {
         );
       }
 
+      case 'pizza-shop': {
+        return (
+          <div className="w-full flex justify-center items-center py-2">
+            <DolaPizzaShop initialLevel={level.gameData?.pizzaLevel || 1} />
+          </div>
+        );
+      }
+
+      case 'robot-maze': {
+        return (
+          <div className="w-full flex justify-center items-center py-2">
+            <RobotMaze initialLevel={level.gameData?.mazeLevel || 1} />
+          </div>
+        );
+      }
+
+      case 'my-little-shop': {
+        return (
+          <div className="w-full flex justify-center items-center py-2">
+            <MyLittleShop initialLevel={level.gameData?.shopLevel || 1} />
+          </div>
+        );
+      }
+
+      case 'frog-adventure': {
+        return (
+          <div className="w-full flex justify-center items-center py-2">
+            <FrogAdventure initialLevel={level.gameData?.frogLevel || 1} />
+          </div>
+        );
+      }
+
+      case 'traffic-rescue': {
+        return (
+          <div className="w-full flex justify-center items-center py-2">
+            <TrafficRescue initialLevel={level.gameData?.trafficLevel || 1} />
+          </div>
+        );
+      }
+
+      case 'pet-rescue': {
+        return (
+          <div className="w-full flex justify-center items-center py-2">
+            <PetRescue initialLevel={level.gameData?.petLevel || 1} />
+          </div>
+        );
+      }
+
       default:
         return <div>Invalid level type.</div>;
     }
@@ -5097,7 +5157,7 @@ export default function Stage1Page() {
         </div>
 
         {/* Part HUD Info Banner */}
-        <div className={`w-full bg-white rounded-[2rem] p-6 border-4 ${currentPartIndex === 0 ? 'border-pink-200' : currentPartIndex === 1 ? 'border-sky-200' : currentPartIndex === 2 ? 'border-indigo-200' : currentPartIndex === 3 ? 'border-emerald-200' : currentPartIndex === 4 ? 'border-amber-200' : currentPartIndex === 5 ? 'border-fuchsia-200' : currentPartIndex === 6 ? 'border-cyan-200' : 'border-rose-200'} flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-md relative overflow-hidden order-5 md:order-2`}>
+        <div className={`w-full bg-white rounded-[2rem] p-6 border-4 ${currentPartIndex === 0 ? 'border-pink-200' : currentPartIndex === 1 ? 'border-sky-200' : currentPartIndex === 2 ? 'border-indigo-200' : currentPartIndex === 3 ? 'border-emerald-200' : currentPartIndex === 4 ? 'border-amber-200' : currentPartIndex === 5 ? 'border-fuchsia-200' : currentPartIndex === 6 ? 'border-cyan-200' : currentPartIndex === 7 ? 'border-rose-200' : 'border-orange-300'} flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-md relative overflow-hidden order-5 md:order-2`}>
           <div>
             <span className="text-indigo-600 font-black text-xs uppercase tracking-widest block mb-1">{part.ageGroup}</span>
             <h2 className="text-2xl font-black text-slate-800">{part.title}</h2>

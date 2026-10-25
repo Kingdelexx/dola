@@ -200,4 +200,154 @@ class StudentChallengeProgress(models.Model):
         return f"{self.student.username} - {self.challenge.title} ({'Completed' if self.is_completed else 'In Progress'})"
 
 
+class PizzaShopProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pizza_shop_progress')
+    current_level = models.IntegerField(default=1)
+    stars_earned = models.IntegerField(default=0)
+    dola_coins = models.IntegerField(default=0)
+    xp_earned = models.IntegerField(default=0)
+    accuracy = models.FloatField(default=100.0)
+    attempts = models.IntegerField(default=0)
+    correct_orders = models.IntegerField(default=0)
+    time_spent_seconds = models.IntegerField(default=0)
+    counting_accuracy = models.FloatField(default=100.0)
+    addition_accuracy = models.FloatField(default=100.0)
+    subtraction_accuracy = models.FloatField(default=100.0)
+    problem_solving_accuracy = models.FloatField(default=100.0)
+    hints_used = models.IntegerField(default=0)
+    coding_concepts_completed = models.IntegerField(default=0)
+    badges = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Pizza Shop Lvl {self.current_level} ({self.dola_coins} Coins)"
+
+
+class RobotMazeProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='robot_maze_progress')
+    current_level = models.IntegerField(default=1)
+    stars_earned = models.IntegerField(default=0)
+    dola_coins = models.IntegerField(default=0)
+    xp_earned = models.IntegerField(default=0)
+    accuracy = models.FloatField(default=100.0)
+    attempts = models.IntegerField(default=0)
+    missions_completed = models.IntegerField(default=0)
+    commands_used = models.IntegerField(default=0)
+    hints_used = models.IntegerField(default=0)
+    debugging_attempts = models.IntegerField(default=0)
+    loops_completed = models.IntegerField(default=0)
+    time_spent_seconds = models.IntegerField(default=0)
+    badges = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Robot Maze Lvl {self.current_level} ({self.dola_coins} Coins)"
+
+
+class MyLittleShopProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='my_little_shop_progress')
+    current_level = models.IntegerField(default=1)
+    stars_earned = models.IntegerField(default=0)
+    dola_coins = models.IntegerField(default=0)
+    xp_earned = models.IntegerField(default=0)
+    accuracy = models.FloatField(default=100.0)
+    attempts = models.IntegerField(default=0)
+    customers_served = models.IntegerField(default=0)
+    addition_accuracy = models.FloatField(default=100.0)
+    subtraction_accuracy = models.FloatField(default=100.0)
+    money_recognition_accuracy = models.FloatField(default=100.0)
+    change_accuracy = models.FloatField(default=100.0)
+    multiplication_accuracy = models.FloatField(default=100.0)
+    profit_accuracy = models.FloatField(default=100.0)
+    stock_accuracy = models.FloatField(default=100.0)
+    problem_solving_accuracy = models.FloatField(default=100.0)
+    hints_used = models.IntegerField(default=0)
+    time_spent_seconds = models.IntegerField(default=0)
+    shop_upgrades = models.JSONField(default=list)
+    badges = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - My Little Shop Lvl {self.current_level} ({self.dola_coins} Coins)"
+
+
+class FrogAdventureProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='frog_adventure_progress')
+    current_level = models.IntegerField(default=1)
+    stars_earned = models.IntegerField(default=0)
+    dola_coins = models.IntegerField(default=0)
+    xp_earned = models.IntegerField(default=0)
+    accuracy = models.FloatField(default=100.0)
+    attempts = models.IntegerField(default=0)
+    fruits_collected = models.IntegerField(default=0)
+    counting_accuracy = models.FloatField(default=100.0)
+    sequence_accuracy = models.FloatField(default=100.0)
+    pattern_accuracy = models.FloatField(default=100.0)
+    coordinates_accuracy = models.FloatField(default=100.0)
+    route_planning_accuracy = models.FloatField(default=100.0)
+    loops_completed = models.IntegerField(default=0)
+    debugging_attempts = models.IntegerField(default=0)
+    hints_used = models.IntegerField(default=0)
+    time_spent_seconds = models.IntegerField(default=0)
+    unlocked_costumes = models.JSONField(default=list)
+    badges = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Frog Adventure Lvl {self.current_level} ({self.dola_coins} Coins)"
+
+
+class TrafficRescueProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='traffic_rescue_progress')
+    current_level = models.IntegerField(default=1)
+    stars_earned = models.IntegerField(default=0)
+    dola_coins = models.IntegerField(default=0)
+    xp_earned = models.IntegerField(default=0)
+    city_points = models.IntegerField(default=0)
+    accuracy = models.FloatField(default=100.0)
+    attempts = models.IntegerField(default=0)
+    vehicles_guided = models.IntegerField(default=0)
+    pedestrians_saved = models.IntegerField(default=0)
+    sequencing_ability = models.FloatField(default=100.0)
+    logical_reasoning = models.FloatField(default=100.0)
+    condition_usage = models.FloatField(default=100.0)
+    timing_accuracy = models.FloatField(default=100.0)
+    debugging_accuracy = models.FloatField(default=100.0)
+    hints_used = models.IntegerField(default=0)
+    time_spent_seconds = models.IntegerField(default=0)
+    city_upgrades = models.JSONField(default=list)
+    badges = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Traffic Rescue Lvl {self.current_level} ({self.city_points} City Points)"
+
+
+class PetRescueProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pet_rescue_progress')
+    current_level = models.IntegerField(default=1)
+    stars_earned = models.IntegerField(default=0)
+    dola_coins = models.IntegerField(default=0)
+    xp_earned = models.IntegerField(default=0)
+    happiness_points = models.IntegerField(default=0)
+    accuracy = models.FloatField(default=100.0)
+    attempts = models.IntegerField(default=0)
+    pets_helped = models.IntegerField(default=0)
+    counting_accuracy = models.FloatField(default=100.0)
+    classification_accuracy = models.FloatField(default=100.0)
+    sequence_accuracy = models.FloatField(default=100.0)
+    pattern_accuracy = models.FloatField(default=100.0)
+    condition_usage = models.FloatField(default=100.0)
+    loops_completed = models.IntegerField(default=0)
+    debugging_accuracy = models.FloatField(default=100.0)
+    hints_used = models.IntegerField(default=0)
+    time_spent_seconds = models.IntegerField(default=0)
+    unlocked_pets = models.JSONField(default=list)
+    unlocked_accessories = models.JSONField(default=list)
+    badges = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Pet Rescue Lvl {self.current_level} ({self.happiness_points} Happiness Pts)"
+
 

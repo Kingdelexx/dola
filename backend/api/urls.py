@@ -7,7 +7,13 @@ from .views import (
     AddSchoolStudentView, InviteParentView, BulkUploadStudentsView, TeacherDashboardView,
     ClaimParentAccountView, GoogleAuthView, SubmitOnboardingDiagnosticView,
     WebChallengeDetailView, WebChallengeSaveDraftView, WebChallengeSubmitView,
-    WebChallengeProjectsListView, SchoolJoinInfoView, ClassJoinInfoView, StudentJoinClassView
+    WebChallengeProjectsListView, SchoolJoinInfoView, ClassJoinInfoView, StudentJoinClassView,
+    PizzaShopSaveProgressView, PizzaShopGetProgressView,
+    RobotMazeSaveProgressView, RobotMazeGetProgressView,
+    MyLittleShopSaveProgressView, MyLittleShopGetProgressView,
+    FrogAdventureSaveProgressView, FrogAdventureGetProgressView,
+    TrafficRescueSaveProgressView, TrafficRescueGetProgressView,
+    PetRescueSaveProgressView, PetRescueGetProgressView
 )
 
 urlpatterns = [
@@ -19,6 +25,18 @@ urlpatterns = [
     path('user/onboarding-diagnostic/', SubmitOnboardingDiagnosticView.as_view(), name='onboarding_diagnostic'),
     path('admin-stats/', AdminDashboardStatsView.as_view(), name='admin_stats'),
     path('user/progress/', UpdateProgressView.as_view(), name='update_progress'),
+    path('pizza-shop/save-progress/', PizzaShopSaveProgressView.as_view(), name='pizza_shop_save_progress'),
+    path('pizza-shop/progress/', PizzaShopGetProgressView.as_view(), name='pizza_shop_get_progress'),
+    path('robot-maze/save-progress/', RobotMazeSaveProgressView.as_view(), name='robot_maze_save_progress'),
+    path('robot-maze/progress/', RobotMazeGetProgressView.as_view(), name='robot_maze_get_progress'),
+    path('my-little-shop/save-progress/', MyLittleShopSaveProgressView.as_view(), name='my_little_shop_save_progress'),
+    path('my-little-shop/progress/', MyLittleShopGetProgressView.as_view(), name='my_little_shop_get_progress'),
+    path('frog-adventure/save-progress/', FrogAdventureSaveProgressView.as_view(), name='frog_adventure_save_progress'),
+    path('frog-adventure/progress/', FrogAdventureGetProgressView.as_view(), name='frog_adventure_get_progress'),
+    path('traffic-rescue/save-progress/', TrafficRescueSaveProgressView.as_view(), name='traffic_rescue_save_progress'),
+    path('traffic-rescue/progress/', TrafficRescueGetProgressView.as_view(), name='traffic_rescue_get_progress'),
+    path('pet-rescue/save-progress/', PetRescueSaveProgressView.as_view(), name='pet_rescue_save_progress'),
+    path('pet-rescue/progress/', PetRescueGetProgressView.as_view(), name='pet_rescue_get_progress'),
     path('badges/', BadgesListView.as_view(), name='badges_list'),
     path('feedback/', SubmitFeedbackView.as_view(), name='submit_feedback'),
     path('chat/', ChatView.as_view(), name='chat'),

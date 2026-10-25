@@ -188,8 +188,8 @@ class AdminDashboardStatsView(APIView):
         })
 
 # Gamification Seeding & Views
-from .models import Badge, UserBadge, Feedback
-from .serializers import BadgeSerializer, FeedbackSerializer
+from .models import Badge, UserBadge, Feedback, PizzaShopProgress, RobotMazeProgress, MyLittleShopProgress, FrogAdventureProgress, TrafficRescueProgress, PetRescueProgress
+from .serializers import BadgeSerializer, FeedbackSerializer, PizzaShopProgressSerializer, RobotMazeProgressSerializer, MyLittleShopProgressSerializer, FrogAdventureProgressSerializer, TrafficRescueProgressSerializer, PetRescueProgressSerializer
 
 DEFAULT_BADGES = [
     {
@@ -268,6 +268,209 @@ DEFAULT_BADGES = [
         "icon": "🏆",
         "condition_type": "points",
         "condition_value": 500
+    },
+    {
+        "name": "Pizza Rookie",
+        "description": "Serve your first pizza customer in Dola's Pizza Shop!",
+        "icon": "🍕",
+        "condition_type": "pizza_orders",
+        "condition_value": 1
+    },
+    {
+        "name": "Super Server",
+        "description": "Serve 5 customers in a row with great accuracy!",
+        "icon": "⭐",
+        "condition_type": "pizza_orders",
+        "condition_value": 5
+    },
+    {
+        "name": "Counting Champion",
+        "description": "Master Level 1 counting in Dola's Pizza Shop!",
+        "icon": "🔢",
+        "condition_type": "pizza_level",
+        "condition_value": 1
+    },
+    {
+        "name": "Pizza Master",
+        "description": "Master Level 2 addition orders in Dola's Pizza Shop!",
+        "icon": "👨‍🍳",
+        "condition_type": "pizza_level",
+        "condition_value": 2
+    },
+    {
+        "name": "Loop Legend",
+        "description": "Master slice loops & computational recipes in Dola's Pizza Shop and Robot Maze!",
+        "icon": "🔄",
+        "condition_type": "pizza_level",
+        "condition_value": 3
+    },
+    {
+        "name": "Robo Rookie",
+        "description": "Guide Robo to complete your first maze mission!",
+        "icon": "🤖",
+        "condition_type": "robot_missions",
+        "condition_value": 1
+    },
+    {
+        "name": "Maze Explorer",
+        "description": "Guide Robo through 5 tricky maze missions!",
+        "icon": "🧭",
+        "condition_type": "robot_missions",
+        "condition_value": 5
+    },
+    {
+        "name": "Direction Master",
+        "description": "Master navigation through multi-turn paths!",
+        "icon": "🎯",
+        "condition_type": "robot_level",
+        "condition_value": 3
+    },
+    {
+        "name": "Bug Fixer",
+        "description": "Fix and debug code to help Robo navigate obstacles safely!",
+        "icon": "🛠️",
+        "condition_type": "robot_debug",
+        "condition_value": 1
+    },
+    {
+        "name": "Shop Helper",
+        "description": "Serve your first customer in My Little Shop!",
+        "icon": "🏪",
+        "condition_type": "shop_orders",
+        "condition_value": 1
+    },
+    {
+        "name": "Money Master",
+        "description": "Master calculating prices and totals using Nigerian Naira!",
+        "icon": "💰",
+        "condition_type": "shop_level",
+        "condition_value": 2
+    },
+    {
+        "name": "Change Champion",
+        "description": "Give exact change to customers like a math champion!",
+        "icon": "💵",
+        "condition_type": "shop_change",
+        "condition_value": 3
+    },
+    {
+        "name": "Smart Seller",
+        "description": "Master multi-item customer orders and stock management!",
+        "icon": "🛍️",
+        "condition_type": "shop_level",
+        "condition_value": 4
+    },
+    {
+        "name": "Young Entrepreneur",
+        "description": "Calculate shop profits, unlock upgrades, and grow your business!",
+        "icon": "🌟",
+        "condition_type": "shop_profit",
+        "condition_value": 1
+    },
+    {
+        "name": "Little Jumper",
+        "description": "Complete your first jumping adventure in Frog Adventure!",
+        "icon": "🐸",
+        "condition_type": "frog_level",
+        "condition_value": 1
+    },
+    {
+        "name": "Pond Explorer",
+        "description": "Guide your frog through tricky pond, river and jungle environments!",
+        "icon": "🌊",
+        "condition_type": "frog_level",
+        "condition_value": 3
+    },
+    {
+        "name": "Pattern Pro",
+        "description": "Solve jump patterns and leap across obstacles like a pro!",
+        "icon": "🧩",
+        "condition_type": "frog_patterns",
+        "condition_value": 1
+    },
+    {
+        "name": "Path Finder",
+        "description": "Find the shortest route and navigate grid coordinates with precision!",
+        "icon": "🗺️",
+        "condition_type": "frog_coordinates",
+        "condition_value": 1
+    },
+    {
+        "name": "Frog Coder",
+        "description": "Master loops and fix bugs to guide your frog safely home!",
+        "icon": "🚀",
+        "condition_type": "frog_code",
+        "condition_value": 1
+    },
+    {
+        "name": "Road Helper",
+        "description": "Match traffic light colours and guide your first vehicle safely!",
+        "icon": "🚦",
+        "condition_type": "traffic_level",
+        "condition_value": 1
+    },
+    {
+        "name": "Safe Driver",
+        "description": "Guide vehicles through complex junctions without any gridlock!",
+        "icon": "🚗",
+        "condition_type": "traffic_level",
+        "condition_value": 2
+    },
+    {
+        "name": "Traffic Boss",
+        "description": "Manage two intersecting roads and protect pedestrian zebra crossings!",
+        "icon": "🛑",
+        "condition_type": "traffic_level",
+        "condition_value": 4
+    },
+    {
+        "name": "Logic Controller",
+        "description": "Use timing and IF/THEN condition blocks to automate city traffic!",
+        "icon": "🧠",
+        "condition_type": "traffic_conditions",
+        "condition_value": 1
+    },
+    {
+        "name": "City Coder",
+        "description": "Debug faulty traffic light rules and keep the miniature city moving!",
+        "icon": "🏙️",
+        "condition_type": "traffic_debug",
+        "condition_value": 1
+    },
+    {
+        "name": "Pet Helper",
+        "description": "Feed, care for, and soothe your first rescue centre pet!",
+        "icon": "🐶",
+        "condition_type": "pet_level",
+        "condition_value": 1
+    },
+    {
+        "name": "Animal Friend",
+        "description": "Match the right healthy food and supplies for all animals!",
+        "icon": "🐾",
+        "condition_type": "pet_level",
+        "condition_value": 2
+    },
+    {
+        "name": "Pattern Star",
+        "description": "Crack pet-care patterns and solve feeding sequences like a pro!",
+        "icon": "⭐",
+        "condition_type": "pet_patterns",
+        "condition_value": 1
+    },
+    {
+        "name": "Care Champion",
+        "description": "Complete multi-step pet rescue routines and classification challenges!",
+        "icon": "🏆",
+        "condition_type": "pet_level",
+        "condition_value": 4
+    },
+    {
+        "name": "Pet Coder",
+        "description": "Automate pet routines with IF/THEN rules, loops, and debugging!",
+        "icon": "💻",
+        "condition_type": "pet_code",
+        "condition_value": 1
     }
 ]
 
@@ -411,6 +614,718 @@ class SubmitFeedbackView(APIView):
                 "feedback": serializer.data
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PizzaShopSaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        
+        current_level = int(data.get('current_level', 1))
+        stars_earned = int(data.get('stars_earned', 0))
+        dola_coins = int(data.get('dola_coins', 0))
+        xp_earned = int(data.get('xp_earned', 0))
+        accuracy = float(data.get('accuracy', 100.0))
+        attempts = int(data.get('attempts', 0))
+        correct_orders = int(data.get('correct_orders', 0))
+        time_spent_seconds = int(data.get('time_spent_seconds', 0))
+        counting_accuracy = float(data.get('counting_accuracy', 100.0))
+        addition_accuracy = float(data.get('addition_accuracy', 100.0))
+        subtraction_accuracy = float(data.get('subtraction_accuracy', 100.0))
+        problem_solving_accuracy = float(data.get('problem_solving_accuracy', 100.0))
+        hints_used = int(data.get('hints_used', 0))
+        coding_concepts_completed = int(data.get('coding_concepts_completed', 0))
+        badge_slugs = data.get('badges', [])
+
+        prog, created = PizzaShopProgress.objects.get_or_create(user=user)
+        
+        xp_delta = max(0, xp_earned - prog.xp_earned)
+        
+        prog.current_level = max(prog.current_level, current_level)
+        prog.stars_earned = max(prog.stars_earned, stars_earned)
+        prog.dola_coins = max(prog.dola_coins, dola_coins)
+        prog.xp_earned = max(prog.xp_earned, xp_earned)
+        prog.accuracy = accuracy
+        prog.attempts = max(prog.attempts, attempts)
+        prog.correct_orders = max(prog.correct_orders, correct_orders)
+        prog.time_spent_seconds = max(prog.time_spent_seconds, time_spent_seconds)
+        prog.counting_accuracy = counting_accuracy
+        prog.addition_accuracy = addition_accuracy
+        prog.subtraction_accuracy = subtraction_accuracy
+        prog.problem_solving_accuracy = problem_solving_accuracy
+        prog.hints_used = max(prog.hints_used, hints_used)
+        prog.coding_concepts_completed = max(prog.coding_concepts_completed, coding_concepts_completed)
+        
+        current_badges = set(prog.badges or [])
+        if isinstance(badge_slugs, list):
+            current_badges.update(badge_slugs)
+            
+        if prog.correct_orders >= 1:
+            current_badges.add("Pizza Rookie")
+        if prog.correct_orders >= 5:
+            current_badges.add("Super Server")
+        if prog.current_level >= 1 and prog.counting_accuracy >= 70:
+            current_badges.add("Counting Champion")
+        if prog.current_level >= 2 and prog.addition_accuracy >= 70:
+            current_badges.add("Pizza Master")
+        if prog.coding_concepts_completed >= 1 or (prog.current_level >= 3 and prog.subtraction_accuracy >= 70):
+            current_badges.add("Loop Legend")
+            
+        prog.badges = list(current_badges)
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if xp_delta > 0:
+            profile.points += xp_delta
+            
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.now().date()
+        if profile.last_active_date != today:
+            if profile.last_active_date == today - timedelta(days=1):
+                profile.current_streak += 1
+            else:
+                profile.current_streak = 1
+            if profile.current_streak > profile.longest_streak:
+                profile.longest_streak = profile.current_streak
+            profile.last_active_date = today
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            badge_obj = Badge.objects.filter(name=badge_name).first()
+            if badge_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=badge_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": badge_obj.name,
+                        "description": badge_obj.description,
+                        "icon": badge_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": PizzaShopProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points,
+            "current_streak": profile.current_streak
+        })
+
+
+class PizzaShopGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        prog, _ = PizzaShopProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": PizzaShopProgressSerializer(prog).data
+        })
+
+
+class RobotMazeSaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        
+        current_level = int(data.get('current_level', 1))
+        stars_earned = int(data.get('stars_earned', 0))
+        dola_coins = int(data.get('dola_coins', 0))
+        xp_earned = int(data.get('xp_earned', 0))
+        accuracy = float(data.get('accuracy', 100.0))
+        attempts = int(data.get('attempts', 0))
+        missions_completed = int(data.get('missions_completed', 0))
+        commands_used = int(data.get('commands_used', 0))
+        hints_used = int(data.get('hints_used', 0))
+        debugging_attempts = int(data.get('debugging_attempts', 0))
+        loops_completed = int(data.get('loops_completed', 0))
+        time_spent_seconds = int(data.get('time_spent_seconds', 0))
+        badge_slugs = data.get('badges', [])
+
+        prog, created = RobotMazeProgress.objects.get_or_create(user=user)
+        
+        xp_delta = max(0, xp_earned - prog.xp_earned)
+        
+        prog.current_level = max(prog.current_level, current_level)
+        prog.stars_earned = max(prog.stars_earned, stars_earned)
+        prog.dola_coins = max(prog.dola_coins, dola_coins)
+        prog.xp_earned = max(prog.xp_earned, xp_earned)
+        prog.accuracy = accuracy
+        prog.attempts = max(prog.attempts, attempts)
+        prog.missions_completed = max(prog.missions_completed, missions_completed)
+        prog.commands_used = max(prog.commands_used, commands_used)
+        prog.hints_used = max(prog.hints_used, hints_used)
+        prog.debugging_attempts = max(prog.debugging_attempts, debugging_attempts)
+        prog.loops_completed = max(prog.loops_completed, loops_completed)
+        prog.time_spent_seconds = max(prog.time_spent_seconds, time_spent_seconds)
+        
+        current_badges = set(prog.badges or [])
+        if isinstance(badge_slugs, list):
+            current_badges.update(badge_slugs)
+            
+        if prog.missions_completed >= 1:
+            current_badges.add("Robo Rookie")
+        if prog.missions_completed >= 5:
+            current_badges.add("Maze Explorer")
+        if prog.current_level >= 3:
+            current_badges.add("Direction Master")
+        if prog.debugging_attempts >= 1:
+            current_badges.add("Bug Fixer")
+        if prog.loops_completed >= 1:
+            current_badges.add("Loop Legend")
+            
+        prog.badges = list(current_badges)
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if xp_delta > 0:
+            profile.points += xp_delta
+            
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.now().date()
+        if profile.last_active_date != today:
+            if profile.last_active_date == today - timedelta(days=1):
+                profile.current_streak += 1
+            else:
+                profile.current_streak = 1
+            if profile.current_streak > profile.longest_streak:
+                profile.longest_streak = profile.current_streak
+            profile.last_active_date = today
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            badge_obj = Badge.objects.filter(name=badge_name).first()
+            if badge_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=badge_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": badge_obj.name,
+                        "description": badge_obj.description,
+                        "icon": badge_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": RobotMazeProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points,
+            "current_streak": profile.current_streak
+        })
+
+
+class RobotMazeGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        prog, _ = RobotMazeProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": RobotMazeProgressSerializer(prog).data
+        })
+
+
+class MyLittleShopSaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        
+        current_level = int(data.get('current_level', 1))
+        stars_earned = int(data.get('stars_earned', 0))
+        dola_coins = int(data.get('dola_coins', 0))
+        xp_earned = int(data.get('xp_earned', 0))
+        accuracy = float(data.get('accuracy', 100.0))
+        attempts = int(data.get('attempts', 0))
+        customers_served = int(data.get('customers_served', 0))
+        addition_accuracy = float(data.get('addition_accuracy', 100.0))
+        subtraction_accuracy = float(data.get('subtraction_accuracy', 100.0))
+        money_recognition_accuracy = float(data.get('money_recognition_accuracy', 100.0))
+        change_accuracy = float(data.get('change_accuracy', 100.0))
+        multiplication_accuracy = float(data.get('multiplication_accuracy', 100.0))
+        profit_accuracy = float(data.get('profit_accuracy', 100.0))
+        stock_accuracy = float(data.get('stock_accuracy', 100.0))
+        problem_solving_accuracy = float(data.get('problem_solving_accuracy', 100.0))
+        hints_used = int(data.get('hints_used', 0))
+        time_spent_seconds = int(data.get('time_spent_seconds', 0))
+        shop_upgrades = data.get('shop_upgrades', [])
+        badge_slugs = data.get('badges', [])
+
+        prog, created = MyLittleShopProgress.objects.get_or_create(user=user)
+        
+        xp_delta = max(0, xp_earned - prog.xp_earned)
+        
+        prog.current_level = max(prog.current_level, current_level)
+        prog.stars_earned = max(prog.stars_earned, stars_earned)
+        prog.dola_coins = max(prog.dola_coins, dola_coins)
+        prog.xp_earned = max(prog.xp_earned, xp_earned)
+        prog.accuracy = accuracy
+        prog.attempts = max(prog.attempts, attempts)
+        prog.customers_served = max(prog.customers_served, customers_served)
+        prog.addition_accuracy = addition_accuracy
+        prog.subtraction_accuracy = subtraction_accuracy
+        prog.money_recognition_accuracy = money_recognition_accuracy
+        prog.change_accuracy = change_accuracy
+        prog.multiplication_accuracy = multiplication_accuracy
+        prog.profit_accuracy = profit_accuracy
+        prog.stock_accuracy = stock_accuracy
+        prog.problem_solving_accuracy = problem_solving_accuracy
+        prog.hints_used = max(prog.hints_used, hints_used)
+        prog.time_spent_seconds = max(prog.time_spent_seconds, time_spent_seconds)
+        
+        if isinstance(shop_upgrades, list):
+            existing_upgrades = set(prog.shop_upgrades or [])
+            existing_upgrades.update(shop_upgrades)
+            prog.shop_upgrades = list(existing_upgrades)
+
+        current_badges = set(prog.badges or [])
+        if isinstance(badge_slugs, list):
+            current_badges.update(badge_slugs)
+            
+        if prog.customers_served >= 1:
+            current_badges.add("Shop Helper")
+        if prog.current_level >= 2 or prog.addition_accuracy >= 80:
+            current_badges.add("Money Master")
+        if prog.current_level >= 3 and prog.change_accuracy >= 70:
+            current_badges.add("Change Champion")
+        if prog.current_level >= 4 or prog.stock_accuracy >= 80:
+            current_badges.add("Smart Seller")
+        if prog.current_level >= 7 or len(prog.shop_upgrades) >= 1 or prog.profit_accuracy >= 80:
+            current_badges.add("Young Entrepreneur")
+            
+        prog.badges = list(current_badges)
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if xp_delta > 0:
+            profile.points += xp_delta
+            
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.now().date()
+        if profile.last_active_date != today:
+            if profile.last_active_date == today - timedelta(days=1):
+                profile.current_streak += 1
+            else:
+                profile.current_streak = 1
+            if profile.current_streak > profile.longest_streak:
+                profile.longest_streak = profile.current_streak
+            profile.last_active_date = today
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            badge_obj = Badge.objects.filter(name=badge_name).first()
+            if badge_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=badge_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": badge_obj.name,
+                        "description": badge_obj.description,
+                        "icon": badge_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": MyLittleShopProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points,
+            "current_streak": profile.current_streak
+        })
+
+
+class MyLittleShopGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        prog, _ = MyLittleShopProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": MyLittleShopProgressSerializer(prog).data
+        })
+
+
+class FrogAdventureSaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        
+        current_level = int(data.get('current_level', 1))
+        stars_earned = int(data.get('stars_earned', 0))
+        dola_coins = int(data.get('dola_coins', 0))
+        xp_earned = int(data.get('xp_earned', 0))
+        accuracy = float(data.get('accuracy', 100.0))
+        attempts = int(data.get('attempts', 0))
+        fruits_collected = int(data.get('fruits_collected', 0))
+        counting_accuracy = float(data.get('counting_accuracy', 100.0))
+        sequence_accuracy = float(data.get('sequence_accuracy', 100.0))
+        pattern_accuracy = float(data.get('pattern_accuracy', 100.0))
+        coordinates_accuracy = float(data.get('coordinates_accuracy', 100.0))
+        route_planning_accuracy = float(data.get('route_planning_accuracy', 100.0))
+        loops_completed = int(data.get('loops_completed', 0))
+        debugging_attempts = int(data.get('debugging_attempts', 0))
+        hints_used = int(data.get('hints_used', 0))
+        time_spent_seconds = int(data.get('time_spent_seconds', 0))
+        unlocked_costumes = data.get('unlocked_costumes', [])
+        badge_slugs = data.get('badges', [])
+
+        prog, created = FrogAdventureProgress.objects.get_or_create(user=user)
+        
+        xp_delta = max(0, xp_earned - prog.xp_earned)
+        
+        prog.current_level = max(prog.current_level, current_level)
+        prog.stars_earned = max(prog.stars_earned, stars_earned)
+        prog.dola_coins = max(prog.dola_coins, dola_coins)
+        prog.xp_earned = max(prog.xp_earned, xp_earned)
+        prog.accuracy = accuracy
+        prog.attempts = max(prog.attempts, attempts)
+        prog.fruits_collected = max(prog.fruits_collected, fruits_collected)
+        prog.counting_accuracy = counting_accuracy
+        prog.sequence_accuracy = sequence_accuracy
+        prog.pattern_accuracy = pattern_accuracy
+        prog.coordinates_accuracy = coordinates_accuracy
+        prog.route_planning_accuracy = route_planning_accuracy
+        prog.loops_completed = max(prog.loops_completed, loops_completed)
+        prog.debugging_attempts = max(prog.debugging_attempts, debugging_attempts)
+        prog.hints_used = max(prog.hints_used, hints_used)
+        prog.time_spent_seconds = max(prog.time_spent_seconds, time_spent_seconds)
+        
+        if isinstance(unlocked_costumes, list):
+            existing_costumes = set(prog.unlocked_costumes or [])
+            existing_costumes.update(unlocked_costumes)
+            prog.unlocked_costumes = list(existing_costumes)
+
+        current_badges = set(prog.badges or [])
+        if isinstance(badge_slugs, list):
+            current_badges.update(badge_slugs)
+            
+        if prog.current_level >= 1 or prog.attempts >= 1:
+            current_badges.add("Little Jumper")
+        if prog.current_level >= 3 or prog.fruits_collected >= 3:
+            current_badges.add("Pond Explorer")
+        if prog.current_level >= 5 or prog.pattern_accuracy >= 80:
+            current_badges.add("Pattern Pro")
+        if prog.current_level >= 6 or prog.coordinates_accuracy >= 80 or prog.route_planning_accuracy >= 80:
+            current_badges.add("Path Finder")
+        if prog.current_level >= 7 or prog.loops_completed >= 1 or prog.debugging_attempts >= 1:
+            current_badges.add("Frog Coder")
+            
+        prog.badges = list(current_badges)
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if xp_delta > 0:
+            profile.points += xp_delta
+            
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.now().date()
+        if profile.last_active_date != today:
+            if profile.last_active_date == today - timedelta(days=1):
+                profile.current_streak += 1
+            else:
+                profile.current_streak = 1
+            if profile.current_streak > profile.longest_streak:
+                profile.longest_streak = profile.current_streak
+            profile.last_active_date = today
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            badge_obj = Badge.objects.filter(name=badge_name).first()
+            if badge_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=badge_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": badge_obj.name,
+                        "description": badge_obj.description,
+                        "icon": badge_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": FrogAdventureProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points,
+            "current_streak": profile.current_streak
+        })
+
+
+class FrogAdventureGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        prog, _ = FrogAdventureProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": FrogAdventureProgressSerializer(prog).data
+        })
+
+
+class TrafficRescueSaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        
+        current_level = int(data.get('current_level', 1))
+        stars_earned = int(data.get('stars_earned', 0))
+        dola_coins = int(data.get('dola_coins', 0))
+        xp_earned = int(data.get('xp_earned', 0))
+        city_points = int(data.get('city_points', 0))
+        accuracy = float(data.get('accuracy', 100.0))
+        attempts = int(data.get('attempts', 0))
+        vehicles_guided = int(data.get('vehicles_guided', 0))
+        pedestrians_saved = int(data.get('pedestrians_saved', 0))
+        sequencing_ability = float(data.get('sequencing_ability', 100.0))
+        logical_reasoning = float(data.get('logical_reasoning', 100.0))
+        condition_usage = float(data.get('condition_usage', 100.0))
+        timing_accuracy = float(data.get('timing_accuracy', 100.0))
+        debugging_accuracy = float(data.get('debugging_accuracy', 100.0))
+        hints_used = int(data.get('hints_used', 0))
+        time_spent_seconds = int(data.get('time_spent_seconds', 0))
+        city_upgrades = data.get('city_upgrades', [])
+        badge_slugs = data.get('badges', [])
+
+        prog, created = TrafficRescueProgress.objects.get_or_create(user=user)
+        
+        xp_delta = max(0, xp_earned - prog.xp_earned)
+        
+        prog.current_level = max(prog.current_level, current_level)
+        prog.stars_earned = max(prog.stars_earned, stars_earned)
+        prog.dola_coins = max(prog.dola_coins, dola_coins)
+        prog.xp_earned = max(prog.xp_earned, xp_earned)
+        prog.city_points = max(prog.city_points, city_points)
+        prog.accuracy = accuracy
+        prog.attempts = max(prog.attempts, attempts)
+        prog.vehicles_guided = max(prog.vehicles_guided, vehicles_guided)
+        prog.pedestrians_saved = max(prog.pedestrians_saved, pedestrians_saved)
+        prog.sequencing_ability = sequencing_ability
+        prog.logical_reasoning = logical_reasoning
+        prog.condition_usage = condition_usage
+        prog.timing_accuracy = timing_accuracy
+        prog.debugging_accuracy = debugging_accuracy
+        prog.hints_used = max(prog.hints_used, hints_used)
+        prog.time_spent_seconds = max(prog.time_spent_seconds, time_spent_seconds)
+        
+        if isinstance(city_upgrades, list):
+            existing_upgrades = set(prog.city_upgrades or [])
+            existing_upgrades.update(city_upgrades)
+            prog.city_upgrades = list(existing_upgrades)
+
+        current_badges = set(prog.badges or [])
+        if isinstance(badge_slugs, list):
+            current_badges.update(badge_slugs)
+            
+        if prog.current_level >= 1 or prog.vehicles_guided >= 1:
+            current_badges.add("Road Helper")
+        if prog.current_level >= 2 or prog.vehicles_guided >= 3:
+            current_badges.add("Safe Driver")
+        if prog.current_level >= 4 or prog.pedestrians_saved >= 2:
+            current_badges.add("Traffic Boss")
+        if prog.current_level >= 6 or prog.condition_usage >= 80 or prog.timing_accuracy >= 80:
+            current_badges.add("Logic Controller")
+        if prog.current_level >= 8 or prog.debugging_accuracy >= 80 or len(prog.city_upgrades) >= 2:
+            current_badges.add("City Coder")
+            
+        prog.badges = list(current_badges)
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if xp_delta > 0:
+            profile.points += xp_delta
+            
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.now().date()
+        if profile.last_active_date != today:
+            if profile.last_active_date == today - timedelta(days=1):
+                profile.current_streak += 1
+            else:
+                profile.current_streak = 1
+            if profile.current_streak > profile.longest_streak:
+                profile.longest_streak = profile.current_streak
+            profile.last_active_date = today
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            badge_obj = Badge.objects.filter(name=badge_name).first()
+            if badge_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=badge_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": badge_obj.name,
+                        "description": badge_obj.description,
+                        "icon": badge_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": TrafficRescueProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points,
+            "current_streak": profile.current_streak
+        })
+
+
+class TrafficRescueGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        prog, _ = TrafficRescueProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": TrafficRescueProgressSerializer(prog).data
+        })
+
+
+class PetRescueSaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        
+        current_level = int(data.get('current_level', 1))
+        stars_earned = int(data.get('stars_earned', 0))
+        dola_coins = int(data.get('dola_coins', 0))
+        xp_earned = int(data.get('xp_earned', 0))
+        happiness_points = int(data.get('happiness_points', 0))
+        accuracy = float(data.get('accuracy', 100.0))
+        attempts = int(data.get('attempts', 0))
+        pets_helped = int(data.get('pets_helped', 0))
+        counting_accuracy = float(data.get('counting_accuracy', 100.0))
+        classification_accuracy = float(data.get('classification_accuracy', 100.0))
+        sequence_accuracy = float(data.get('sequence_accuracy', 100.0))
+        pattern_accuracy = float(data.get('pattern_accuracy', 100.0))
+        condition_usage = float(data.get('condition_usage', 100.0))
+        loops_completed = int(data.get('loops_completed', 0))
+        debugging_accuracy = float(data.get('debugging_accuracy', 100.0))
+        hints_used = int(data.get('hints_used', 0))
+        time_spent_seconds = int(data.get('time_spent_seconds', 0))
+        unlocked_pets = data.get('unlocked_pets', [])
+        unlocked_accessories = data.get('unlocked_accessories', [])
+        badge_slugs = data.get('badges', [])
+
+        prog, created = PetRescueProgress.objects.get_or_create(user=user)
+        
+        xp_delta = max(0, xp_earned - prog.xp_earned)
+        
+        prog.current_level = max(prog.current_level, current_level)
+        prog.stars_earned = max(prog.stars_earned, stars_earned)
+        prog.dola_coins = max(prog.dola_coins, dola_coins)
+        prog.xp_earned = max(prog.xp_earned, xp_earned)
+        prog.happiness_points = max(prog.happiness_points, happiness_points)
+        prog.accuracy = accuracy
+        prog.attempts = max(prog.attempts, attempts)
+        prog.pets_helped = max(prog.pets_helped, pets_helped)
+        prog.counting_accuracy = counting_accuracy
+        prog.classification_accuracy = classification_accuracy
+        prog.sequence_accuracy = sequence_accuracy
+        prog.pattern_accuracy = pattern_accuracy
+        prog.condition_usage = condition_usage
+        prog.loops_completed = max(prog.loops_completed, loops_completed)
+        prog.debugging_accuracy = debugging_accuracy
+        prog.hints_used = max(prog.hints_used, hints_used)
+        prog.time_spent_seconds = max(prog.time_spent_seconds, time_spent_seconds)
+        
+        if isinstance(unlocked_pets, list):
+            existing_pets = set(prog.unlocked_pets or [])
+            existing_pets.update(unlocked_pets)
+            prog.unlocked_pets = list(existing_pets)
+
+        if isinstance(unlocked_accessories, list):
+            existing_acc = set(prog.unlocked_accessories or [])
+            existing_acc.update(unlocked_accessories)
+            prog.unlocked_accessories = list(existing_acc)
+
+        current_badges = set(prog.badges or [])
+        if isinstance(badge_slugs, list):
+            current_badges.update(badge_slugs)
+            
+        if prog.current_level >= 1 or prog.pets_helped >= 1:
+            current_badges.add("Pet Helper")
+        if prog.current_level >= 2 or prog.classification_accuracy >= 80:
+            current_badges.add("Animal Friend")
+        if prog.current_level >= 5 or prog.pattern_accuracy >= 80:
+            current_badges.add("Pattern Star")
+        if prog.current_level >= 4 or prog.sequence_accuracy >= 80:
+            current_badges.add("Care Champion")
+        if prog.current_level >= 6 or prog.loops_completed >= 1 or prog.condition_usage >= 80:
+            current_badges.add("Pet Coder")
+            
+        prog.badges = list(current_badges)
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if xp_delta > 0:
+            profile.points += xp_delta
+            
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.now().date()
+        if profile.last_active_date != today:
+            if profile.last_active_date == today - timedelta(days=1):
+                profile.current_streak += 1
+            else:
+                profile.current_streak = 1
+            if profile.current_streak > profile.longest_streak:
+                profile.longest_streak = profile.current_streak
+            profile.last_active_date = today
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            badge_obj = Badge.objects.filter(name=badge_name).first()
+            if badge_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=badge_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": badge_obj.name,
+                        "description": badge_obj.description,
+                        "icon": badge_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": PetRescueProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points,
+            "current_streak": profile.current_streak
+        })
+
+
+class PetRescueGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        prog, _ = PetRescueProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": PetRescueProgressSerializer(prog).data
+        })
+
 
 import os
 import urllib.request
@@ -1071,6 +1986,144 @@ class ParentDashboardView(APIView):
                 plan_name = "Independent Learner Plan"
                 plan_status = "Active Account"
 
+            p_prog = getattr(child, 'pizza_shop_progress', None)
+            pizza_shop_stats = None
+            if p_prog:
+                pizza_shop_stats = {
+                    "current_level": p_prog.current_level,
+                    "stars_earned": p_prog.stars_earned,
+                    "dola_coins": p_prog.dola_coins,
+                    "xp_earned": p_prog.xp_earned,
+                    "accuracy": p_prog.accuracy,
+                    "counting_accuracy": p_prog.counting_accuracy,
+                    "addition_accuracy": p_prog.addition_accuracy,
+                    "subtraction_accuracy": p_prog.subtraction_accuracy,
+                    "problem_solving_accuracy": p_prog.problem_solving_accuracy,
+                    "hints_used": p_prog.hints_used,
+                    "coding_concepts_completed": p_prog.coding_concepts_completed,
+                    "correct_orders": p_prog.correct_orders,
+                    "time_spent_seconds": p_prog.time_spent_seconds,
+                    "badges": p_prog.badges,
+                }
+
+            rm_prog = getattr(child, 'robot_maze_progress', None)
+            robot_maze_stats = None
+            if rm_prog:
+                robot_maze_stats = {
+                    "current_level": rm_prog.current_level,
+                    "stars_earned": rm_prog.stars_earned,
+                    "dola_coins": rm_prog.dola_coins,
+                    "xp_earned": rm_prog.xp_earned,
+                    "accuracy": rm_prog.accuracy,
+                    "attempts": rm_prog.attempts,
+                    "missions_completed": rm_prog.missions_completed,
+                    "commands_used": rm_prog.commands_used,
+                    "hints_used": rm_prog.hints_used,
+                    "debugging_attempts": rm_prog.debugging_attempts,
+                    "loops_completed": rm_prog.loops_completed,
+                    "time_spent_seconds": rm_prog.time_spent_seconds,
+                    "badges": rm_prog.badges,
+                }
+
+            mls_prog = getattr(child, 'my_little_shop_progress', None)
+            my_little_shop_stats = None
+            if mls_prog:
+                my_little_shop_stats = {
+                    "current_level": mls_prog.current_level,
+                    "stars_earned": mls_prog.stars_earned,
+                    "dola_coins": mls_prog.dola_coins,
+                    "xp_earned": mls_prog.xp_earned,
+                    "accuracy": mls_prog.accuracy,
+                    "attempts": mls_prog.attempts,
+                    "customers_served": mls_prog.customers_served,
+                    "addition_accuracy": mls_prog.addition_accuracy,
+                    "subtraction_accuracy": mls_prog.subtraction_accuracy,
+                    "money_recognition_accuracy": mls_prog.money_recognition_accuracy,
+                    "change_accuracy": mls_prog.change_accuracy,
+                    "multiplication_accuracy": mls_prog.multiplication_accuracy,
+                    "profit_accuracy": mls_prog.profit_accuracy,
+                    "stock_accuracy": mls_prog.stock_accuracy,
+                    "problem_solving_accuracy": mls_prog.problem_solving_accuracy,
+                    "hints_used": mls_prog.hints_used,
+                    "time_spent_seconds": mls_prog.time_spent_seconds,
+                    "shop_upgrades": mls_prog.shop_upgrades,
+                    "badges": mls_prog.badges,
+                }
+
+            fa_prog = getattr(child, 'frog_adventure_progress', None)
+            frog_adventure_stats = None
+            if fa_prog:
+                frog_adventure_stats = {
+                    "current_level": fa_prog.current_level,
+                    "stars_earned": fa_prog.stars_earned,
+                    "dola_coins": fa_prog.dola_coins,
+                    "xp_earned": fa_prog.xp_earned,
+                    "accuracy": fa_prog.accuracy,
+                    "attempts": fa_prog.attempts,
+                    "fruits_collected": fa_prog.fruits_collected,
+                    "counting_accuracy": fa_prog.counting_accuracy,
+                    "sequence_accuracy": fa_prog.sequence_accuracy,
+                    "pattern_accuracy": fa_prog.pattern_accuracy,
+                    "coordinates_accuracy": fa_prog.coordinates_accuracy,
+                    "route_planning_accuracy": fa_prog.route_planning_accuracy,
+                    "loops_completed": fa_prog.loops_completed,
+                    "debugging_attempts": fa_prog.debugging_attempts,
+                    "hints_used": fa_prog.hints_used,
+                    "time_spent_seconds": fa_prog.time_spent_seconds,
+                    "unlocked_costumes": fa_prog.unlocked_costumes,
+                    "badges": fa_prog.badges,
+                }
+
+            tr_prog = getattr(child, 'traffic_rescue_progress', None)
+            traffic_rescue_stats = None
+            if tr_prog:
+                traffic_rescue_stats = {
+                    "current_level": tr_prog.current_level,
+                    "stars_earned": tr_prog.stars_earned,
+                    "dola_coins": tr_prog.dola_coins,
+                    "xp_earned": tr_prog.xp_earned,
+                    "city_points": tr_prog.city_points,
+                    "accuracy": tr_prog.accuracy,
+                    "attempts": tr_prog.attempts,
+                    "vehicles_guided": tr_prog.vehicles_guided,
+                    "pedestrians_saved": tr_prog.pedestrians_saved,
+                    "sequencing_ability": tr_prog.sequencing_ability,
+                    "logical_reasoning": tr_prog.logical_reasoning,
+                    "condition_usage": tr_prog.condition_usage,
+                    "timing_accuracy": tr_prog.timing_accuracy,
+                    "debugging_accuracy": tr_prog.debugging_accuracy,
+                    "hints_used": tr_prog.hints_used,
+                    "time_spent_seconds": tr_prog.time_spent_seconds,
+                    "city_upgrades": tr_prog.city_upgrades,
+                    "badges": tr_prog.badges,
+                }
+
+            pr_prog = getattr(child, 'pet_rescue_progress', None)
+            pet_rescue_stats = None
+            if pr_prog:
+                pet_rescue_stats = {
+                    "current_level": pr_prog.current_level,
+                    "stars_earned": pr_prog.stars_earned,
+                    "dola_coins": pr_prog.dola_coins,
+                    "xp_earned": pr_prog.xp_earned,
+                    "happiness_points": pr_prog.happiness_points,
+                    "accuracy": pr_prog.accuracy,
+                    "attempts": pr_prog.attempts,
+                    "pets_helped": pr_prog.pets_helped,
+                    "counting_accuracy": pr_prog.counting_accuracy,
+                    "classification_accuracy": pr_prog.classification_accuracy,
+                    "sequence_accuracy": pr_prog.sequence_accuracy,
+                    "pattern_accuracy": pr_prog.pattern_accuracy,
+                    "condition_usage": pr_prog.condition_usage,
+                    "loops_completed": pr_prog.loops_completed,
+                    "debugging_accuracy": pr_prog.debugging_accuracy,
+                    "hints_used": pr_prog.hints_used,
+                    "time_spent_seconds": pr_prog.time_spent_seconds,
+                    "unlocked_pets": pr_prog.unlocked_pets,
+                    "unlocked_accessories": pr_prog.unlocked_accessories,
+                    "badges": pr_prog.badges,
+                }
+
             children_analytics.append({
                 "user": UserSerializer(child).data,
                 "analytics": {
@@ -1080,6 +2133,12 @@ class ParentDashboardView(APIView):
                     "coding_score": coding_score,
                     "time_spent": time_spent,
                     "achievements": badge_list,
+                    "pizza_shop_stats": pizza_shop_stats,
+                    "robot_maze_stats": robot_maze_stats,
+                    "my_little_shop_stats": my_little_shop_stats,
+                    "frog_adventure_stats": frog_adventure_stats,
+                    "traffic_rescue_stats": traffic_rescue_stats,
+                    "pet_rescue_stats": pet_rescue_stats,
                     "weekly_report": {
                         "summary": summary,
                         "teacher_feedback": teacher_feedback,

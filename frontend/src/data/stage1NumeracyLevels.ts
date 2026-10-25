@@ -30,7 +30,19 @@ export interface NumeracyLevel {
     | 'data-pie-charts' | 'data-mean' | 'data-median' | 'data-mode' | 'data-interpretation'
     // Part 8 game types
     | 'algo-steps' | 'algo-decomposition' | 'algo-bugs' | 'algo-math-bugs' | 'algo-logic-puzzles'
-    | 'algo-word-problems' | 'algo-brain-teasers' | 'algo-strategy' | 'algo-flowchart' | 'algo-design';
+    | 'algo-word-problems' | 'algo-brain-teasers' | 'algo-strategy' | 'algo-flowchart' | 'algo-design'
+    // Part 9 game type
+    | 'pizza-shop'
+    // Part 10 game type
+    | 'robot-maze'
+    // Part 11 game type
+    | 'my-little-shop'
+    // Part 12 game type
+    | 'frog-adventure'
+    // Part 13 game type
+    | 'traffic-rescue'
+    // Part 14 game type
+    | 'pet-rescue';
   gameData: any;
 }
 
@@ -1367,5 +1379,715 @@ export const STAGE1_NUMERACY_PARTS: NumeracyPart[] = [
         }
       }
     ]
+  },
+  {
+    id: 9,
+    title: "Part 9: Dola's Pizza Shop",
+    ageGroup: "Ages 5–8",
+    description: "Step into Dola's colourful Pizza Shop! Serve happy customers, drag delicious slices, share fairly with friends, and discover loop recipes.",
+    levels: [
+      {
+        id: 1,
+        globalId: 81,
+        title: "Level 1: Pizza Counter - Slice by Slice",
+        topic: "Counting 1–5 with Pizza Slices",
+        objective: "Drag and place the exact number of pizza slices the customer orders onto their plate.",
+        codingLink: "Input Parameters. Counting items one by one is how computers register numbers as input arguments!",
+        unlockedAbility: "Slice Counter",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 1, mode: "counting", subRound: 1 }
+      },
+      {
+        id: 2,
+        globalId: 82,
+        title: "Level 2: Big Party - Counting 6–10",
+        topic: "Counting 6–10 with Pizza Slices",
+        objective: "Help serve bigger party orders by counting up to 10 delicious pizza slices.",
+        codingLink: "Data Volume & Registers. Computers manage larger batches of items by holding them in memory registers.",
+        unlockedAbility: "Party Server",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 1, mode: "counting", subRound: 2 }
+      },
+      {
+        id: 3,
+        globalId: 83,
+        title: "Level 3: Order Up - Slice Addition",
+        topic: "Simple addition with pizza slices",
+        objective: "Customer already has slices on their plate. Add more slices to complete their order!",
+        codingLink: "Increment Operations (x += n). Addition in programming increments variable values step by step.",
+        unlockedAbility: "Slice Adder",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 2, mode: "addition", subRound: 1 }
+      },
+      {
+        id: 4,
+        globalId: 84,
+        title: "Level 4: Extra Hungry - Double Addition",
+        topic: "Addition combinations",
+        objective: "Combine slice portions into one feast using visual slice addition.",
+        codingLink: "Sum Functions. Combining multiple values into a single accumulator variable.",
+        unlockedAbility: "Order Combiner",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 2, mode: "addition", subRound: 2 }
+      },
+      {
+        id: 5,
+        globalId: 85,
+        title: "Level 5: Hungry Munch - Subtraction",
+        topic: "Simple subtraction with pizza slices",
+        objective: "Customer ate some slices! Count and remove slices to find how many remain.",
+        codingLink: "Decrement Operations (x -= n). Taking away items updates program counters downward.",
+        unlockedAbility: "Slice Subtractor",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 3, mode: "subtraction", subRound: 1 }
+      },
+      {
+        id: 6,
+        globalId: 86,
+        title: "Level 6: Leftover Magic - Subtraction Puzzle",
+        topic: "Subtraction logic",
+        objective: "Solve the customer leftover challenge by calculating remaining slices.",
+        codingLink: "Remainder & Modulo. Knowing what's left over helps computers manage buffer space.",
+        unlockedAbility: "Leftover Calculator",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 3, mode: "subtraction", subRound: 2 }
+      },
+      {
+        id: 7,
+        globalId: 87,
+        title: "Level 7: Fair Share - Pizza Sharing",
+        topic: "Division and sharing equally",
+        objective: "Share pizza slices equally between two best friends so everyone gets an equal plate.",
+        codingLink: "Even Distribution & Division. Distributing data evenly across processor cores (Load Balancing!).",
+        unlockedAbility: "Fair Share Operator",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 4, mode: "sharing", subRound: 1 }
+      },
+      {
+        id: 8,
+        globalId: 88,
+        title: "Level 8: Fraction Feast - Halves and Quarters",
+        topic: "Fractions: Whole, Half, and Quarter",
+        objective: "Identify half (1/2) and quarter (1/4) pizza orders using slice groupings.",
+        codingLink: "Data Partitioning. Dividing large datasets into halves and quarters for parallel computation.",
+        unlockedAbility: "Fraction Chef",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 5, mode: "fractions", subRound: 1 }
+      },
+      {
+        id: 9,
+        globalId: 89,
+        title: "Level 9: Chef's Code - Loop Recipe Blocks",
+        topic: "Computational Thinking & Loop Blocks",
+        objective: "Build code commands like REPEAT 3 TIMES: ADD 2 SLICES to automatically assemble large orders!",
+        codingLink: "Loop Iteration (for loops). A loop tells the computer to repeat instructions without writing them over and over!",
+        unlockedAbility: "Loop Architect",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 6, mode: "loops", subRound: 1 }
+      },
+      {
+        id: 10,
+        globalId: 90,
+        title: "Level 10: Master Chef - Dola's Grand Pizza Rush",
+        topic: "Grand Numeracy & Algorithmic Finale",
+        objective: "Put counting, addition, subtraction, and loop commands together in the ultimate pizza rush!",
+        codingLink: "Full Pipeline Integration. Real software ties input, arithmetic, conditionals, and loops together into complete applications!",
+        unlockedAbility: "Grand Pizza Master Trophy",
+        gameType: "pizza-shop",
+        gameData: { pizzaLevel: 6, mode: "grand-rush", subRound: 2 }
+      }
+    ]
+  },
+  {
+    id: 10,
+    title: "Part 10: Robot Maze",
+    ageGroup: "Ages 5–8",
+    description: "Guide Robo the friendly robot through colourful grid mazes using visual coding blocks, loops, directional sequencing, and playful debugging!",
+    levels: [
+      {
+        id: 1,
+        globalId: 91,
+        title: "Level 1: Robo's First Step",
+        topic: "One-Step Directional Movement",
+        objective: "Give Robo a single command to step forward into the battery charging dock.",
+        codingLink: "Direct Execution & Instructions. Computers execute atomic commands step-by-step.",
+        unlockedAbility: "Robo Commander",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 1 }
+      },
+      {
+        id: 2,
+        globalId: 92,
+        title: "Level 2: Step-by-Step Path",
+        topic: "Two- & Three-Step Sequences",
+        objective: "Line up forward movement commands in sequence to cross the open corridor.",
+        codingLink: "Sequential Algorithms. Instructions execute in exact top-to-bottom order.",
+        unlockedAbility: "Path Planner",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 2 }
+      },
+      {
+        id: 3,
+        globalId: 93,
+        title: "Level 3: Turning the Corner",
+        topic: "Directional Awareness & Turns",
+        objective: "Navigate past stone walls by turning and moving down to reach home base.",
+        codingLink: "Multi-axis Coordinate Navigation. Translating 2D spatial directions into robot code.",
+        unlockedAbility: "Corner Navigator",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 3 }
+      },
+      {
+        id: 4,
+        globalId: 94,
+        title: "Level 4: Crystal Collector",
+        topic: "Checkpoints & Item Collection",
+        objective: "Collect glowing energy crystals along the maze path before docking at the charging station.",
+        codingLink: "Preconditions & Checkpoints. Tasks must meet prerequisite conditions before concluding.",
+        unlockedAbility: "Crystal Harvester",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 4 }
+      },
+      {
+        id: 5,
+        globalId: 95,
+        title: "Level 5: Loop Power!",
+        topic: "Repeat Loops in Spatial Movement",
+        objective: "Use a REPEAT 3 TIMES block to slide across the long corridor with minimal code!",
+        codingLink: "Iterative Loops. A loop tells the computer to repeat instructions without writing repeated code!",
+        unlockedAbility: "Loop Pioneer",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 5 }
+      },
+      {
+        id: 6,
+        globalId: 96,
+        title: "Level 6: Dual Loop Expedition",
+        topic: "Multi-Loop Sequences",
+        objective: "Combine horizontal and vertical repeat blocks to cross a wide garden terrain.",
+        codingLink: "Modular Loops. Combining multiple loops to solve multi-stage geometric paths.",
+        unlockedAbility: "Double Loop Specialist",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 6 }
+      },
+      {
+        id: 7,
+        globalId: 97,
+        title: "Level 7: Smart Sensor Robot",
+        topic: "Simple Conditions (IF Path Clear)",
+        objective: "Check sensors to move forward if the path is clear, or turn when an obstacle is ahead.",
+        codingLink: "Conditional Logic (if / else). Decision branching allows robots to react to their environment.",
+        unlockedAbility: "Sensor Engineer",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 7 }
+      },
+      {
+        id: 8,
+        globalId: 98,
+        title: "Level 8: Bug Detective!",
+        topic: "Debugging & Error Correction",
+        objective: "Robo's pre-loaded code has a bug that bumps into a rock! Fix the wrong step to guide Robo home.",
+        codingLink: "Debugging. Finding and fixing logic bugs is one of the most essential superpower skills in coding.",
+        unlockedAbility: "Master Bug Fixer",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 8 }
+      },
+      {
+        id: 9,
+        globalId: 99,
+        title: "Level 9: Crystal Cavern Maze",
+        topic: "Advanced Multi-Objective Navigation",
+        objective: "Collect 3 scattered energy cells through a winding maze with ponds and trees.",
+        codingLink: "Optimal Pathfinding. Balancing efficiency, obstacle avoidance, and item collection.",
+        unlockedAbility: "Maze Explorer Star",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 9 }
+      },
+      {
+        id: 10,
+        globalId: 100,
+        title: "Level 10: Robo's Grand Journey Finale",
+        topic: "Grand Computational & Algorithmic Finale",
+        objective: "Unite sequencing, turns, loops, and debugging in the ultimate Robo championship maze!",
+        codingLink: "Full Algorithmic Mastery. You can sequence, loop, detect obstacles, and debug code like a true software engineer!",
+        unlockedAbility: "Golden Robo Trophy",
+        gameType: "robot-maze",
+        gameData: { mazeLevel: 10 }
+      }
+    ]
+  },
+  {
+    id: 11,
+    title: "Part 11: My Little Shop",
+    ageGroup: "Ages 5–8",
+    description: "Run your own colourful Nigerian neighbourhood shop! Match orders, add Naira prices, give exact change, manage inventory, calculate profits, and use coding loops!",
+    levels: [
+      {
+        id: 1,
+        globalId: 101,
+        title: "Level 1: Market Day - Match Customer Orders",
+        topic: "Quantity Matching & Item Recognition",
+        objective: "Select and pack the exact items and quantities requested by friendly neighbourhood customers.",
+        codingLink: "Data Matching & Input Parsing. Recognizing specific data types and quantities from customer requests.",
+        unlockedAbility: "Shop Helper Apron",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 1 }
+      },
+      {
+        id: 2,
+        globalId: 102,
+        title: "Level 2: Price Tally - Adding Nigerian Naira",
+        topic: "Currency Addition & Totaling",
+        objective: "Add the prices of two shop items (e.g. Banana ₦100 + Juice ₦200) to find the customer's total bill.",
+        codingLink: "Arithmetic Operators & Variable Summation. Combining multiple values into an order total accumulator.",
+        unlockedAbility: "Naira Calculator",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 2 }
+      },
+      {
+        id: 3,
+        globalId: 103,
+        title: "Level 3: Exact Change - Cash Register Math",
+        topic: "Subtraction & Calculating Change",
+        objective: "Calculate and dispense the correct change when a customer hands over a larger Naira note.",
+        codingLink: "Subtraction & Difference Logic. Calculating remainder balances in transactional processing.",
+        unlockedAbility: "Change Champion Register",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 3 }
+      },
+      {
+        id: 4,
+        globalId: 104,
+        title: "Level 4: Shopping Basket - Multiple Items",
+        topic: "Multi-Item Addition & Combinations",
+        objective: "Process multi-item orders combining fruits, snacks, and drinks with different unit prices.",
+        codingLink: "List Iteration & Array Sums. Tallying values from an array of heterogeneous shopping cart items.",
+        unlockedAbility: "Master Cashier",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 4 }
+      },
+      {
+        id: 5,
+        globalId: 105,
+        title: "Level 5: Bulk Orders - Simple Multiplication",
+        topic: "Multiplication as Repeated Addition",
+        objective: "Calculate the total for multiples of the same item (e.g. 3 drinks at ₦200 each = ₦600).",
+        codingLink: "Multiplication & Scaling. Scaling amounts by constant multipliers (Quantity × Price).",
+        unlockedAbility: "Bulk Order Scale",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 5 }
+      },
+      {
+        id: 6,
+        globalId: 106,
+        title: "Level 6: Stockroom Manager - Inventory Counting",
+        topic: "Stock Management & Remaining Balance",
+        objective: "Track shop stock: start with 8 apples in stock, sell 3 to Kofi, and determine the remaining inventory.",
+        codingLink: "State Management & Inventory Counters. Maintaining mutable state variables across checkout events.",
+        unlockedAbility: "Inventory Clipboard",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 6 }
+      },
+      {
+        id: 7,
+        globalId: 107,
+        title: "Level 7: Entrepreneur - Profit & Margins",
+        topic: "Cost, Selling Price & Profit",
+        objective: "Calculate profit earned by selling toys (Bought for ₦500, sold for ₦700 = ₦200 profit!).",
+        codingLink: "Profit Logic & Revenue Formulas. Implementing core business logic (Profit = Revenue - Cost).",
+        unlockedAbility: "Golden Ledger",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 7 }
+      },
+      {
+        id: 8,
+        globalId: 108,
+        title: "Level 8: Smart Automator - Loop Cashier",
+        topic: "Loop Automation & Batch Processing",
+        objective: "Use REPEAT 3 TIMES: SELL 1 JUICE to serve an identical line of customers automatically with code!",
+        codingLink: "Iterative Automation (Loops). Repeating standard procedures automatically to boost efficiency.",
+        unlockedAbility: "Automated Kiosk",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 8 }
+      },
+      {
+        id: 9,
+        globalId: 109,
+        title: "Level 9: Shop Upgrade - Business Growth",
+        topic: "Smart Reinvestment & Pricing Patterns",
+        objective: "Reinvest earned shop profits to unlock colourful canopies, golden registers, and high-value treats!",
+        codingLink: "Resource Allocation & Strategic Optimization. Managing budgets and unlocking capabilities through growth.",
+        unlockedAbility: "Super Storefront",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 9 }
+      },
+      {
+        id: 10,
+        globalId: 110,
+        title: "Level 10: Grand Merchant - Community Market Rush",
+        topic: "Grand Early Entrepreneurship Finale",
+        objective: "Master customer orders, multi-item additions, exact change, and loop automations in the Grand Market Rush!",
+        codingLink: "End-to-End Enterprise Systems. Integrating user interaction, transactions, inventory, and automated loops.",
+        unlockedAbility: "Grand Nigerian Merchant Trophy",
+        gameType: "my-little-shop",
+        gameData: { shopLevel: 10 }
+      }
+    ]
+  },
+  {
+    id: 12,
+    title: "Part 12: Frog Adventure",
+    ageGroup: "Ages 5–8",
+    description: "Guide Hoppy the Frog through ponds, rainforests, gardens, and rivers using jump sequences, patterns, grid coordinates, and loops!",
+    levels: [
+      {
+        id: 1,
+        globalId: 111,
+        title: "Level 1: Lily Pad Leap - Count Jumps 1–5",
+        topic: "Counting forward & jump steps",
+        objective: "Count the lily pads and build a jump sequence to help Hoppy hop safely to the big pink water lily!",
+        codingLink: "Single-Step Sequential Execution. Executing an exact number of forward movement instructions.",
+        unlockedAbility: "Lily Pad Hopper",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 1 }
+      },
+      {
+        id: 2,
+        globalId: 112,
+        title: "Level 2: Directional Trail - Follow Directions",
+        topic: "Spatial directions & turns",
+        objective: "Guide Hoppy with TURN LEFT, TURN RIGHT, and JUMP FORWARD around pond rocks to reach the golden treasure chest!",
+        codingLink: "Directional State & Turning Logic. Updating orientation vectors before forward steps.",
+        unlockedAbility: "Compass Frog",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 2 }
+      },
+      {
+        id: 3,
+        globalId: 113,
+        title: "Level 3: Smart Leaper - Choose the Shortest Path",
+        topic: "Optimization & route planning",
+        objective: "Compare two routes around logs and deep water whirlpools to find the quickest path to Toby the Turtle!",
+        codingLink: "Pathfinding Optimization. Finding the shortest distance algorithm (A* / Dijkstra foundations).",
+        unlockedAbility: "Shortest Path Scout",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 3 }
+      },
+      {
+        id: 4,
+        globalId: 114,
+        title: "Level 4: Rainforest Feast - Collect Juicy Fruit",
+        topic: "Waypoints & collection sequences",
+        objective: "Leap across stepping stones, munch delicious mangoes and watermelons, then arrive safely at home!",
+        codingLink: "Waypoint Traversal & Event Triggers. Collecting items at coordinates before completing execution.",
+        unlockedAbility: "Fruit Harvester",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 4 }
+      },
+      {
+        id: 5,
+        globalId: 115,
+        title: "Level 5: Rhythm Leaps - Jump Patterns",
+        topic: "Pattern recognition & prediction",
+        objective: "Identify the pattern: Jump 1, Jump 2, Jump 1, Jump 2... What comes next? Complete the pattern to cross!",
+        codingLink: "Algorithmic Pattern Recognition. Detecting periodicity and repeating intervals in computational logic.",
+        unlockedAbility: "Pattern Master Frog",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 5 }
+      },
+      {
+        id: 6,
+        globalId: 116,
+        title: "Level 6: Pond Explorer - Numbered Grid Coordinates",
+        topic: "2D Cartesian coordinates (X, Y)",
+        objective: "Read grid coordinates (Column 4, Row 3) and direct Hoppy to the exact spot where Bella the Butterfly waits!",
+        codingLink: "2D Grid Coordinate Systems. Referencing elements in 2D arrays via (column, row) indexing.",
+        unlockedAbility: "Coordinate Navigator",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 6 }
+      },
+      {
+        id: 7,
+        globalId: 117,
+        title: "Level 7: Pond Hopper - Introduce Loops",
+        topic: "Loop blocks (REPEAT N TIMES)",
+        objective: "Cross the wide river using REPEAT 4 TIMES: JUMP FORWARD instead of arranging repetitive single blocks!",
+        codingLink: "Loop Abstraction. Compressing repetitive sequences into clean count-controlled loop statements.",
+        unlockedAbility: "Looping Leap",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 7 }
+      },
+      {
+        id: 8,
+        globalId: 118,
+        title: "Level 8: Frog Detective - Debug the Wrong Leap",
+        topic: "Debugging faulty sequences",
+        objective: "Hoppy's sequence has 1 wrong turn heading toward a prickly bush! Spot the bug, change the command, and save the day!",
+        codingLink: "Code Debugging & Error Isolation. Inspecting a sequence, identifying faulty instructions, and correcting them.",
+        unlockedAbility: "Bug Detective Badge",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 8 }
+      },
+      {
+        id: 9,
+        globalId: 119,
+        title: "Level 9: Jungle River Sprint - Multi-Obstacle Mastery",
+        topic: "Advanced obstacle avoidance & 2-space jumps",
+        objective: "Use JUMP 2 SPACES and sharp turns to leap over river gaps and sleeping snakes in the deep jungle!",
+        codingLink: "Multi-Step Optimization & Conditional Planning. Choosing variable jump velocities to bypass hazards.",
+        unlockedAbility: "Jungle Leaper",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 9 }
+      },
+      {
+        id: 10,
+        globalId: 120,
+        title: "Level 10: Grand Frog Finale - The Golden Lily Pad",
+        topic: "Comprehensive Coding Adventure",
+        objective: "Combine counting, shortest paths, fruit collection, grid coordinates, and loops to reach the mythical Golden Lily Pad!",
+        codingLink: "Full System Synthesis. Combining sequencing, looping, pattern recognition, and navigation.",
+        unlockedAbility: "Golden Frog Master Crown",
+        gameType: "frog-adventure",
+        gameData: { frogLevel: 10 }
+      }
+    ]
+  },
+  {
+    id: 13,
+    title: "Part 13: Traffic Rescue",
+    ageGroup: "Ages 5–8",
+    description: "Take control of the miniature city traffic! Match light signals, manage crossroads, protect zebra crossings, and write IF/THEN logic to guide vehicles and people safely!",
+    levels: [
+      {
+        id: 1,
+        globalId: 121,
+        title: "Level 1: Signal Colors - Match Lights to Action",
+        topic: "Signal matching & color coding",
+        objective: "Learn city traffic light rules! Match Red (STOP), Yellow (GET READY), and Green (GO) to help vehicles know when to move.",
+        codingLink: "State Representation & Enumerations. Translating symbolic states (Red, Yellow, Green) into system actions.",
+        unlockedAbility: "Signal Operator",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 1 }
+      },
+      {
+        id: 2,
+        globalId: 122,
+        title: "Level 2: School Run - Guide the Blue Car",
+        topic: "Single junction control",
+        objective: "The blue car needs to reach school! Switch the junction traffic light to Green at the right moment so it drives through safely.",
+        codingLink: "Event-Driven Triggers. Firing an event when a specific entity arrives at a trigger checkpoint.",
+        unlockedAbility: "Crossing Guard",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 2 }
+      },
+      {
+        id: 3,
+        globalId: 123,
+        title: "Level 3: Crossroads - Manage Two Roads",
+        topic: "Mutual exclusion & coordination",
+        objective: "Manage North-South and East-West traffic! Coordinate opposite lights so cars take turns without gridlock.",
+        codingLink: "Mutual Exclusion & Concurrency Control. Ensuring two conflicting processes do not access a shared resource at the same time.",
+        unlockedAbility: "Crossroad Coordinator",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 3 }
+      },
+      {
+        id: 4,
+        globalId: 124,
+        title: "Level 4: Zebra Crossing - Safe Pedestrians",
+        topic: "Priority lanes & pedestrian safety",
+        objective: "Kids are waiting to cross to the library! Turn vehicle lights Red and activate the walk signal so pedestrians cross safely.",
+        codingLink: "Priority Queuing & Interrupts. Pausing regular background tasks when a high-priority user request arrives.",
+        unlockedAbility: "Zebra Crossing Shield",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 4 }
+      },
+      {
+        id: 5,
+        globalId: 125,
+        title: "Level 5: Green Wave - Introduce Timing",
+        topic: "Timing intervals & delay blocks",
+        objective: "Use WAIT 3 SECONDS blocks so vehicles have enough time to clear the junction before the light turns Red.",
+        codingLink: "Temporal Delays & Clock Timing. Introducing duration intervals (sleep/wait timers) into execution pipelines.",
+        unlockedAbility: "Timer Whiz",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 5 }
+      },
+      {
+        id: 6,
+        globalId: 126,
+        title: "Level 6: Smart City - IF/THEN Conditions",
+        topic: "Conditional statements (IF / THEN)",
+        objective: "Automate the traffic lights! Build: IF PEDESTRIAN WAITING -> STOP CARS, and IF CAR WAITING -> TURN LIGHT GREEN.",
+        codingLink: "Conditional Logic (if/else). Executing specific actions only when boolean sensor conditions evaluate to true.",
+        unlockedAbility: "Smart Sensor Controller",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 6 }
+      },
+      {
+        id: 7,
+        globalId: 127,
+        title: "Level 7: Rush Hour - Multi-Vehicle Anti-Gridlock",
+        topic: "Multi-agent coordination & sequencing",
+        objective: "Handle yellow taxis, city buses, and bicycles all arriving at once! Sequence traffic light changes to prevent traffic jams.",
+        codingLink: "Resource Scheduling & Deadlock Prevention. Managing multiple concurrent agents to avoid system stalls.",
+        unlockedAbility: "Anti-Gridlock Master",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 7 }
+      },
+      {
+        id: 8,
+        globalId: 128,
+        title: "Level 8: Traffic Detective - Debug the Stuck Light",
+        topic: "Debugging faulty traffic rules",
+        objective: "A traffic rule has both lights green at the same time! Find the faulty instruction block, fix it, and restore smooth flow.",
+        codingLink: "Debugging & State Verification. Finding contradictory logical states and resolving race conditions.",
+        unlockedAbility: "City Bug Detective",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 8 }
+      },
+      {
+        id: 9,
+        globalId: 129,
+        title: "Level 9: Emergency Rescue - Priority Express",
+        topic: "Conditional priority & emergency overrides",
+        objective: "The rescue ambulance is rushing through! Use IF AMBULANCE -> OVERRIDE ALL LIGHTS GREEN to clear the intersection instantly.",
+        codingLink: "High-Priority Preemption. Preempting standard control loops to handle urgent critical interrupts.",
+        unlockedAbility: "Rescue Chief",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 9 }
+      },
+      {
+        id: 10,
+        globalId: 130,
+        title: "Level 10: Grand Metropolis - City Traffic Master",
+        topic: "Grand Traffic Controller Finale",
+        objective: "Master the Grand Metropolis! Coordinate multi-lane roads, zebra crossings, timers, and IF/THEN smart rules in the ultimate rush hour!",
+        codingLink: "Full Cyber-Physical System Integration. Unifying sensors, actuators, conditional logic, timing, and safety protocols.",
+        unlockedAbility: "Golden Traffic Controller Trophy",
+        gameType: "traffic-rescue",
+        gameData: { trafficLevel: 10 }
+      }
+    ]
+  },
+  {
+    id: 14,
+    title: "Part 14: Pet Rescue Centre",
+    ageGroup: "Ages 5–8",
+    description: "Care for cute rescue pets! Practice counting biscuits, matching food, sorting toys, care routines, pattern puzzles, and automated IF/THEN and loop rules.",
+    levels: [
+      {
+        id: 1,
+        globalId: 131,
+        title: "Level 1: Biscuit Count - Feed Hungry Puppy",
+        topic: "One-to-one correspondence & counting (1–5)",
+        objective: "Buster the puppy is hungry! Count out exactly 4 bone biscuits into Buster's feeding bowl.",
+        codingLink: "Variable counting & exact quantity allocation. Matching input values to required program limits.",
+        unlockedAbility: "Puppy Feeder",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 1 }
+      },
+      {
+        id: 2,
+        globalId: 132,
+        title: "Level 2: Pet Matching - Right Food for Right Pet",
+        topic: "Categorical matching & relational mapping",
+        objective: "Match each cute rescue animal with their favourite treat! Bone for puppy, fish for kitten, carrots for rabbit, and seeds for parrot.",
+        codingLink: "Key-Value Mapping & Type Association. Routing specific data types to compatible receiver objects.",
+        unlockedAbility: "Treat Matcher",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 2 }
+      },
+      {
+        id: 3,
+        globalId: 133,
+        title: "Level 3: Shelter Cleanup - Sorting & Classification",
+        topic: "Classification by attribute (Food vs Toys)",
+        objective: "Sort messy items in the pet playroom! Drag all food treats into the pantry tray and all chew balls and squeak toys into the toy box.",
+        codingLink: "Data Filtering & Classification. Partitioning a mixed collection into categorized subsets based on attribute predicates.",
+        unlockedAbility: "Care Classifier",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 3 }
+      },
+      {
+        id: 4,
+        globalId: 134,
+        title: "Level 4: Kitten Care Routine - Step-by-Step Sequence",
+        topic: "Sequential execution & chronological order",
+        objective: "Milo the kitten needs care! Arrange the daily routine blocks in proper order: FOOD → WATER → NAP.",
+        codingLink: "Instruction Sequencing. Execution order is essential for deterministic program outcomes.",
+        unlockedAbility: "Routine Master",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 4 }
+      },
+      {
+        id: 5,
+        globalId: 135,
+        title: "Level 5: Toy Patterns - What Comes Next?",
+        topic: "Pattern recognition & repeating sequences (AB, AAB)",
+        objective: "Solve the pet play pattern: Bone, Ball, Bone, Ball... Which toy comes next to keep Buster happy?",
+        codingLink: "Pattern Recognition & Cyclic Iteration. Identifying mathematical periods in data sequences.",
+        unlockedAbility: "Pattern Star",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 5 }
+      },
+      {
+        id: 6,
+        globalId: 136,
+        title: "Level 6: Smart Pet Care - IF/THEN Conditions",
+        topic: "Conditional Logic (IF / THEN)",
+        objective: "Build smart care rules! IF PET IS HUNGRY → GIVE FOOD, and IF PET IS TIRED → LET PET SLEEP.",
+        codingLink: "Conditional Branching (if/else). Triggering responsive actions based on real-time state evaluation.",
+        unlockedAbility: "Logic Caretaker",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 6 }
+      },
+      {
+        id: 7,
+        globalId: 137,
+        title: "Level 7: Feeding Loops - REPEAT 3 TIMES",
+        topic: "Iteration & loop automation (REPEAT N)",
+        objective: "Use a loop block to feed Coco the rabbit 3 delicious carrots using REPEAT 3 TIMES: GIVE 1 CARROT instead of single taps!",
+        codingLink: "Loop Automation (for/repeat). Writing clean, non-redundant instructions using bounded iteration.",
+        unlockedAbility: "Loop Feeder",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 7 }
+      },
+      {
+        id: 8,
+        globalId: 138,
+        title: "Level 8: Routine Detective - Debug the Muddled Schedule",
+        topic: "Debugging faulty sequencing logic",
+        objective: "The shelter assistant put: NAP → FOOD → WATER! Fix the buggy sequence so pets eat and drink before taking a sweet nap.",
+        codingLink: "Debugging & Logical Refactoring. Inspecting execution order to find and correct sequencing errors.",
+        unlockedAbility: "Shelter Bug Fixer",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 8 }
+      },
+      {
+        id: 9,
+        globalId: 139,
+        title: "Level 9: Multi-Pet Nursery - Team Care Coordination",
+        topic: "Multi-object state handling & task scheduling",
+        objective: "All 5 rescue pets arrived! Coordinate feeding, watering, grooming, and cozy sleeping across the whole rescue centre.",
+        codingLink: "Multi-Agent Queue Management. Coordinating asynchronous workflows across multiple interactive entities.",
+        unlockedAbility: "Nursery Superintendent",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 9 }
+      },
+      {
+        id: 10,
+        globalId: 140,
+        title: "Level 10: Grand Pet Gala - Master Animal Caretaker",
+        topic: "Grand Pet Rescue Centre Finale",
+        objective: "Celebrate the Grand Pet Gala! Apply all counting, sorting, routines, pattern rhythms, conditions, and loops in the grand adoption day!",
+        codingLink: "Full Computational Animal Care Synthesis. Harmonizing data types, algorithms, loops, conditions, and debugging.",
+        unlockedAbility: "Golden Pet Rescuer Trophy",
+        gameType: "pet-rescue",
+        gameData: { petLevel: 10 }
+      }
+    ]
   }
 ];
+
+
