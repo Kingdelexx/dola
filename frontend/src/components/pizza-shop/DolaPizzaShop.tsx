@@ -8,6 +8,7 @@ import {
   HelpCircle, CheckCircle2, Heart, Award, Flame, Play, Lightbulb, Lock,
   ChevronRight, RefreshCw, ChefHat, MessageSquare
 } from 'lucide-react';
+import { speakFemale, stopSpeech } from '@/lib/speech';
 
 // --- Sound Synthesizer via Web Audio API (Zero External Asset Dependency) ---
 class SoundEffects {
@@ -515,20 +516,18 @@ export default function DolaPizzaShop({ onBackToStage1, initialLevel = 1 }: Dola
     const next = !soundEnabled;
     setSoundEnabled(next);
     sounds.muted = !next;
+    if (!next) {
+      stopSpeech();
+    }
   };
 
-  // Text to Speech for younger kids
+  // Text to Speech for younger kids (Female Voice)
   const speakText = useCallback((text: string) => {
-    if (!soundEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.95;
-      utterance.pitch = 1.1; // Friendly warm pitch for young learners
-      window.speechSynthesis.speak(utterance);
-    } catch {
-      // Ignore audio synthesis errors on unsupported browsers
-    }
+    if (!soundEnabled) return;
+    speakFemale(text, {
+      rate: 0.95,
+      pitch: 1.15,
+    });
   }, [soundEnabled]);
 
   // Load saved state

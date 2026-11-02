@@ -9,6 +9,7 @@ import {
   ChevronRight, RefreshCw, Trash2, ArrowUp, ArrowLeft, ArrowRight as ArrowRightIcon,
   Compass, Bug, Home, Map, Repeat, Footprints, ShieldAlert, Sparkle, Shirt
 } from 'lucide-react';
+import { speakFemale, stopSpeech } from '@/lib/speech';
 
 // --- Web Audio Synthesizer (Zero External Asset Dependency) ---
 class FrogSoundEffects {
@@ -469,19 +470,22 @@ export default function FrogAdventure({ initialLevel }: { initialLevel?: number 
     const nextMuted = !soundMuted;
     setSoundMuted(nextMuted);
     frogSounds.muted = nextMuted;
+    if (nextMuted) {
+      stopSpeech();
+      setSpeaking(false);
+    }
   };
 
-  // Text to Speech
+  // Text to Speech (Female Voice)
   const speakText = (text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9;
-    utterance.pitch = 1.1;
-    utterance.onstart = () => setSpeaking(true);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utterance);
+    if (soundMuted) return;
+    speakFemale(text, {
+      rate: 0.92,
+      pitch: 1.15,
+      onStart: () => setSpeaking(true),
+      onEnd: () => setSpeaking(false),
+      onError: () => setSpeaking(false),
+    });
   };
 
   // Fetch saved progress

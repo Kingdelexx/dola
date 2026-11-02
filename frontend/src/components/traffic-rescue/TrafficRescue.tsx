@@ -9,6 +9,7 @@ import {
   ChevronRight, RefreshCw, Trash2, ShieldAlert, Sparkle,
   Compass, Map, Heart, AlertTriangle, Check, Car, UserCheck, Clock, GitBranch
 } from 'lucide-react';
+import { speakFemale, stopSpeech } from '@/lib/speech';
 
 // --- Web Audio Synthesizer (Zero External Asset Dependency) ---
 class TrafficSoundEffects {
@@ -506,16 +507,13 @@ export default function TrafficRescue({ initialLevel }: { initialLevel?: number 
     fetchProgress();
   }, []);
 
-  // Read Aloud Helper with Web Speech API
+  // Read Aloud Helper with Web Speech API (Female Voice)
   const speakText = useCallback((text: string) => {
     if (isMuted) return;
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.1;
-      window.speechSynthesis.speak(utterance);
-    }
+    speakFemale(text, {
+      rate: 0.92,
+      pitch: 1.15,
+    });
   }, [isMuted]);
 
   // Initialize current level
@@ -565,8 +563,8 @@ export default function TrafficRescue({ initialLevel }: { initialLevel?: number 
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
     trafficSounds.muted = nextMuted;
-    if (nextMuted && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if (nextMuted) {
+      stopSpeech();
     }
   };
 

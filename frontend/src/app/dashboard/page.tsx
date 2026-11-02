@@ -195,7 +195,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Interactive Mini-Games Showcase for Younger Kids (Ages 5–8) */}
+        {/* Interactive Mini-Games Showcase */}
         <div className="dash-element mb-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* 1. Dola's Pizza Shop */}
@@ -205,7 +205,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-yellow-300" /> Stage 1 Part 9 • Ages 5–8
+                  <Sparkles size={13} className="text-yellow-300" /> Stage 1 Part 9
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -237,7 +237,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-cyan-200" /> Stage 1 Part 10 • Ages 5–8
+                  <Sparkles size={13} className="text-cyan-200" /> Stage 1 Part 10
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -269,7 +269,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 11 • Ages 5–8
+                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 11
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -301,7 +301,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-lime-200" /> Stage 1 Part 12 • Ages 5–8
+                  <Sparkles size={13} className="text-lime-200" /> Stage 1 Part 12
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -333,7 +333,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 13 • Ages 5–8
+                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 13
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -365,7 +365,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-pink-200" /> Stage 1 Part 14 • Ages 5–8
+                  <Sparkles size={13} className="text-pink-200" /> Stage 1 Part 14
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">

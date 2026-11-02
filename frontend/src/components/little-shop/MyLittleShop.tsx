@@ -9,6 +9,7 @@ import {
   ChevronRight, RefreshCw, Trash2, ShoppingBag, Store, Coins,
   Plus, Minus, ArrowLeft, Home, Map, Heart, Check, Sparkle, Tag
 } from 'lucide-react';
+import { speakFemale, stopSpeech } from '@/lib/speech';
 
 // --- Web Audio Synthesizer (Zero Audio Asset Dependency) ---
 class ShopSoundEffects {
@@ -166,19 +167,13 @@ class ShopSoundEffects {
 
 const sounds = new ShopSoundEffects();
 
-// --- Speech Synthesis Helper ---
+// --- Speech Synthesis Helper (Female Voice) ---
 function speakText(text: string, enabled: boolean) {
-  if (!enabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.1; // Friendly warm pitch for young learners
-    utterance.lang = 'en-NG'; // Nigerian English if available, or en-US
-    window.speechSynthesis.speak(utterance);
-  } catch (err) {
-    // Graceful fallback
-  }
+  speakFemale(text, {
+    enabled,
+    rate: 0.95,
+    pitch: 1.15,
+  });
 }
 
 // --- Customer Definitions ---
@@ -949,6 +944,7 @@ export default function MyLittleShop({ initialLevel = 1, onBackToStage1 }: MyLit
                 const next = !soundEnabled;
                 setSoundEnabled(next);
                 sounds.muted = !next;
+                if (!next) stopSpeech();
               }}
               className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 text-slate-700 transition-transform active:scale-95"
               title={soundEnabled ? 'Mute Sounds' : 'Unmute Sounds'}
