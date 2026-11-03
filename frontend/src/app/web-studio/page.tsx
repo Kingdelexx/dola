@@ -7,6 +7,7 @@ import WebPlayground from '@/components/WebPlayground';
 import LizzyChat from '@/components/LizzyChat';
 import Link from 'next/link';
 import { ArrowLeft, Rocket, Sparkles } from 'lucide-react';
+import PaywallGuard from '@/components/subscription/PaywallGuard';
 
 export default function WebStudioPage() {
   const router = useRouter();
@@ -40,7 +41,8 @@ export default function WebStudioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col font-sans overflow-hidden">
+    <PaywallGuard feature="web-studio">
+      <div className="min-h-screen bg-slate-950 flex flex-col font-sans overflow-hidden">
       {/* Top Header Navigation bar for Web Studio */}
       <div className="h-16 bg-slate-900 border-b border-slate-800 px-4 md:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
@@ -79,5 +81,6 @@ export default function WebStudioPage() {
         contextInfo="Web Dev Studio: Kids writing HTML and CSS code side-by-side with live iframe preview. Help them with HTML tags like <h1>, <p>, <img>, <button> and CSS properties like background, color, border, padding, and text-align."
       />
     </div>
+    </PaywallGuard>
   );
 }

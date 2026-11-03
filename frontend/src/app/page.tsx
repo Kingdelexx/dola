@@ -143,6 +143,9 @@ export default function Home() {
           <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain group-hover:scale-105 transition-transform" />
         </Link>
         <div className="space-x-3 flex items-center">
+          <Link href="/subscribe" className="px-4 py-2 rounded-full font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-100/70 transition-colors">
+            Pricing
+          </Link>
           {!loading && user ? (
             <>
               {user.is_superuser && (
@@ -452,6 +455,7 @@ export default function Home() {
             <h4 className="text-white font-black text-lg mb-6 uppercase tracking-widest text-purple-400">Company</h4>
             <ul className="space-y-4 font-bold">
               <li><Link href="/about" className="hover:text-purple-300 hover:pl-2 transition-all block">About Us</Link></li>
+              <li><Link href="/subscribe" className="hover:text-purple-300 hover:pl-2 transition-all block">Pricing &amp; Plans</Link></li>
               <li><Link href="/child-safety" className="hover:text-purple-300 hover:pl-2 transition-all block">Child Safety</Link></li>
               <li><Link href="/contact" className="hover:text-purple-300 hover:pl-2 transition-all block">Contact</Link></li>
             </ul>

@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { STAGE2_BLOCK_LEVELS } from '@/data/stage2BlockLevels';
 import { Trophy } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import PaywallGuard from '@/components/subscription/PaywallGuard';
 
 // Dynamically import Lottie to avoid SSR issues
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
@@ -444,7 +445,8 @@ await main()
   `;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
+    <PaywallGuard feature="stage2">
+      <div className="min-h-screen bg-slate-50 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-4">
             <Link href="/" className="text-blue-500 hover:text-blue-700 inline-block font-bold">&larr; Back to Dashboard</Link>
@@ -1004,5 +1006,6 @@ await main()
         contextInfo={`Stage 2 Level ${currentLevelIndex + 1} (${level.title}): ${level.objective}. Theme: ${level.theme}. Current Generated Code: "${pythonCode}"`} 
       />
     </div>
+    </PaywallGuard>
   );
 }

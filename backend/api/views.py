@@ -3,8 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from .serializers import UserSerializer, LoginSerializer
-from .models import UserProfile
+from .serializers import (
+    UserSerializer, LoginSerializer,
+    BlocklyProjectSerializer, PythonProjectSerializer, AppStudioProjectSerializer
+)
+from .models import UserProfile, BlocklyProject, PythonProject, AppStudioProject
+from .permissions import RequiresActiveSubscription, IsFamilyResourceOwner
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -150,7 +154,13 @@ class UserDataView(APIView):
 
     def get(self, request):
         serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        data = serializer.data
+        try:
+            from .subscription_service import is_student_accessible
+            data['subscription_access'] = is_student_accessible(request.user)
+        except Exception as e:
+            data['subscription_access'] = {"has_access": True, "reason": "Default fallback", "status": "active"}
+        return Response(data)
 
 class SubmitOnboardingDiagnosticView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -495,6 +505,8 @@ class UpdateProgressView(APIView):
         
         stage = request.data.get('stage')
         progress = request.data.get('progress')
+        if progress is None:
+            progress = request.data.get('level')
         
         points_earned = 0
         
@@ -502,7 +514,21 @@ class UpdateProgressView(APIView):
         if stage is not None and progress is not None:
             stage = int(stage)
             progress = int(progress)
-            
+
+            # Access guard: Stage 1 levels 1-10 are free sample lessons. Everything beyond requires an active subscription.
+            if stage > 1 or (stage == 1 and progress > 10):
+                from .subscription_service import check_learning_access
+                access = check_learning_access(user, feature=f'stage{stage}', stage=stage, part=2 if (stage == 1 and progress > 10) else None)
+                if not access.get('allowed', False):
+                    return Response({
+                        "error": "SUBSCRIPTION_REQUIRED",
+                        "detail": access.get("reason", "An active subscription is required to progress beyond Chapter 1."),
+                        "headline": access.get("headline", "Your DolaCode adventure is waiting!"),
+                        "subtext": access.get("subtext", "Ask your parent to unlock your learning world."),
+                        "cta_text": access.get("cta_text", "UNLOCK DOLACODE"),
+                        "cta_url": access.get("cta_url", "/subscribe")
+                    }, status=status.HTTP_403_FORBIDDEN)
+
             if stage == 1:
                 old_progress = profile.stage1_progress
                 if progress > old_progress:
@@ -616,7 +642,7 @@ class SubmitFeedbackView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PizzaShopSaveProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
 
     def post(self, request):
         user = request.user
@@ -715,10 +741,25 @@ class PizzaShopSaveProgressView(APIView):
 
 
 class PizzaShopGetProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'numeracy'
 
     def get(self, request):
         user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         prog, _ = PizzaShopProgress.objects.get_or_create(user=user)
         return Response({
             "success": True,
@@ -727,7 +768,7 @@ class PizzaShopGetProgressView(APIView):
 
 
 class RobotMazeSaveProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
 
     def post(self, request):
         user = request.user
@@ -822,10 +863,25 @@ class RobotMazeSaveProgressView(APIView):
 
 
 class RobotMazeGetProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'numeracy'
 
     def get(self, request):
         user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         prog, _ = RobotMazeProgress.objects.get_or_create(user=user)
         return Response({
             "success": True,
@@ -834,7 +890,7 @@ class RobotMazeGetProgressView(APIView):
 
 
 class MyLittleShopSaveProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
 
     def post(self, request):
         user = request.user
@@ -945,10 +1001,25 @@ class MyLittleShopSaveProgressView(APIView):
 
 
 class MyLittleShopGetProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'numeracy'
 
     def get(self, request):
         user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         prog, _ = MyLittleShopProgress.objects.get_or_create(user=user)
         return Response({
             "success": True,
@@ -957,7 +1028,7 @@ class MyLittleShopGetProgressView(APIView):
 
 
 class FrogAdventureSaveProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
 
     def post(self, request):
         user = request.user
@@ -1066,10 +1137,25 @@ class FrogAdventureSaveProgressView(APIView):
 
 
 class FrogAdventureGetProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'numeracy'
 
     def get(self, request):
         user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         prog, _ = FrogAdventureProgress.objects.get_or_create(user=user)
         return Response({
             "success": True,
@@ -1078,7 +1164,7 @@ class FrogAdventureGetProgressView(APIView):
 
 
 class TrafficRescueSaveProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
 
     def post(self, request):
         user = request.user
@@ -1187,10 +1273,25 @@ class TrafficRescueSaveProgressView(APIView):
 
 
 class TrafficRescueGetProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'numeracy'
 
     def get(self, request):
         user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         prog, _ = TrafficRescueProgress.objects.get_or_create(user=user)
         return Response({
             "success": True,
@@ -1199,7 +1300,7 @@ class TrafficRescueGetProgressView(APIView):
 
 
 class PetRescueSaveProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
 
     def post(self, request):
         user = request.user
@@ -1316,10 +1417,25 @@ class PetRescueSaveProgressView(APIView):
 
 
 class PetRescueGetProgressView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'numeracy'
 
     def get(self, request):
         user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         prog, _ = PetRescueProgress.objects.get_or_create(user=user)
         return Response({
             "success": True,
@@ -1917,6 +2033,9 @@ class ParentDashboardView(APIView):
         relations = ParentChild.objects.filter(parent=user)
         children_users = [rel.child for rel in relations]
 
+        from .models import Subscription
+        parent_sub = Subscription.objects.filter(parent=user).select_related('plan').order_by('-created_at').first()
+
         children_analytics = []
         for child in children_users:
             c_profile = getattr(child, 'profile', None)
@@ -1979,12 +2098,18 @@ class ParentDashboardView(APIView):
                 else:
                     ai_rec = "Lizzy AI recommends advancing through Stage 4 Python programming."
 
-            if c_profile and c_profile.school:
+            if c_profile and c_profile.school and c_profile.school.status == 'APPROVED' and c_profile.classroom:
                 plan_name = f"{c_profile.school.name} Plan"
-                plan_status = f"Enrolled in {c_profile.classroom.name if c_profile.classroom else 'General Class'}"
+                plan_status = f"Enrolled in {c_profile.classroom.name}"
+                renews_at = "School Sponsored"
+            elif parent_sub and parent_sub.is_valid():
+                plan_name = parent_sub.plan.plan_name if parent_sub.plan else "Family Membership"
+                plan_status = f"Active ({parent_sub.get_subscription_status_display()})"
+                renews_at = parent_sub.current_period_end.strftime("%b %d, %Y") if parent_sub.current_period_end else "Active"
             else:
-                plan_name = "Independent Learner Plan"
-                plan_status = "Active Account"
+                plan_name = "Independent Learner"
+                plan_status = "Subscription Required"
+                renews_at = "Inactive"
 
             p_prog = getattr(child, 'pizza_shop_progress', None)
             pizza_shop_stats = None
@@ -2149,13 +2274,21 @@ class ParentDashboardView(APIView):
                     "subscription": {
                         "plan": plan_name,
                         "status": plan_status,
-                        "renews_at": "N/A"
+                        "renews_at": renews_at
                     }
                 }
             })
 
         return Response({
             "parent": UserSerializer(user).data,
+            "parent_subscription": {
+                "has_subscription": parent_sub is not None,
+                "is_active": parent_sub.is_valid() if parent_sub else False,
+                "plan_name": parent_sub.plan.plan_name if (parent_sub and parent_sub.plan) else "No Active Plan",
+                "status": parent_sub.subscription_status if parent_sub else "inactive",
+                "current_period_end": parent_sub.current_period_end.isoformat() if (parent_sub and parent_sub.current_period_end) else None,
+                "grace_period_end": parent_sub.grace_period_end.isoformat() if (parent_sub and parent_sub.grace_period_end) else None,
+            },
             "children": children_analytics
         })
 
@@ -2735,12 +2868,27 @@ from .models import WebChallenge, StudentChallengeProgress, ProgressLog
 from .serializers import WebChallengeSerializer, StudentChallengeProgressSerializer
 
 class WebChallengeDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'web_studio'
 
     def get(self, request, slug):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to view student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         challenge = WebChallenge.objects.filter(slug=slug).first()
         if not challenge:
-            # Create a default initial challenge if not found in DB
             challenge = WebChallenge.objects.create(
                 slug=slug,
                 title="Build Your Superhero Badge",
@@ -2753,9 +2901,9 @@ class WebChallengeDetailView(APIView):
             )
 
         student_progress_data = None
-        if request.user and request.user.is_authenticated:
+        if target_user and target_user.is_authenticated:
             progress, _ = StudentChallengeProgress.objects.get_or_create(
-                student=request.user,
+                student=target_user,
                 challenge=challenge
             )
             student_progress_data = {
@@ -2773,7 +2921,8 @@ class WebChallengeDetailView(APIView):
 
 
 class WebChallengeSaveDraftView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'web_studio'
 
     def post(self, request):
         slug = request.data.get('slug')
@@ -2783,10 +2932,15 @@ class WebChallengeSaveDraftView(APIView):
         if not slug:
             return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            challenge = WebChallenge.objects.get(slug=slug)
-        except WebChallenge.DoesNotExist:
-            return Response({"error": f"Web challenge '{slug}' not found."}, status=status.HTTP_404_NOT_FOUND)
+        challenge, _ = WebChallenge.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "title": slug.replace('-', ' ').title(),
+                "stage_order": 1,
+                "solution_criteria": {"required_tags": ["h1"]},
+                "reward_xp": 50
+            }
+        )
 
         progress, _ = StudentChallengeProgress.objects.get_or_create(
             student=request.user,
@@ -2803,7 +2957,8 @@ class WebChallengeSaveDraftView(APIView):
 
 
 class WebChallengeSubmitView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'web_studio'
 
     def post(self, request):
         slug = request.data.get('slug')
@@ -2813,10 +2968,15 @@ class WebChallengeSubmitView(APIView):
         if not slug:
             return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            challenge = WebChallenge.objects.get(slug=slug)
-        except WebChallenge.DoesNotExist:
-            return Response({"error": f"Web challenge '{slug}' not found."}, status=status.HTTP_404_NOT_FOUND)
+        challenge, _ = WebChallenge.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "title": slug.replace('-', ' ').title(),
+                "stage_order": 1,
+                "solution_criteria": {"required_tags": ["h1"]},
+                "reward_xp": 50
+            }
+        )
 
         progress, _ = StudentChallengeProgress.objects.get_or_create(
             student=request.user,
@@ -2866,15 +3026,31 @@ class WebChallengeSubmitView(APIView):
 
 
 class WebChallengeProjectsListView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'web_studio'
 
     def get(self, request):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to view student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
         challenges = WebChallenge.objects.all().order_by('stage_order')
         projects = []
 
         progress_map = {}
-        if request.user and request.user.is_authenticated:
-            all_progress = StudentChallengeProgress.objects.filter(student=request.user)
+        if target_user and target_user.is_authenticated:
+            all_progress = StudentChallengeProgress.objects.filter(student=target_user)
             for p in all_progress:
                 progress_map[p.challenge_id] = p
 
@@ -3000,6 +3176,319 @@ class StudentJoinClassView(APIView):
             "token": token.key,
             "user": UserSerializer(user).data
         }, status=status.HTTP_201_CREATED)
+
+
+# =====================================================================
+# PROTECTED LEARNING RESOURCES: PYTHON, BLOCK CODING, APP STUDIO, PREMIUM
+# =====================================================================
+
+class PythonExecuteView(APIView):
+    """
+    Executes student Python code in a sandboxed, resource-limited subprocess.
+    Protected by subscription check and strict AST + runtime sandbox security.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'python_quest'
+
+    def post(self, request):
+        code = request.data.get('code', '')
+        test_assertions = request.data.get('test_assertions', [])
+
+        if not isinstance(code, str):
+            return Response({"error": "Code must be a string."}, status=status.HTTP_400_BAD_REQUEST)
+        if test_assertions and not isinstance(test_assertions, list):
+            return Response({"error": "test_assertions must be a list of strings."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(code) > 50000:
+            return Response({"error": "Code length exceeds maximum allowed limit (50KB)."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from .python_sandbox import execute_sandboxed_python
+        result = execute_sandboxed_python(code=code, test_assertions=test_assertions, timeout_seconds=2.0)
+        status_code = status.HTTP_200_OK if result.get('success') else status.HTTP_400_BAD_REQUEST
+        return Response(result, status=status_code)
+
+
+class PythonProjectsListView(APIView):
+    """
+    Lists and saves Python Quest projects with strict family account isolation.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'python_quest'
+
+    def get(self, request):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        projects = PythonProject.objects.filter(user=target_user)
+        return Response({"projects": PythonProjectSerializer(projects, many=True).data})
+
+    def post(self, request):
+        serializer = PythonProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            project = serializer.save(user=request.user)
+            return Response({"success": True, "project": PythonProjectSerializer(project).data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PythonProjectDetailView(APIView):
+    """
+    Retrieves, updates, or deletes a specific Python project with family authorization checks.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription, IsFamilyResourceOwner]
+    subscription_feature = 'python_quest'
+
+    def get_object(self, pk):
+        try:
+            obj = PythonProject.objects.get(pk=pk)
+            self.check_object_permissions(self.request, obj)
+            return obj
+        except PythonProject.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"project": PythonProjectSerializer(project).data})
+
+    def put(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PythonProjectSerializer(project, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "project": serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        project.delete()
+        return Response({"success": True, "message": "Project deleted successfully."})
+
+
+class BlocklyProjectsListView(APIView):
+    """
+    Lists and saves Block Coding projects with family account isolation.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'block_coding'
+
+    def get(self, request):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        projects = BlocklyProject.objects.filter(user=target_user)
+        return Response({"projects": BlocklyProjectSerializer(projects, many=True).data})
+
+    def post(self, request):
+        serializer = BlocklyProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            project = serializer.save(user=request.user)
+            return Response({"success": True, "project": BlocklyProjectSerializer(project).data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BlocklyProjectDetailView(APIView):
+    """
+    Retrieves, updates, or deletes a Block Coding project with family authorization checks.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription, IsFamilyResourceOwner]
+    subscription_feature = 'block_coding'
+
+    def get_object(self, pk):
+        try:
+            obj = BlocklyProject.objects.get(pk=pk)
+            self.check_object_permissions(self.request, obj)
+            return obj
+        except BlocklyProject.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"project": BlocklyProjectSerializer(project).data})
+
+    def put(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = BlocklyProjectSerializer(project, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "project": serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        project.delete()
+        return Response({"success": True, "message": "Project deleted successfully."})
+
+
+class AppStudioProjectsListView(APIView):
+    """
+    Lists and saves App Studio mobile development projects with family account isolation.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'app_studio'
+
+    def get(self, request):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to access student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        projects = AppStudioProject.objects.filter(user=target_user)
+        return Response({"projects": AppStudioProjectSerializer(projects, many=True).data})
+
+    def post(self, request):
+        project_id = request.data.get('project_id')
+        if project_id:
+            existing = AppStudioProject.objects.filter(user=request.user, project_id=project_id).first()
+            if existing:
+                serializer = AppStudioProjectSerializer(existing, data=request.data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({"success": True, "project": serializer.data})
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = AppStudioProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            project = serializer.save(user=request.user)
+            return Response({"success": True, "project": AppStudioProjectSerializer(project).data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AppStudioProjectDetailView(APIView):
+    """
+    Retrieves, updates, or deletes an App Studio project with family authorization checks.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription, IsFamilyResourceOwner]
+    subscription_feature = 'app_studio'
+
+    def get_object(self, pk):
+        try:
+            if str(pk).isdigit():
+                obj = AppStudioProject.objects.get(pk=int(pk))
+            else:
+                obj = AppStudioProject.objects.get(project_id=str(pk))
+            self.check_object_permissions(self.request, obj)
+            return obj
+        except AppStudioProject.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"project": AppStudioProjectSerializer(project).data})
+
+    def put(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = AppStudioProjectSerializer(project, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "project": serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        project = self.get_object(pk)
+        if not project:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+        project.delete()
+        return Response({"success": True, "message": "Project deleted successfully."})
+
+
+class PremiumContentDeliveryView(APIView):
+    """
+    Delivers premium curriculum materials, verified solutions, video hints,
+    and teacher resources. Accessible only to active subscribers.
+    """
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'premium_content'
+
+    def get(self, request):
+        resource_id = request.query_params.get('resource_id')
+
+        premium_resources = {
+            "stage1_solutions": {
+                "title": "Numeracy World: Master Solution Key",
+                "stage": 1,
+                "type": "teacher_guide",
+                "description": "Full walkthrough of all 14 parts of Stage 1 Numeracy and computational thinking."
+            },
+            "stage2_blockly_curriculum": {
+                "title": "Block Coding Challenge Solutions",
+                "stage": 2,
+                "type": "solutions_guide",
+                "description": "Block-by-block visual architecture for all 11 maze and game missions."
+            },
+            "stage3_appstudio_templates": {
+                "title": "App Studio Production Templates",
+                "stage": 3,
+                "type": "project_templates",
+                "description": "Commercial-grade mobile app templates with responsive UI layouts."
+            },
+            "stage4_python_solutions": {
+                "title": "Python Quest: AI & Algorithm Answer Keys",
+                "stage": 4,
+                "type": "code_solutions",
+                "description": "Optimal algorithmic solutions and test assertions for all 10 chapters."
+            }
+        }
+
+        if resource_id:
+            res = premium_resources.get(resource_id)
+            if not res:
+                return Response({"error": "Premium resource not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"resource": res})
+
+        return Response({
+            "success": True,
+            "resources": list(premium_resources.values())
+        })
+
 
 
 

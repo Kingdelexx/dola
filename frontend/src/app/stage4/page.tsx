@@ -20,6 +20,7 @@ import { translatePythonError } from './utils/errorTranslator';
 import InstructionCarousel from './components/InstructionCarousel';
 import ChapterZeroView from './components/ChapterZeroView';
 import { useAuth } from '@/context/AuthContext';
+import PaywallGuard from '@/components/subscription/PaywallGuard';
 
 export default function Stage4Page() {
   const router = useRouter();
@@ -166,7 +167,8 @@ export default function Stage4Page() {
   const currentLevelHintsCount = unlockedHints[activeLevel.id] || 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/60 via-purple-50/40 to-sky-50/80 text-slate-900 flex flex-col font-sans select-none overflow-x-hidden">
+    <PaywallGuard feature="stage4">
+      <div className="min-h-screen bg-gradient-to-b from-amber-50/60 via-purple-50/40 to-sky-50/80 text-slate-900 flex flex-col font-sans select-none overflow-x-hidden">
       
       {/* HUD Header */}
       <header className="h-16 border-b-4 border-purple-200/80 bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 px-3 sm:px-6 flex items-center justify-between z-30 shrink-0 sticky top-0 text-white shadow-lg">
@@ -547,5 +549,6 @@ export default function Stage4Page() {
         contextInfo={`Stage 4 Python Quest. Level ${activeLevel.id} (${activeLevel.title}). Chapter ${activeLevel.chapter}. Instructions: ${activeLevel.instructions}. Starter Code: "${activeLevel.starterCode}". Current Student Code: "${codeState[activeLevel.id] || activeLevel.starterCode}". ${executionError ? `Terminal Error: ${executionError.message}` : ''}`} 
       />
     </div>
+    </PaywallGuard>
   );
 }

@@ -9,6 +9,17 @@ import {
   Sparkles, RefreshCw, ShieldAlert, UserPlus,
   BookOpen, Calculator, Code, Clock, Award, FileText, CheckCircle2, CreditCard, LogOut
 } from 'lucide-react';
+import SubscriptionModal from '@/components/subscription/SubscriptionModal';
+import confetti from 'canvas-confetti';
+
+interface ParentSubscription {
+  has_subscription: boolean;
+  is_active: boolean;
+  plan_name: string;
+  status: string;
+  current_period_end: string | null;
+  grace_period_end: string | null;
+}
 
 interface Achievement {
   name: string;
@@ -218,7 +229,7 @@ export default function ParentDashboardPage() {
   const router = useRouter();
   const { logout } = useAuth();
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  const [data, setData] = useState<{ children?: ChildData[] } | null>(null);
+  const [data, setData] = useState<{ parent?: any; parent_subscription?: ParentSubscription; children?: ChildData[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -227,6 +238,11 @@ export default function ParentDashboardPage() {
   const [studentIdentifier, setStudentIdentifier] = useState('');
   const [linkError, setLinkError] = useState('');
   const [isLinking, setIsLinking] = useState(false);
+
+  // Subscription modal & payment verification
+  const [showSubModal, setShowSubModal] = useState(false);
+  const [paymentVerifying, setPaymentVerifying] = useState(false);
+  const [paymentSuccessMessage, setPaymentSuccessMessage] = useState('');
 
   const fetchParentData = useCallback(async () => {
     const authToken = token || localStorage.getItem('token');
@@ -255,11 +271,50 @@ export default function ParentDashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, token]);
 
   useEffect(() => {
     fetchParentData();
   }, [fetchParentData]);
+
+  // Handle Paystack redirect return and verification
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const isComplete = params.get('payment') === 'complete';
+      const ref = params.get('reference') || params.get('trxref');
+
+      if (isComplete && ref) {
+        setPaymentVerifying(true);
+        const authToken = token || localStorage.getItem('token');
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/payments/verify/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ reference: ref })
+        })
+          .then(res => res.json())
+          .then(resData => {
+            if (resData.success) {
+              setPaymentSuccessMessage(resData.message || 'Payment verified! Your family membership is now active.');
+              confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+              fetchParentData();
+            } else {
+              setError(resData.message || 'Payment verification was not completed.');
+            }
+          })
+          .catch(err => {
+            console.error("Payment verification error:", err);
+          })
+          .finally(() => {
+            setPaymentVerifying(false);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          });
+      }
+    }
+  }, [token, fetchParentData]);
 
   const handleLinkChild = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -319,6 +374,12 @@ export default function ParentDashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/parent/subscription"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-500/20 flex items-center gap-1.5 transition-all cursor-pointer hover:shadow-lg"
+          >
+            <CreditCard className="w-4 h-4" /> {data?.parent_subscription?.is_active ? 'Membership Active' : 'Subscribe / Upgrade'}
+          </Link>
           <button
             onClick={() => setShowLinkModal(true)}
             className="px-4 py-2 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold text-xs rounded-xl shadow-md shadow-pink-500/20 flex items-center gap-1.5 transition-all cursor-pointer hover:shadow-lg"
@@ -361,6 +422,110 @@ export default function ParentDashboardPage() {
             <p className="text-pink-50/90 text-sm font-medium leading-relaxed">
               Track lesson completion, homework, numeracy & coding scores, time spent, badges earned, and weekly Lizzy AI recommendations.
             </p>
+          </div>
+        </div>
+
+        {/* Payment Verification Feedback */}
+        {paymentVerifying && (
+          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-800 flex items-center gap-3 font-semibold shadow-xs animate-pulse">
+            <RefreshCw className="w-5 h-5 animate-spin text-indigo-600" />
+            <span>Verifying your Paystack payment transaction... Please hold on.</span>
+          </div>
+        )}
+
+        {paymentSuccessMessage && (
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between font-bold shadow-xs">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+              <span>{paymentSuccessMessage}</span>
+            </div>
+            <button 
+              onClick={() => setPaymentSuccessMessage('')} 
+              className="text-xs text-emerald-700 hover:text-emerald-900 underline font-semibold ml-4"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Past Due Grace Period Notification Banner */}
+        {data?.parent_subscription?.status === 'past_due' && (
+          <div className="p-6 rounded-3xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                <ShieldAlert size={22} />
+              </div>
+              <div>
+                <h4 className="font-black text-base text-amber-950">
+                  Your DolaCode subscription could not be renewed.
+                </h4>
+                <p className="text-xs text-amber-900 font-medium mt-0.5">
+                  Your child's learning progress and saved projects are safe. Please update your payment details to continue learning.
+                </p>
+                {data.parent_subscription.grace_period_end && (
+                  <div className="text-[11px] font-bold text-amber-800 mt-1 flex items-center gap-1.5">
+                    <Clock size={13} className="text-amber-600" />
+                    <span>Grace period active until {new Date(data.parent_subscription.grace_period_end).toLocaleDateString()}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Link
+              href="/parent/subscription"
+              className="px-5 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs shadow-md shadow-amber-600/20 active:scale-95 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+            >
+              <CreditCard size={15} />
+              <span>UPDATE PAYMENT</span>
+            </Link>
+          </div>
+        )}
+
+        {/* Family Subscription Status Card */}
+        <div className="p-6 rounded-3xl bg-white border-2 border-indigo-100/80 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${
+              data?.parent_subscription?.is_active 
+                ? 'bg-emerald-100 text-emerald-600 border-2 border-emerald-200' 
+                : 'bg-amber-100 text-amber-600 border-2 border-amber-200'
+            }`}>
+              {data?.parent_subscription?.is_active ? '🌟' : '🔒'}
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-extrabold text-base text-slate-900">
+                  Family Membership: <span className="text-indigo-600">{data?.parent_subscription?.plan_name || 'No Active Plan'}</span>
+                </h3>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                  data?.parent_subscription?.is_active 
+                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                    : 'bg-amber-100 text-amber-800 border border-amber-200'
+                }`}>
+                  {data?.parent_subscription?.status || 'Inactive'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                {data?.parent_subscription?.is_active && data.parent_subscription.current_period_end 
+                  ? `Covers all linked children • Valid until ${new Date(data.parent_subscription.current_period_end).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}`
+                  : 'Subscribe to give all your linked children full access to all 4 coding stages and math games.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/parent/subscription"
+              className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5"
+            >
+              <span>Manage & Receipts</span>
+            </Link>
+            <button
+              onClick={() => setShowSubModal(true)}
+              className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <CreditCard size={15} />
+              <span>{data?.parent_subscription?.is_active ? 'Renew Plan' : 'Activate Membership'}</span>
+            </button>
           </div>
         </div>
 
@@ -1512,6 +1677,17 @@ export default function ParentDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Paystack Family Subscription Modal */}
+      <SubscriptionModal
+        isOpen={showSubModal}
+        onClose={() => setShowSubModal(false)}
+        childrenCount={children.length || 1}
+        onSuccess={() => {
+          setShowSubModal(false);
+          fetchParentData();
+        }}
+      />
     </div>
   );
 }

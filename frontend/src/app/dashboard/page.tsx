@@ -4,7 +4,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, Bot, Store } from 'lucide-react';
+import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, Bot, Store, ShieldCheck, UserCircle2 } from 'lucide-react';
+import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import { gsap } from 'gsap';
 
 export default function DashboardPage() {
@@ -26,6 +27,18 @@ export default function DashboardPage() {
   const [stage2Progress, setStage2Progress] = useState(0);
   const [stage3Completed, setStage3Completed] = useState(false);
   const [allBadges, setAllBadges] = useState<any[]>([]);
+  const [showStudentGuidance, setShowStudentGuidance] = useState(false);
+  const [showParentModal, setShowParentModal] = useState(false);
+
+  const isUnpaid = user?.subscription_access && !user.subscription_access.has_access;
+
+  const handleUnlockClick = () => {
+    if (user?.profile?.role === 'parent') {
+      setShowParentModal(true);
+    } else {
+      setShowStudentGuidance(true);
+    }
+  };
 
   useEffect(() => {
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
@@ -194,6 +207,40 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Subscription Notice for Independent / Unpaid Learners */}
+        {user?.subscription_access && !user.subscription_access.has_access && (
+          <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white rounded-[2.5rem] p-6 sm:p-8 mb-10 border-4 border-purple-400/40 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 dash-element relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex items-center gap-5 relative z-10 text-center md:text-left">
+              <div className="w-16 h-16 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-lg border-2 border-white/20">
+                🚀
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-black uppercase tracking-wider mb-2">
+                  <Sparkles size={12} className="text-yellow-400" /> Free Preview Mode &bull; Chapter 1 Unlocked
+                </div>
+                <h3 className="font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+                  Your DolaCode adventure is waiting!
+                </h3>
+                <p className="text-purple-200/90 text-sm sm:text-base font-medium mt-1 max-w-xl">
+                  Ask your parent to unlock your learning world.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 relative z-10 w-full md:w-auto shrink-0">
+              <button
+                onClick={handleUnlockClick}
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 hover:from-amber-500 hover:to-pink-600 text-white font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#9d174d] hover:shadow-[0_8px_0_#9d174d] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Lock size={16} />
+                <span>UNLOCK DOLACODE</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Interactive Mini-Games Showcase */}
         <div className="dash-element mb-10">
@@ -407,6 +454,11 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-xl font-black mb-1 text-slate-800">World 1</h3>
               <p className="text-indigo-600 font-bold bg-indigo-50 px-3 py-0.5 rounded-full mb-3 text-sm">DolaCode Numeracy</p>
+              {isUnpaid && (
+                <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block">
+                  Free Sample Chapter 1 Available
+                </div>
+              )}
               <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Maths for coding readiness—numbers, logic, patterns, and digital thinking.</p>
               <div className="mt-4 text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{Math.min(stage1Progress, 140)}/140 Complete</div>
               <div className="mt-4 bg-indigo-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#4338ca] group-hover:bg-indigo-400 transition-colors">Play Now</div>
@@ -423,6 +475,11 @@ export default function DashboardPage() {
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-800">World 2</h3>
                 <p className="text-pink-600 font-bold bg-pink-50 px-3 py-0.5 rounded-full mb-3 text-sm">Block Coding</p>
+                {isUnpaid && (
+                  <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-pink-700 bg-pink-100 border border-pink-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <Lock size={10} /> Locked Adventure
+                  </div>
+                )}
                 <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Snap colorful code blocks together to build games and solve maze challenges.</p>
                 <div className="mt-4 text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{Math.min(stage2Progress, 11)}/11 Complete</div>
                 <div className="mt-4 bg-pink-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#be185d] group-hover:bg-pink-400 transition-colors">Play Now</div>
@@ -451,6 +508,11 @@ export default function DashboardPage() {
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-800">World 3</h3>
                 <p className="text-purple-600 font-bold bg-purple-50 px-3 py-0.5 rounded-full mb-3 text-sm">Python Pro</p>
+                {isUnpaid && (
+                  <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-purple-700 bg-purple-100 border border-purple-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <Lock size={10} /> Locked Adventure
+                  </div>
+                )}
                 <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Write real text-based Python code and build programs with an AI sidekick.</p>
                 <div className="mt-4 bg-purple-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#6d28d9] group-hover:bg-purple-400 transition-colors">Play Now</div>
               </Link>
@@ -477,6 +539,11 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-xl font-black mb-1 text-slate-800">World 4</h3>
               <p className="text-amber-600 font-bold bg-amber-50 px-3 py-0.5 rounded-full mb-3 text-sm">Web Dev Studio</p>
+              {isUnpaid && (
+                <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 border border-amber-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                  <Lock size={10} /> Locked Adventure
+                </div>
+              )}
               <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Write HTML & CSS side-by-side to design magical websites with real-time live previews!</p>
               <div className="mt-4 bg-amber-500 text-slate-950 w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#b45309] group-hover:bg-amber-400 transition-colors">Play Now</div>
             </Link>
@@ -532,6 +599,71 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Student Guidance Modal */}
+        {showStudentGuidance && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-slate-900 border-4 border-purple-500/50 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-left">
+              <button
+                onClick={() => setShowStudentGuidance(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 font-bold"
+              >
+                ✕
+              </button>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center mb-4 shadow-lg border border-white/20">
+                <UserCircle2 size={32} className="text-white" />
+              </div>
+              <h3 className="text-2xl font-black text-white mb-2">
+                Ask Your Parent to Unlock DolaCode!
+              </h3>
+              <p className="text-purple-200/90 text-sm leading-relaxed mb-4">
+                DolaCode subscriptions are family-based to keep your account safe and learning adventure uninterrupted.
+              </p>
+              <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-xs text-slate-300">
+                <div className="flex items-start gap-2">
+                  <span className="font-black text-pink-400">1.</span>
+                  <span>Share this link with your parent: <strong className="text-white">dolacode.com.ng/subscribe</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-black text-pink-400">2.</span>
+                  <span>They log into their Parent Dashboard and activate a family plan.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-black text-pink-400">3.</span>
+                  <span>All worlds, games, and coding tools unlock for you instantly!</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-purple-300/80 bg-white/5 py-2.5 px-3.5 rounded-xl border border-white/5 mb-4">
+                <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+                <span>Your stars, XP, and badges are 100% saved and will never be deleted.</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/subscribe"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-black text-sm text-center shadow-lg transition-transform active:scale-95"
+                >
+                  Go to Pricing &amp; Plans Page
+                </Link>
+                <button
+                  onClick={() => setShowStudentGuidance(false)}
+                  className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Parent Subscription Modal */}
+        <SubscriptionModal
+          isOpen={showParentModal}
+          onClose={() => setShowParentModal(false)}
+          onSuccess={() => {
+            setShowParentModal(false);
+            window.location.reload();
+          }}
+        />
 
       </div>
     </div>

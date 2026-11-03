@@ -17,11 +17,21 @@ export type UserBadge = {
   earned_at: string;
 };
 
+export type SubscriptionAccess = {
+  has_access: boolean;
+  reason: string;
+  plan_name: string;
+  status: string;
+  expires_at: string | null;
+};
+
 export type User = {
   id: number;
   username: string;
   email: string;
   is_superuser?: boolean;
+  is_staff?: boolean;
+  role?: string;
   profile?: {
     role?: string;
     age: number;
@@ -38,6 +48,7 @@ export type User = {
     starting_score?: number | null;
     learning_band?: string | null;
   };
+  subscription_access?: SubscriptionAccess;
   earned_badges?: UserBadge[];
 };
 

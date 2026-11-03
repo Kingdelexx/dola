@@ -319,7 +319,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user', 'created_at')
 
 
-from .models import WebChallenge, StudentChallengeProgress
+from .models import WebChallenge, StudentChallengeProgress, BlocklyProject, PythonProject, AppStudioProject
 
 class WebChallengeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -335,4 +335,43 @@ class StudentChallengeProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentChallengeProgress
         fields = ('id', 'challenge', 'saved_html', 'saved_css', 'is_completed', 'completed_at')
+
+
+class BlocklyProjectSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = BlocklyProject
+        fields = (
+            'id', 'username', 'title', 'description', 'workspace_xml',
+            'python_code', 'level_index', 'sprites_data', 'is_completed',
+            'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'username', 'created_at', 'updated_at')
+
+
+class PythonProjectSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = PythonProject
+        fields = (
+            'id', 'username', 'title', 'description', 'code',
+            'chapter_id', 'level_id', 'is_favorite', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'username', 'created_at', 'updated_at')
+
+
+class AppStudioProjectSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = AppStudioProject
+        fields = (
+            'id', 'username', 'project_id', 'name', 'screens', 'assets',
+            'code', 'blockly_xml', 'is_favorite', 'is_archived',
+            'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'username', 'created_at', 'updated_at')
+
 

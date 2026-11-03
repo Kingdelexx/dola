@@ -17,6 +17,7 @@ import LivePreview from './components/LivePreview';
 
 import { useAppStudioStore } from './store/useAppStudioStore';
 import { Smartphone, Library, Layers, Sliders, Puzzle, Play, LayoutGrid } from 'lucide-react';
+import PaywallGuard from '@/components/subscription/PaywallGuard';
 
 export default function Stage3Page() {
   const router = useRouter();
@@ -126,7 +127,8 @@ export default function Stage3Page() {
   };
 
   return (
-    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden text-slate-100 font-sans">
+    <PaywallGuard feature="stage3">
+      <div className="h-screen bg-slate-950 flex flex-col overflow-hidden text-slate-100 font-sans">
       {/* Top Nav Header */}
       <TopNav onCompleteStage={handleCompleteStage} />
 
@@ -261,5 +263,6 @@ export default function Stage3Page() {
         contextInfo={`Stage 3 App Studio. Active Workspace Tab: ${activeTab}. Active View: ${mobileActiveView}. Drag and drop UI elements, edit properties, and add JavaScript logic.`} 
       />
     </div>
+    </PaywallGuard>
   );
 }

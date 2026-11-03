@@ -351,3 +351,242 @@ class PetRescueProgress(models.Model):
         return f"{self.user.username} - Pet Rescue Lvl {self.current_level} ({self.happiness_points} Happiness Pts)"
 
 
+class SubscriptionPlan(models.Model):
+    INTERVAL_CHOICES = (
+        ('monthly', 'Monthly'),
+        ('quarterly', 'Quarterly/Termly (3 Months)'),
+        ('biannual', 'Biannual (6 Months)'),
+        ('annually', 'Annually (1 Year)'),
+    )
+
+    plan_name = models.CharField(max_length=100)
+    plan_description = models.TextField(blank=True, default='')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)  # In NGN
+    currency = models.CharField(max_length=10, default='NGN')
+    billing_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default='monthly')
+    paystack_plan_code = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    features = models.JSONField(default=list, blank=True)
+    promotional_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    promotional_headline = models.CharField(max_length=150, blank=True, default='')
+    is_promotional = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['amount']
+
+    def __str__(self):
+        return f"{self.plan_name} - {self.currency} {self.amount} ({self.get_billing_interval_display()})"
+
+    @property
+    def amount_in_kobo(self):
+        return int(self.amount * 100)
+
+    def is_feature_included(self, feature: str) -> bool:
+        if not self.features:
+            return True
+        if 'all' in self.features or '*' in self.features:
+            return True
+        norm = feature.lower().strip()
+        return any(f.lower().strip() == norm for f in self.features)
+
+
+class Subscription(models.Model):
+    STATUS_CHOICES = (
+        ('inactive', 'Inactive'),
+        ('active', 'Active'),
+        ('past_due', 'Past Due'),
+        ('cancelled', 'Cancelled'),
+        ('expired', 'Expired'),
+    )
+
+    parent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.PROTECT, related_name='subscriptions', null=True, blank=True)
+    subscription_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='inactive', db_index=True)
+    
+    paystack_customer_code = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    paystack_subscription_code = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    paystack_email_token = models.CharField(max_length=100, blank=True, null=True)
+
+    subscription_start_date = models.DateTimeField(null=True, blank=True)
+    current_period_start = models.DateTimeField(null=True, blank=True)
+    current_period_end = models.DateTimeField(null=True, blank=True, db_index=True)
+    next_payment_date = models.DateTimeField(null=True, blank=True)
+    cancellation_date = models.DateTimeField(null=True, blank=True)
+    grace_period_end = models.DateTimeField(null=True, blank=True)
+
+    subscribed_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    is_manual_compensation = models.BooleanField(default=False)
+    manual_compensation_reason = models.TextField(blank=True, default='')
+    manual_compensated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='compensated_subscriptions')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Subscription #{self.id} - Parent: {self.parent.username} ({self.subscription_status})"
+
+    def is_valid(self):
+        from django.utils import timezone
+        now = timezone.now()
+        if self.subscription_status == 'active':
+            if self.current_period_end:
+                return self.current_period_end >= now
+            return True
+        if self.subscription_status == 'past_due' and self.grace_period_end:
+            return self.grace_period_end >= now
+        if self.subscription_status == 'cancelled' and self.current_period_end:
+            return self.current_period_end >= now
+        return False
+
+
+class Payment(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('abandoned', 'Abandoned'),
+    )
+
+    parent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments')
+    payment_reference = models.CharField(max_length=120, unique=True, db_index=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)  # In NGN
+    currency = models.CharField(max_length=10, default='NGN')
+    payment_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', db_index=True)
+    payment_channel = models.CharField(max_length=50, blank=True, null=True)
+    paystack_transaction_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Payment {self.payment_reference} - {self.currency} {self.amount} ({self.payment_status})"
+
+
+class WebhookEvent(models.Model):
+    PROCESSING_CHOICES = (
+        ('pending', 'Pending'),
+        ('processed', 'Processed'),
+        ('failed', 'Failed'),
+        ('ignored', 'Ignored'),
+    )
+
+    event_id = models.CharField(max_length=150, unique=True, db_index=True)
+    event_type = models.CharField(max_length=100, db_index=True)
+    payment_reference = models.CharField(max_length=120, blank=True, null=True, db_index=True)
+    processing_status = models.CharField(max_length=20, choices=PROCESSING_CHOICES, default='pending', db_index=True)
+    received_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-received_at']
+
+    def __str__(self):
+        return f"WebhookEvent {self.event_id} ({self.event_type}) - {self.processing_status}"
+
+
+class BlocklyProject(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blockly_projects')
+    title = models.CharField(max_length=200, default='My Block Project')
+    description = models.TextField(blank=True, default='')
+    workspace_xml = models.TextField(blank=True, default='')
+    python_code = models.TextField(blank=True, default='')
+    level_index = models.IntegerField(default=0)
+    sprites_data = models.JSONField(default=dict, blank=True)
+    is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
+
+
+class PythonProject(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='python_projects')
+    title = models.CharField(max_length=200, default='My Python Quest')
+    description = models.TextField(blank=True, default='')
+    code = models.TextField(default='')
+    chapter_id = models.IntegerField(default=0)
+    level_id = models.CharField(max_length=50, blank=True, default='')
+    is_favorite = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
+
+
+class AppStudioProject(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='app_studio_projects')
+    project_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
+    name = models.CharField(max_length=200, default='My Mobile App')
+    screens = models.JSONField(default=list)
+    assets = models.JSONField(default=list, blank=True)
+    code = models.TextField(blank=True, default='')
+    blockly_xml = models.TextField(blank=True, default='')
+    is_favorite = models.BooleanField(default=False)
+    is_archived = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.name}"
+
+
+class AdminAuditLog(models.Model):
+    admin_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_audit_logs')
+    action = models.CharField(max_length=100, db_index=True)
+    target_model = models.CharField(max_length=100, blank=True, default='')
+    target_id = models.CharField(max_length=100, blank=True, default='')
+    details = models.JSONField(default=dict, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.created_at.strftime('%Y-%m-%d %H:%M')}] {self.admin_user.username} - {self.action}"
+
+
+class SubscriptionSetting(models.Model):
+    key = models.CharField(max_length=50, unique=True, db_index=True)
+    value = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default='')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
+
+    @classmethod
+    def get_grace_period_days(cls) -> int:
+        from django.conf import settings
+        default_days = getattr(settings, 'SUBSCRIPTION_GRACE_PERIOD_DAYS', 3)
+        try:
+            item = cls.objects.filter(key='grace_period_days').first()
+            if item and item.value.isdigit():
+                return int(item.value)
+        except Exception:
+            pass
+        return default_days
+
+
+
+
+
+

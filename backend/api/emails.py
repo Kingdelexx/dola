@@ -409,3 +409,178 @@ def send_school_approval_email(school, recipient_email=None):
     """
 
     return _dispatch_email(subject, recipients, text_content, html_content)
+
+
+def send_subscription_payment_failed_email(parent, subscription, grace_days=3):
+    """
+    Sends an alert email to a parent when an automated Paystack recurring renewal charge fails.
+    Uses exact required copy:
+    "Your DolaCode subscription could not be renewed.
+    Your child's learning progress and saved projects are safe.
+    Please update your payment details to continue learning."
+    """
+    if not parent or not parent.email:
+        return False
+
+    recipients = [parent.email]
+    subject = "Your DolaCode Subscription Renewal Notice"
+    plan_name = subscription.plan.plan_name if (subscription and subscription.plan) else "Family Membership"
+    parent_name = parent.first_name or parent.username
+    update_payment_url = "https://dolacode.com.ng/parent/subscription"
+
+    text_content = f"""
+Hello {parent_name},
+
+Your DolaCode subscription could not be renewed.
+
+Your child's learning progress and saved projects are safe.
+
+Please update your payment details to continue learning.
+
+We have activated a {grace_days}-day grace period for your family account. Your children will continue to enjoy full access while you update your card.
+
+Update Payment:
+{update_payment_url}
+
+Warm regards,
+The DolaCode Team
+hello@dolacode.com.ng
+"""
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 32px; color: #e2e8f0; }}
+        .badge {{ display: inline-block; background-color: #f59e0b; color: #ffffff; padding: 6px 12px; border-radius: 9999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }}
+        h1 {{ color: #ffffff; font-size: 22px; font-weight: 800; margin: 0 0 16px; }}
+        p {{ font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 16px; }}
+        .highlight-box {{ background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #6366f1; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: left; }}
+        .highlight-title {{ color: #a5b4fc; font-weight: 800; font-size: 15px; margin-bottom: 8px; }}
+        .btn {{ display: inline-block; background: #6366f1; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 12px; }}
+        .footer {{ border-top: 1px solid #334155; margin-top: 32px; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center; }}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <span class="badge">Renewal Notice</span>
+        <h1>Your DolaCode Subscription Renewal</h1>
+        <p>Hello <strong>{parent_name}</strong>,</p>
+        
+        <div class="highlight-box">
+          <div class="highlight-title">Important Account Notice:</div>
+          <p style="margin: 0 0 10px 0; color: #ffffff; font-size: 15px; font-weight: 700;">
+            Your DolaCode subscription could not be renewed.
+          </p>
+          <p style="margin: 0 0 10px 0; color: #cbd5e1; font-size: 14px;">
+            Your child's learning progress and saved projects are safe.
+          </p>
+          <p style="margin: 0; color: #a5b4fc; font-size: 14px; font-weight: 600;">
+            Please update your payment details to continue learning.
+          </p>
+        </div>
+
+        <p>A <strong>{grace_days}-day grace period</strong> has been activated on your account so your children have uninterrupted learning access while you update your card information.</p>
+
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="{update_payment_url}" class="btn">UPDATE PAYMENT →</a>
+        </div>
+
+        <div class="footer">
+          <p>© 2026 DolaCode Platform. All rights reserved.<br>
+          Questions? Reply directly to this email or reach us at <a href="mailto:hello@dolacode.com.ng" style="color: #818cf8;">hello@dolacode.com.ng</a>.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+
+    return _dispatch_email(subject, recipients, text_content, html_content)
+
+
+def send_subscription_renewal_success_email(parent, subscription, amount_paid, next_billing_date):
+    """
+    Sends an automated receipt and confirmation email to a parent when an automated Paystack
+    recurring subscription renewal succeeds.
+    """
+    if not parent or not parent.email:
+        return False
+
+    recipients = [parent.email]
+    subject = "Confirmation: Your DolaCode Subscription Has Been Renewed"
+    plan_name = subscription.plan.plan_name if (subscription and subscription.plan) else "Family Membership"
+    parent_name = parent.first_name or parent.username
+    dashboard_url = "https://dolacode.com.ng/parent/subscription"
+    formatted_date = next_billing_date.strftime("%B %d, %Y") if hasattr(next_billing_date, 'strftime') else str(next_billing_date)
+
+    text_content = f"""
+Hello {parent_name},
+
+Thank you! Your DolaCode family subscription for {plan_name} has been successfully renewed.
+
+Amount Paid: ₦{amount_paid:,.2f}
+Next Renewal Date: {formatted_date}
+
+All coding stages, numeracy games, and personalized AI tutoring continue to be fully unlocked for all your linked children.
+
+Manage your subscription and view your payment receipts anytime:
+{dashboard_url}
+
+Warm regards,
+The DolaCode Team
+hello@dolacode.com.ng
+"""
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 20px; }}
+        .container {{ max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 32px; color: #e2e8f0; }}
+        .badge {{ display: inline-block; background-color: #10b981; color: #ffffff; padding: 6px 12px; border-radius: 9999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }}
+        h1 {{ color: #ffffff; font-size: 22px; font-weight: 800; margin: 0 0 16px; }}
+        p {{ font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 16px; }}
+        .success-box {{ background: linear-gradient(135deg, #064e3b, #047857); border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: left; }}
+        .btn {{ display: inline-block; background: #6366f1; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 14px; text-transform: uppercase; margin-top: 12px; }}
+        .footer {{ border-top: 1px solid #334155; margin-top: 32px; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center; }}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <span class="badge">Renewal Confirmed</span>
+        <h1>Subscription Renewed Successfully</h1>
+        <p>Hello <strong>{parent_name}</strong>,</p>
+        
+        <div class="success-box">
+          <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 800;">
+            {plan_name}
+          </p>
+          <p style="margin: 0; color: #d1fae5; font-size: 14px;">
+            Amount Paid: <strong>₦{amount_paid:,.2f}</strong> • Next Renewal: <strong>{formatted_date}</strong>
+          </p>
+        </div>
+
+        <p>Your family's membership is active and all coding stages and numeracy adventures remain 100% unlocked for your children.</p>
+
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="{dashboard_url}" class="btn">View Subscription & Receipts →</a>
+        </div>
+
+        <div class="footer">
+          <p>© 2026 DolaCode Platform. All rights reserved.<br>
+          Questions? Reply directly to this email or reach us at <a href="mailto:hello@dolacode.com.ng" style="color: #818cf8;">hello@dolacode.com.ng</a>.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+
+    return _dispatch_email(subject, recipients, text_content, html_content)
+
+
+    return _dispatch_email(subject, recipients, text_content, html_content)

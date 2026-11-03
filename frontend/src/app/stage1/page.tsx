@@ -18,6 +18,7 @@ import {
   ArrowRight, AlertTriangle, RefreshCw, Cpu, ShieldAlert, Binary, HelpCircle, Lock, Gamepad2, Info
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import PaywallGuard from '@/components/subscription/PaywallGuard';
 
 // Dynamically import Lottie to avoid SSR issues
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
@@ -5140,16 +5141,19 @@ export default function Stage1Page() {
                 <button
                   key={p.id}
                   onClick={() => selectPart(idx)}
-                  disabled={!isUnlocked}
-                  className={`px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 shrink-0 transform hover:scale-102 active:scale-98
+                  className={`px-4 sm:px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 shrink-0 transform hover:scale-102 active:scale-98
                     ${isActive 
                       ? `bg-gradient-to-r ${activeBg} text-white shadow-lg` 
-                      : isUnlocked 
-                        ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200' 
-                        : 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-60'}`}
+                      : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'}`}
                 >
-                  {!isUnlocked && <Lock size={12} />}
                   {p.title.split(":")[0]}
+                  {idx === 0 ? (
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-extrabold ${isActive ? 'bg-white text-emerald-800' : 'bg-emerald-100 text-emerald-700'}`}>
+                      FREE
+                    </span>
+                  ) : (!user?.subscription_access?.has_access && (
+                    <Lock size={12} className={isActive ? "text-yellow-300" : "text-amber-500"} />
+                  ))}
                 </button>
               );
             })}
@@ -5254,9 +5258,11 @@ export default function Stage1Page() {
 
           {/* Right panel: Interactive lab game */}
           <div className="w-full lg:col-span-8 order-1 lg:order-2">
-            <div className={`w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] border-4 sm:border-[6px] ${success ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)]' : success === false ? 'border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.25)]' : 'border-indigo-200 shadow-[0_0_25px_rgba(99,102,241,0.15)]'} p-3 sm:p-8 shadow-xl min-h-[420px] sm:min-h-[460px] transition-all duration-300 overflow-x-auto ${shake ? 'animate-shake' : ''}`}>
-              {renderGameArea()}
-            </div>
+            <PaywallGuard feature="stage1_parts" currentPart={currentPartIndex + 1}>
+              <div className={`w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] border-4 sm:border-[6px] ${success ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)]' : success === false ? 'border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.25)]' : 'border-indigo-200 shadow-[0_0_25px_rgba(99,102,241,0.15)]'} p-3 sm:p-8 shadow-xl min-h-[420px] sm:min-h-[460px] transition-all duration-300 overflow-x-auto ${shake ? 'animate-shake' : ''}`}>
+                {renderGameArea()}
+              </div>
+            </PaywallGuard>
           </div>
 
         </div>
