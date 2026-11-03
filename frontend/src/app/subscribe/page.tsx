@@ -22,12 +22,35 @@ interface Plan {
   paystack_plan_code?: string;
 }
 
+const DEFAULT_PLANS: Plan[] = [
+  {
+    id: 1,
+    plan_name: "Monthly Explorer",
+    plan_description: "Full access to all 4 coding worlds, 6 interactive numeracy games, and Lizzy AI tutor for all linked children.",
+    amount: 10000,
+    currency: "NGN",
+    billing_interval: "monthly",
+    billing_interval_display: "Monthly",
+    paystack_plan_code: "PLN_dmt3enn7u1045sx"
+  },
+  {
+    id: 3,
+    plan_name: "Annual Champion (1 Year)",
+    plan_description: "Best value for full-year coding mastery! Covers all coding stages, game studios, and weekly AI progress reports. Save ₦20,000 (2 months free).",
+    amount: 100000,
+    currency: "NGN",
+    billing_interval: "annually",
+    billing_interval_display: "Annually (1 Year)",
+    paystack_plan_code: "PLN_27x0pbe5znqyzte"
+  }
+];
+
 export default function SubscribePage() {
   const router = useRouter();
   const { user, loading: authLoading, logout } = useAuth();
 
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [loadingPlans, setLoadingPlans] = useState(true);
+  const [plans, setPlans] = useState<Plan[]>(DEFAULT_PLANS);
+  const [loadingPlans, setLoadingPlans] = useState(false);
   const [plansError, setPlansError] = useState('');
 
   // Subscription modal state
@@ -47,15 +70,17 @@ export default function SubscribePage() {
         return res.json();
       })
       .then(data => {
-        if (data.plans) {
-          setPlans(data.plans);
+        if (data.plans && data.plans.length > 0) {
+          // Filter out legacy termly plans
+          const validPlans = data.plans.filter((p: Plan) => p.billing_interval !== 'quarterly');
+          if (validPlans.length > 0) {
+            setPlans(validPlans);
+          }
         }
       })
       .catch(err => {
-        console.error("Error fetching pricing plans:", err);
-        setPlansError("Could not load pricing options. Please refresh the page.");
-      })
-      .finally(() => setLoadingPlans(false));
+        console.error("Error fetching pricing plans, keeping defaults:", err);
+      });
   }, []);
 
   // Dynamic Savings Calculation (only display when database prices support the claim)

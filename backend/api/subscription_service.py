@@ -12,37 +12,59 @@ logger = logging.getLogger(__name__)
 
 def seed_default_plans():
     """
-    Creates standard default subscription plans if the database has none.
+    Ensures standard DolaCode subscription plans exist with accurate prices and active Paystack codes.
     """
-    if SubscriptionPlan.objects.exists():
-        return
+    # 1. Monthly Plan -> 10,000 NGN
+    monthly = SubscriptionPlan.objects.filter(billing_interval='monthly').first()
+    if monthly:
+        needs_save = False
+        if monthly.amount != 10000.00 or monthly.paystack_plan_code != 'PLN_dmt3enn7u1045sx' or not monthly.is_active:
+            monthly.amount = 10000.00
+            monthly.plan_name = "Monthly Explorer"
+            monthly.paystack_plan_code = "PLN_dmt3enn7u1045sx"
+            monthly.is_active = True
+            needs_save = True
+        if needs_save:
+            monthly.save()
+    else:
+        SubscriptionPlan.objects.create(
+            plan_name="Monthly Explorer",
+            plan_description="Full access to all 4 coding worlds, 6 interactive numeracy games, and Lizzy AI tutor for all linked children.",
+            amount=10000.00,
+            currency="NGN",
+            billing_interval="monthly",
+            paystack_plan_code="PLN_dmt3enn7u1045sx",
+            features=["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
+            is_active=True
+        )
 
-    plans = [
-        {
-            "plan_name": "Monthly Explorer",
-            "plan_description": "Full access to all 4 coding worlds, 6 interactive numeracy games, and Lizzy AI tutor for all linked children.",
-            "amount": 10000.00,
-            "currency": "NGN",
-            "billing_interval": "monthly",
-            "paystack_plan_code": "PLN_dmt3enn7u1045sx",
-            "features": ["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
-            "is_active": True
-        },
-        {
-            "plan_name": "Annual Champion (1 Year)",
-            "plan_description": "Best value for full-year coding mastery! Covers all coding stages, game studios, and weekly AI progress reports. Save ₦20,000 (2 months free).",
-            "amount": 100000.00,
-            "currency": "NGN",
-            "billing_interval": "annually",
-            "paystack_plan_code": "PLN_27x0pbe5znqyzte",
-            "features": ["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
-            "is_active": True
-        }
-    ]
+    # 2. Annual Plan -> 100,000 NGN
+    annual = SubscriptionPlan.objects.filter(billing_interval='annually').first()
+    if annual:
+        needs_save = False
+        if annual.amount != 100000.00 or annual.paystack_plan_code != 'PLN_27x0pbe5znqyzte' or not annual.is_active:
+            annual.amount = 100000.00
+            annual.plan_name = "Annual Champion (1 Year)"
+            annual.paystack_plan_code = "PLN_27x0pbe5znqyzte"
+            annual.is_active = True
+            needs_save = True
+        if needs_save:
+            annual.save()
+    else:
+        SubscriptionPlan.objects.create(
+            plan_name="Annual Champion (1 Year)",
+            plan_description="Best value for full-year coding mastery! Covers all coding stages, game studios, and weekly AI progress reports. Save ₦20,000 (2 months free).",
+            amount=100000.00,
+            currency="NGN",
+            billing_interval="annually",
+            paystack_plan_code="PLN_27x0pbe5znqyzte",
+            features=["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
+            is_active=True
+        )
 
-    for p in plans:
-        SubscriptionPlan.objects.create(**p)
-    logger.info("Default DolaCode subscription plans seeded successfully.")
+    # 3. Deactivate legacy quarterly/termly plans from active public selection
+    SubscriptionPlan.objects.filter(billing_interval='quarterly', is_active=True).update(is_active=False)
+    logger.info("Default DolaCode subscription plans verified and active.")
 
 
 @transaction.atomic

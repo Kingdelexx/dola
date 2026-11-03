@@ -15,6 +15,27 @@ interface Plan {
   billing_interval_display: string;
 }
 
+const DEFAULT_PLANS: Plan[] = [
+  {
+    id: 1,
+    plan_name: "Monthly Explorer",
+    plan_description: "Full access to all 4 coding worlds, 6 interactive numeracy games, and Lizzy AI tutor for all linked children.",
+    amount: 10000,
+    currency: "NGN",
+    billing_interval: "monthly",
+    billing_interval_display: "Monthly"
+  },
+  {
+    id: 3,
+    plan_name: "Annual Champion (1 Year)",
+    plan_description: "Best value for full-year coding mastery! Covers all coding stages, game studios, and weekly AI progress reports. Save ₦20,000 (2 months free).",
+    amount: 100000,
+    currency: "NGN",
+    billing_interval: "annually",
+    billing_interval_display: "Annually (1 Year)"
+  }
+];
+
 interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,35 +53,35 @@ export default function SubscriptionModal({
   initialPlanId,
   onSuccess
 }: SubscriptionModalProps) {
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(initialPlanId || null);
-  const [loadingPlans, setLoadingPlans] = useState(true);
+  const [plans, setPlans] = useState<Plan[]>(DEFAULT_PLANS);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(initialPlanId || 3);
+  const [loadingPlans, setLoadingPlans] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (!isOpen) return;
-    setLoadingPlans(true);
     setErrorMessage('');
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/payments/plans/`)
       .then(res => res.json())
       .then(data => {
         if (data.plans && data.plans.length > 0) {
-          setPlans(data.plans);
-          if (initialPlanId && data.plans.some((p: Plan) => p.id === initialPlanId)) {
-            setSelectedPlanId(initialPlanId);
-          } else if (!selectedPlanId) {
-            const defaultPlan = data.plans.length > 1 ? data.plans[1] : data.plans[0];
-            setSelectedPlanId(defaultPlan.id);
+          const validPlans = data.plans.filter((p: Plan) => p.billing_interval !== 'quarterly');
+          if (validPlans.length > 0) {
+            setPlans(validPlans);
+            if (initialPlanId && validPlans.some((p: Plan) => p.id === initialPlanId)) {
+              setSelectedPlanId(initialPlanId);
+            } else if (!selectedPlanId) {
+              const defaultPlan = validPlans.length > 1 ? validPlans[1] : validPlans[0];
+              setSelectedPlanId(defaultPlan.id);
+            }
           }
         }
       })
       .catch(err => {
-        console.error("Error fetching plans:", err);
-        setErrorMessage("Failed to load subscription plans. Please try again.");
-      })
-      .finally(() => setLoadingPlans(false));
+        console.error("Error fetching plans, using defaults:", err);
+      });
   }, [isOpen]);
 
   if (!isOpen) return null;
