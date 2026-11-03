@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
   Sparkles, Check, ArrowRight, ShieldCheck, Star, Crown, Rocket,
   Brain, Code, Terminal, LayoutGrid, Gamepad2, Award, ChevronDown,
-  ChevronUp, HelpCircle, Users, Heart, Zap, AlertCircle, CreditCard, Lock
+  ChevronUp, HelpCircle, Users, Heart, Zap, AlertCircle, CreditCard, Lock, Building
 } from 'lucide-react';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 
@@ -63,6 +63,7 @@ export default function SubscribePage() {
   const annualPlan = plans.find(p => p.billing_interval === 'annually');
 
   let annualSavingsPercent: number | null = null;
+  let annualSavingsAmount: number | null = null;
   let annualEquivalentMonthly: number | null = null;
 
   if (monthlyPlan && annualPlan && monthlyPlan.amount > 0) {
@@ -70,6 +71,7 @@ export default function SubscribePage() {
     if (annualPlan.amount < fullYearAtMonthlyRate) {
       const diff = fullYearAtMonthlyRate - annualPlan.amount;
       annualSavingsPercent = Math.round((diff / fullYearAtMonthlyRate) * 100);
+      annualSavingsAmount = diff;
       annualEquivalentMonthly = Math.round(annualPlan.amount / 12);
     }
   }
@@ -401,7 +403,7 @@ export default function SubscribePage() {
             {plans.map((plan) => {
               const isAnnual = plan.billing_interval === 'annually';
               const isMonthly = plan.billing_interval === 'monthly';
-              const isPopular = isAnnual || plan.billing_interval === 'quarterly';
+              const isPopular = isAnnual;
 
               return (
                 <div
@@ -425,7 +427,7 @@ export default function SubscribePage() {
                     {/* Annual Savings Badge (Displayed only when supported by database prices) */}
                     {isAnnual && annualSavingsPercent && annualSavingsPercent > 0 && (
                       <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500 text-white shadow-xs animate-pulse">
-                        Save {annualSavingsPercent}%
+                        Save {annualSavingsPercent}% (2 Mos Free)
                       </span>
                     )}
                   </div>
@@ -450,7 +452,7 @@ export default function SubscribePage() {
                       {/* Display breakdown when annual plan has verified savings */}
                       {isAnnual && annualEquivalentMonthly && (
                         <p className="text-[11px] text-emerald-400 font-bold mt-1">
-                          Equivalent to ~₦{annualEquivalentMonthly.toLocaleString()} / month billed annually
+                          Equivalent to ~₦{annualEquivalentMonthly.toLocaleString()} / month {annualSavingsAmount ? `(Save ₦${annualSavingsAmount.toLocaleString()}/yr)` : ''}
                         </p>
                       )}
                     </div>
@@ -509,6 +511,85 @@ export default function SubscribePage() {
                 </div>
               );
             })}
+
+            {/* School & Institutional Custom Pricing Card */}
+            <div className="relative rounded-[2.5rem] p-8 flex flex-col justify-between transition-all duration-300 bg-white text-slate-800 shadow-xl border-4 border-emerald-100 hover:border-emerald-300">
+              {/* Top Badges */}
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Institutions &amp; Schools
+                </span>
+                <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
+                  Volume Pricing
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-black mb-2 text-slate-900">Schools &amp; Academies</h3>
+                <p className="text-xs sm:text-sm font-medium leading-relaxed mb-6 text-slate-500">
+                  Tailored digital coding &amp; numeracy curriculum for primary and secondary schools, computer labs, and multi-classroom deployments across Nigeria.
+                </p>
+
+                {/* Price Header */}
+                <div className="mb-6 pb-6 border-b border-slate-200/40">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
+                      Custom Pricing
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-emerald-600 font-bold mt-1">
+                    Schools reach out for custom volume pricing &amp; lab packages
+                  </p>
+                </div>
+
+                {/* Features Checklist */}
+                <ul className="space-y-3 mb-8 text-xs sm:text-sm font-semibold">
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Dedicated School Admin &amp; Teacher Dashboards</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Classroom Management &amp; Custom Join Codes</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Bulk Student Roster Upload &amp; Account Setup</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Nigerian &amp; Cambridge Curriculum Alignment</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Teacher Training, Lesson Plans &amp; Ongoing Support</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Comprehensive Termly Class Progress Reports</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Flexible Billing (Per-Pupil or Annual Site License)</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* School CTA Button */}
+              <div>
+                <Link
+                  href="/contact?subject=School%20Pricing%20Inquiry"
+                  className="w-full py-4 px-6 rounded-2xl font-black text-sm sm:text-base shadow-lg transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+                >
+                  <Building size={18} />
+                  <span>Contact for School Pricing</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <p className="text-[10px] text-center mt-2.5 font-medium text-slate-400">
+                  Schools will reach out for custom pricing and dedicated support
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </section>
@@ -639,6 +720,29 @@ export default function SubscribePage() {
             {openFaqIndex === 5 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
                 If your child is enrolled in an approved partner school and has joined an active classroom with a class code, their access is sponsored by the school! You do not need to purchase a parent subscription for school-sponsored students. You can still link your child to monitor their weekly homework and performance for free.
+              </div>
+            )}
+          </div>
+
+          {/* FAQ 7: School Custom Pricing */}
+          <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
+            <button
+              onClick={() => toggleFaq(6)}
+              className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2.5">
+                <Building size={18} className="text-emerald-600 shrink-0" />
+                Do you offer custom pricing for schools and institutions?
+              </span>
+              {openFaqIndex === 6 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {openFaqIndex === 6 && (
+              <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
+                <strong>Yes, absolutely!</strong> We partner directly with primary schools, secondary schools, computer academies, and coding clubs across Nigeria. School packages include custom per-pupil pricing, teacher administrative dashboards, bulk student onboarding, curriculum alignment, and dedicated training for ICT educators. Please reach out to our educational team via our{" "}
+                <Link href="/contact?subject=School%20Pricing%20Inquiry" className="text-indigo-600 font-bold hover:underline">
+                  Contact Page
+                </Link>{" "}
+                or call us at 09152690938 to discuss your school&apos;s requirements.
               </div>
             )}
           </div>

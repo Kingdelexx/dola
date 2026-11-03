@@ -869,6 +869,16 @@ export default function ParentSubscriptionPage() {
                   </div>
                 );
               })}
+
+              <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-center text-xs text-slate-600 font-medium">
+                Are you an educator or school administrator?{" "}
+                <Link
+                  href="/contact?subject=School%20Pricing%20Inquiry"
+                  className="text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
+                >
+                  Reach out for custom school &amp; classroom pricing &rarr;
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -21,27 +21,20 @@ def seed_default_plans():
         {
             "plan_name": "Monthly Explorer",
             "plan_description": "Full access to all 4 coding worlds, 6 interactive numeracy games, and Lizzy AI tutor for all linked children.",
-            "amount": 3500.00,
+            "amount": 10000.00,
             "currency": "NGN",
             "billing_interval": "monthly",
-            "features": ["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
-            "is_active": True
-        },
-        {
-            "plan_name": "Termly Scholar (3 Months)",
-            "plan_description": "Our most popular plan for school terms. Includes unlimited coding projects, numeracy games, and weekly analytics.",
-            "amount": 9000.00,
-            "currency": "NGN",
-            "billing_interval": "quarterly",
+            "paystack_plan_code": "PLN_dmt3enn7u1045sx",
             "features": ["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
             "is_active": True
         },
         {
             "plan_name": "Annual Champion (1 Year)",
-            "plan_description": "Best value for full-year coding mastery! Covers all coding stages, game studios, and new feature releases.",
-            "amount": 28000.00,
+            "plan_description": "Best value for full-year coding mastery! Covers all coding stages, game studios, and weekly AI progress reports. Save ₦20,000 (2 months free).",
+            "amount": 100000.00,
             "currency": "NGN",
             "billing_interval": "annually",
+            "paystack_plan_code": "PLN_27x0pbe5znqyzte",
             "features": ["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
             "is_active": True
         }

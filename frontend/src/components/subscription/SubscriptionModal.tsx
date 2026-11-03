@@ -179,53 +179,66 @@ export default function SubscriptionModal({
                 Loading membership plans...
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                {plans.map((p) => {
-                  const isSelected = selectedPlanId === p.id;
-                  const isPopular = p.billing_interval === 'quarterly';
+              <div>
+                <div className={`grid grid-cols-1 ${plans.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3.5`}>
+                  {plans.map((p) => {
+                    const isSelected = selectedPlanId === p.id;
+                    const isPopular = p.billing_interval === 'annually';
 
-                  return (
-                    <div
-                      key={p.id}
-                      onClick={() => setSelectedPlanId(p.id)}
-                      className={`relative p-5 rounded-2xl border-3 cursor-pointer transition-all flex flex-col justify-between ${
-                        isSelected 
-                          ? 'border-indigo-600 bg-indigo-50/60 shadow-lg shadow-indigo-500/10 scale-102' 
-                          : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
-                      }`}
-                    >
-                      {isPopular && (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-pink-500 text-white font-black text-[9px] uppercase tracking-wider shadow-sm">
-                          Most Popular
-                        </span>
-                      )}
+                    return (
+                      <div
+                        key={p.id}
+                        onClick={() => setSelectedPlanId(p.id)}
+                        className={`relative p-5 rounded-2xl border-3 cursor-pointer transition-all flex flex-col justify-between ${
+                          isSelected 
+                            ? 'border-indigo-600 bg-indigo-50/60 shadow-lg shadow-indigo-500/10 scale-102' 
+                            : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
+                        }`}
+                      >
+                        {isPopular && (
+                          <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white font-black text-[9px] uppercase tracking-wider shadow-sm">
+                            Best Value (Save ₦20k)
+                          </span>
+                        )}
 
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-extrabold text-sm text-slate-900 leading-tight">
-                            {p.plan_name.split('(')[0]}
-                          </h4>
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300'}`}>
-                            {isSelected && <Check size={10} className="text-white" />}
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-extrabold text-sm text-slate-900 leading-tight">
+                              {p.plan_name.split('(')[0]}
+                            </h4>
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300'}`}>
+                              {isSelected && <Check size={10} className="text-white" />}
+                            </div>
+                          </div>
+
+                          <p className="text-[10px] text-slate-500 leading-normal mb-3">
+                            {p.billing_interval_display}
+                          </p>
+                        </div>
+
+                        <div>
+                          <div className="text-lg font-black text-slate-900">
+                            ₦{p.amount.toLocaleString()}
+                          </div>
+                          <div className="text-[10px] text-indigo-600 font-bold">
+                            {isPopular ? 'Full Year Family Access' : 'Monthly Family Access'}
                           </div>
                         </div>
-
-                        <p className="text-[10px] text-slate-500 leading-normal mb-3">
-                          {p.billing_interval_display}
-                        </p>
                       </div>
+                    );
+                  })}
+                </div>
 
-                      <div>
-                        <div className="text-lg font-black text-slate-900">
-                          ₦{p.amount.toLocaleString()}
-                        </div>
-                        <div className="text-[10px] text-indigo-600 font-bold">
-                          Family Access
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {/* School / Institutional Outreach Note */}
+                <div className="mt-3.5 p-3 rounded-2xl bg-emerald-50/60 border border-emerald-200/70 text-center text-xs text-slate-600 font-medium">
+                  Are you a school administrator, educator, or lab manager?{" "}
+                  <a 
+                    href="/contact?subject=School%20Pricing%20Inquiry" 
+                    className="text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
+                  >
+                    Reach out for custom school pricing &rarr;
+                  </a>
+                </div>
               </div>
             )}
           </div>
