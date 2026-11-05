@@ -164,7 +164,7 @@ def activate_subscription(parent_user: User, plan: SubscriptionPlan, payment_rec
 activate_or_renew_subscription = activate_subscription
 
 
-def is_student_accessible(student_user: User) -> dict:
+def is_student_accessible(student_user: User, include_model: bool = False) -> dict:
     """
     Evaluates learning access rights for a user account (student or parent).
     Verifies:
@@ -173,47 +173,59 @@ def is_student_accessible(student_user: User) -> dict:
       3. Parent subscription eligibility (active, past_due within grace, cancelled within paid-through)
     """
     if not student_user or not student_user.is_authenticated:
-        return {
+        res = {
             "has_access": False,
             "reason": "Authentication required",
             "plan_name": "None",
             "status": "unauthenticated",
             "expires_at": None,
-            "subscription": None
+            "subscription_id": None
         }
+        if include_model:
+            res["subscription_model"] = None
+        return res
 
     # Staff & Admin Preview Exemption
     if student_user.is_superuser or student_user.is_staff:
-        return {
+        res = {
             "has_access": True,
             "reason": "Administrative access",
             "plan_name": "Super Admin Preview",
             "status": "active",
             "expires_at": None,
-            "subscription": None
+            "subscription_id": None
         }
+        if include_model:
+            res["subscription_model"] = None
+        return res
 
     profile = getattr(student_user, 'profile', None)
     if profile and profile.role in ['teacher', 'school_admin', 'super_admin']:
-        return {
+        res = {
             "has_access": True,
             "reason": f"Educator role ({profile.role})",
             "plan_name": "Educator License",
             "status": "active",
             "expires_at": None,
-            "subscription": None
+            "subscription_id": None
         }
+        if include_model:
+            res["subscription_model"] = None
+        return res
 
     # Institutional School Exemption:
     if profile and profile.school and profile.school.status == 'APPROVED' and profile.classroom:
-        return {
+        res = {
             "has_access": True,
             "reason": f"Enrolled in {profile.school.name}",
             "plan_name": f"{profile.school.name} Student License",
             "status": "active",
             "expires_at": None,
-            "subscription": None
+            "subscription_id": None
         }
+        if include_model:
+            res["subscription_model"] = None
+        return res
 
     # Direct Parent Account Check:
     if profile and profile.role == 'parent':
@@ -223,46 +235,58 @@ def is_student_accessible(student_user: User) -> dict:
         ).select_related('plan').order_by('-current_period_end').first()
 
         if sub and sub.is_valid():
-            return {
+            res = {
                 "has_access": True,
                 "reason": "Parent subscription active",
                 "plan_name": sub.plan.plan_name if sub.plan else "Family Membership",
                 "status": sub.subscription_status,
                 "expires_at": sub.current_period_end.isoformat() if sub.current_period_end else None,
-                "subscription": sub
+                "subscription_id": sub.id
             }
+            if include_model:
+                res["subscription_model"] = sub
+            return res
         elif sub:
             expired_status = 'past_due' if sub.subscription_status == 'past_due' else 'expired'
-            return {
+            res = {
                 "has_access": False,
                 "reason": f"Subscription {sub.subscription_status}",
                 "plan_name": sub.plan.plan_name if sub.plan else "Family Membership",
                 "status": expired_status,
                 "expires_at": sub.current_period_end.isoformat() if sub.current_period_end else None,
-                "subscription": sub
+                "subscription_id": sub.id
             }
+            if include_model:
+                res["subscription_model"] = sub
+            return res
         else:
-            return {
+            res = {
                 "has_access": False,
                 "reason": "Parent has no active subscription",
                 "plan_name": "None",
                 "status": "inactive",
                 "expires_at": None,
-                "subscription": None
+                "subscription_id": None
             }
+            if include_model:
+                res["subscription_model"] = None
+            return res
 
     # Student Family Check:
     # 1. Must belong to a valid parent/child relationship
     parent_links = ParentChild.objects.filter(child=student_user).select_related('parent')
     if not parent_links.exists():
-        return {
+        res = {
             "has_access": False,
             "reason": "Student account must be linked to a parent account",
             "plan_name": "Independent Learner (Unlinked)",
             "status": "inactive",
             "expires_at": None,
-            "subscription": None
+            "subscription_id": None
         }
+        if include_model:
+            res["subscription_model"] = None
+        return res
 
     # 2. Check linked parents' subscriptions
     latest_sub = None
@@ -277,35 +301,44 @@ def is_student_accessible(student_user: User) -> dict:
                 latest_sub = sub
 
             if sub.is_valid():
-                return {
+                res = {
                     "has_access": True,
                     "reason": f"Covered by parent subscription ({link.parent.username})",
                     "plan_name": sub.plan.plan_name if sub.plan else "Family Membership",
                     "status": sub.subscription_status,
                     "expires_at": sub.current_period_end.isoformat() if sub.current_period_end else None,
-                    "subscription": sub
+                    "subscription_id": sub.id
                 }
+                if include_model:
+                    res["subscription_model"] = sub
+                return res
 
     if latest_sub:
         expired_status = 'past_due' if latest_sub.subscription_status == 'past_due' else 'expired'
-        return {
+        res = {
             "has_access": False,
             "reason": f"Parent subscription {latest_sub.subscription_status}",
             "plan_name": latest_sub.plan.plan_name if latest_sub.plan else "Family Membership",
             "status": expired_status,
             "expires_at": latest_sub.current_period_end.isoformat() if latest_sub.current_period_end else None,
-            "subscription": latest_sub
+            "subscription_id": latest_sub.id
         }
+        if include_model:
+            res["subscription_model"] = latest_sub
+        return res
 
     # Default: Parent has never subscribed
-    return {
+    res = {
         "has_access": False,
         "reason": "Active parent subscription required for learning access",
         "plan_name": "Independent Learner (Unpaid)",
         "status": "inactive",
         "expires_at": None,
-        "subscription": None
+        "subscription_id": None
     }
+    if include_model:
+        res["subscription_model"] = None
+    return res
 
 
 def normalize_feature_category(feature: str, stage: int = None) -> str:
@@ -374,12 +407,12 @@ def check_learning_access(user: User, feature: str = None, stage: int = None, pa
         }
 
     # 2. Evaluate student / user account access rights
-    access_info = is_student_accessible(user)
+    access_info = is_student_accessible(user, include_model=True)
+    sub = access_info.pop("subscription_model", None)
 
     if access_info.get("has_access", False):
         # 3. Plan feature inclusion check:
         # If covered by a subscription, check if the specific feature is included in the plan
-        sub = access_info.get("subscription")
         if sub and sub.plan:
             category = normalize_feature_category(feature, stage)
             if not sub.plan.is_feature_included(category):

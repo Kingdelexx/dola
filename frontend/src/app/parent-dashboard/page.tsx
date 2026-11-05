@@ -466,17 +466,23 @@ export default function ParentDashboardPage() {
         body: JSON.stringify({ child_id: childId })
       });
 
-      const json = await res.json();
-      if (res.ok && json.token && json.user) {
+      let json: any = null;
+      try {
+        json = await res.json();
+      } catch (e) {
+        console.error("Non-JSON response from server:", e);
+      }
+
+      if (res.ok && json?.token && json?.user) {
         login(json.token, json.user);
         window.location.href = '/dashboard';
       } else {
-        alert(json.error || 'Failed to launch student session.');
+        alert(json?.error || json?.message || `Failed to launch learner session (Status: ${res.status}).`);
         setIsSwitchingChild(null);
       }
-    } catch (err) {
-      console.error(err);
-      alert('Error connecting to server.');
+    } catch (err: any) {
+      console.error("Error switching to child:", err);
+      alert(err?.message || 'Error connecting to server. Please try again.');
       setIsSwitchingChild(null);
     }
   };

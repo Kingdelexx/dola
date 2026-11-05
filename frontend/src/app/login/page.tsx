@@ -339,8 +339,14 @@ export default function LoginPage() {
         })
       });
 
-      const data = await res.json();
-      if (res.ok && data.token && data.user) {
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch (e) {
+        console.error("Non-JSON response from server:", e);
+      }
+
+      if (res.ok && data?.token && data?.user) {
         login(data.token, data.user);
         window.location.href = '/dashboard';
       } else {
@@ -348,7 +354,7 @@ export default function LoginPage() {
         setTimeout(() => setPinShake(false), 600);
         setPinDigits(['', '', '', '']);
         pinInputRefs[0].current?.focus();
-        setFamilyError(data.error || "Incorrect 4-digit PIN. Please try again or ask your parent to check the PIN.");
+        setFamilyError(data?.error || data?.message || "Incorrect 4-digit PIN. Please try again or ask your parent to check the PIN.");
       }
     } catch (err) {
       console.error(err);
