@@ -14,7 +14,12 @@ class UserBadgeSerializer(serializers.ModelSerializer):
         model = UserBadge
         fields = ('badge', 'earned_at')
 
-from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild
+from .models import (
+    UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild,
+    PetRescueProgress, PizzaShopProgress, RobotMazeProgress, MyLittleShopProgress,
+    FrogAdventureProgress, TrafficRescueProgress, StudentCompetency, WebChallenge,
+    StudentChallengeProgress, DolaMoneyProgress
+)
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,7 +38,6 @@ class ClassroomSerializer(serializers.ModelSerializer):
         model = Classroom
         fields = ('id', 'school', 'school_name', 'name', 'grade_level', 'teacher', 'teacher_name', 'join_code', 'created_at')
 
-from .models import UserProfile, Badge, UserBadge, Feedback, School, Classroom, ParentChild, StudentCompetency, PizzaShopProgress, RobotMazeProgress, MyLittleShopProgress, FrogAdventureProgress, TrafficRescueProgress, PetRescueProgress
 
 class PetRescueProgressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -102,6 +106,16 @@ class TrafficRescueProgressSerializer(serializers.ModelSerializer):
             'hints_used', 'time_spent_seconds', 'city_upgrades', 'badges', 'updated_at'
         )
 
+class DolaMoneyProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DolaMoneyProgress
+        fields = (
+            'dola_coins', 'xp_earned', 'savings_streak', 'savings_total',
+            'current_world', 'completed_worlds', 'world_levels',
+            'active_savings_goal', 'business_stats', 'bank_stats',
+            'financial_skills', 'badges', 'time_spent_seconds', 'updated_at'
+        )
+
 class StudentCompetencySerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentCompetency
@@ -130,10 +144,11 @@ class UserSerializer(serializers.ModelSerializer):
     frog_adventure_progress = serializers.SerializerMethodField()
     traffic_rescue_progress = serializers.SerializerMethodField()
     pet_rescue_progress = serializers.SerializerMethodField()
+    dolamoney_progress = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies', 'pizza_shop_progress', 'robot_maze_progress', 'my_little_shop_progress', 'frog_adventure_progress', 'traffic_rescue_progress', 'pet_rescue_progress')
+        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies', 'pizza_shop_progress', 'robot_maze_progress', 'my_little_shop_progress', 'frog_adventure_progress', 'traffic_rescue_progress', 'pet_rescue_progress', 'dolamoney_progress')
         extra_kwargs = {
             'password': {'write_only': True},
             'is_superuser': {'read_only': True}
@@ -187,6 +202,12 @@ class UserSerializer(serializers.ModelSerializer):
         prog = getattr(obj, 'pet_rescue_progress', None)
         if prog:
             return PetRescueProgressSerializer(prog).data
+        return None
+
+    def get_dolamoney_progress(self, obj):
+        prog = getattr(obj, 'dolamoney_progress', None)
+        if prog:
+            return DolaMoneyProgressSerializer(prog).data
         return None
 
     def create(self, validated_data):

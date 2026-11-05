@@ -587,6 +587,28 @@ class SubscriptionSetting(models.Model):
         return default_days
 
 
+class DolaMoneyProgress(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='dolamoney_progress')
+    dola_coins = models.IntegerField(default=0)  # Educational in-platform rewards only (not real money, non-redeemable)
+    xp_earned = models.IntegerField(default=0)
+    savings_streak = models.IntegerField(default=0)
+    savings_total = models.IntegerField(default=0)
+    current_world = models.IntegerField(default=1)
+    completed_worlds = models.JSONField(default=list)
+    world_levels = models.JSONField(default=dict)
+    active_savings_goal = models.JSONField(default=dict)
+    business_stats = models.JSONField(default=dict)
+    bank_stats = models.JSONField(default=dict)
+    financial_skills = models.JSONField(default=dict)
+    badges = models.JSONField(default=list)
+    time_spent_seconds = models.IntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - DolaMoney Quest ({self.dola_coins} Coins, World {self.current_world})"
+
+
+
 
 
 

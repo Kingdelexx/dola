@@ -184,6 +184,21 @@ interface PetRescueStats {
   badges: string[];
 }
 
+interface DolaMoneyStats {
+  dola_coins: number;
+  xp_earned: number;
+  savings_streak: number;
+  savings_total: number;
+  current_world: number;
+  completed_worlds: number[];
+  active_savings_goal?: { name?: string; target?: number; current?: number };
+  badges: string[];
+  skills?: {
+    [key: string]: { name: string; status: 'Learning' | 'Practising' | 'Mastered' };
+  };
+  conversation_prompts?: string[];
+}
+
 interface ChildAnalytics {
   lessons_completed: number;
   homework_submitted: string;
@@ -197,6 +212,7 @@ interface ChildAnalytics {
   frog_adventure_stats?: FrogAdventureStats;
   traffic_rescue_stats?: TrafficRescueStats;
   pet_rescue_stats?: PetRescueStats;
+  dolamoney_stats?: DolaMoneyStats;
   weekly_report: WeeklyReport;
   weekly_journey?: WeeklyJourney;
   learning_profile?: LearningProfile;
@@ -1749,6 +1765,122 @@ export default function ParentDashboardPage() {
                           <span className="text-slate-500 text-[11px]">Ready to earn &quot;Pet Helper&quot;!</span>
                         )}
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Financial Literacy (DolaMoney Quest) Analytics */}
+                  <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/70 border-2 border-emerald-500/40 text-white space-y-6 shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-500/20 pb-4 relative z-10">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 flex items-center justify-center text-2xl shadow-lg border-2 border-white shrink-0">
+                          🪙
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-black text-lg text-white">Financial Literacy &bull; DolaMoney Quest</h4>
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-black uppercase tracking-wider">
+                              Nigerian Naira (₦)
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-300 font-medium mt-0.5">
+                            Learn. Earn. Save. Spend. Build. &bull; Practical decision-making through games
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="px-3 py-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 font-black text-xs flex items-center gap-1.5">
+                          <span>🪙</span> {analytics.dolamoney_stats?.dola_coins ?? 0} DolaCoins
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-orange-500/20 border border-orange-400/40 text-orange-300 font-black text-xs flex items-center gap-1">
+                          <span>🔥</span> {analytics.dolamoney_stats?.savings_streak ?? 0}-Week Streak
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-black text-xs flex items-center gap-1">
+                          <span>🌍</span> {analytics.dolamoney_stats?.completed_worlds?.length ?? 0}/10 Worlds
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 7 Core Financial Competencies */}
+                    <div className="space-y-2.5 relative z-10">
+                      <div className="text-xs font-black uppercase tracking-wider text-slate-300">
+                        Financial Competencies &amp; Progression
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                        {analytics.dolamoney_stats?.skills ? (
+                          Object.entries(analytics.dolamoney_stats.skills).map(([k, sk]) => (
+                            <div key={k} className="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+                              <span className="text-xs font-bold text-slate-200">{sk.name}</span>
+                              <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                                sk.status === 'Mastered'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'
+                                  : sk.status === 'Practising'
+                                  ? 'bg-blue-500/20 text-blue-300 border border-blue-400/40'
+                                  : 'bg-amber-500/20 text-amber-300 border border-amber-400/40'
+                              }`}>
+                                {sk.status}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          ['Money Recognition (Naira)', 'Needs vs Wants', 'Savings & Goals', 'Budgeting & Planning', 'Banking Basics', 'Entrepreneurship & Profit', 'Decision Making'].map((name, i) => (
+                            <div key={i} className="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+                              <span className="text-xs font-bold text-slate-200">{name}</span>
+                              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                                Learning
+                              </span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Weekly Parent Conversation Starters */}
+                    <div className="p-4.5 rounded-2xl bg-emerald-950/40 border border-emerald-400/30 space-y-2 relative z-10">
+                      <div className="text-xs font-black uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                        <span>💬</span> Real-World Parent Conversation Starters of the Week
+                      </div>
+                      <div className="space-y-1.5 text-xs text-slate-200 leading-relaxed font-medium">
+                        {(analytics.dolamoney_stats?.conversation_prompts && analytics.dolamoney_stats.conversation_prompts.length > 0) ? (
+                          analytics.dolamoney_stats.conversation_prompts.map((prompt, pi) => (
+                            <div key={pi} className="flex items-start gap-2">
+                              <span className="text-emerald-400 font-bold">&bull;</span>
+                              <span>{prompt}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex items-start gap-2">
+                            <span className="text-emerald-400 font-bold">&bull;</span>
+                            <span>
+                              Ask {childUser.first_name || childUser.username}: &quot;If you were given ₦2,000 today, would you choose to save it in your savings jar towards a goal, or spend a part of it?&quot;
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Badges & Active Goal Bar */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-t border-emerald-500/20 pt-4 relative z-10">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-slate-400 font-bold text-[11px]">Financial Badges:</span>
+                        {(analytics.dolamoney_stats?.badges && analytics.dolamoney_stats.badges.length > 0) ? (
+                          analytics.dolamoney_stats.badges.map((b, bi) => (
+                            <span key={bi} className="px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-200 font-bold text-[10px] border border-emerald-500/30">
+                              🏆 {b}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-500 text-[11px]">Ready to unlock first badge in World 1</span>
+                        )}
+                      </div>
+
+                      {analytics.dolamoney_stats?.active_savings_goal?.name && (
+                        <div className="text-slate-300 font-semibold text-xs">
+                          Active Goal: <strong className="text-emerald-300">{analytics.dolamoney_stats.active_savings_goal.name}</strong> (₦{analytics.dolamoney_stats.active_savings_goal.current?.toLocaleString() || 0} / ₦{analytics.dolamoney_stats.active_savings_goal.target?.toLocaleString() || 0})
+                        </div>
+                      )}
                     </div>
                   </div>
 

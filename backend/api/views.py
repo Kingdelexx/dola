@@ -352,8 +352,16 @@ class AdminDashboardStatsView(APIView):
         })
 
 # Gamification Seeding & Views
-from .models import Badge, UserBadge, Feedback, PizzaShopProgress, RobotMazeProgress, MyLittleShopProgress, FrogAdventureProgress, TrafficRescueProgress, PetRescueProgress
-from .serializers import BadgeSerializer, FeedbackSerializer, PizzaShopProgressSerializer, RobotMazeProgressSerializer, MyLittleShopProgressSerializer, FrogAdventureProgressSerializer, TrafficRescueProgressSerializer, PetRescueProgressSerializer
+from .models import (
+    Badge, UserBadge, Feedback, PizzaShopProgress, RobotMazeProgress,
+    MyLittleShopProgress, FrogAdventureProgress, TrafficRescueProgress, PetRescueProgress,
+    DolaMoneyProgress
+)
+from .serializers import (
+    BadgeSerializer, FeedbackSerializer, PizzaShopProgressSerializer,
+    RobotMazeProgressSerializer, MyLittleShopProgressSerializer, FrogAdventureProgressSerializer,
+    TrafficRescueProgressSerializer, PetRescueProgressSerializer, DolaMoneyProgressSerializer
+)
 
 DEFAULT_BADGES = [
     {
@@ -634,6 +642,76 @@ DEFAULT_BADGES = [
         "description": "Automate pet routines with IF/THEN rules, loops, and debugging!",
         "icon": "💻",
         "condition_type": "pet_code",
+        "condition_value": 1
+    },
+    {
+        "name": "Money Starter",
+        "description": "Recognise Nigerian currency notes and make your first exact amount!",
+        "icon": "🪙",
+        "condition_type": "dolamoney_world",
+        "condition_value": 1
+    },
+    {
+        "name": "Smart Shopper",
+        "description": "Distinguish needs from wants and make smart spending choices!",
+        "icon": "🛒",
+        "condition_type": "dolamoney_world",
+        "condition_value": 2
+    },
+    {
+        "name": "Savings Star",
+        "description": "Build a consistent savings streak and fill your savings jar!",
+        "icon": "⭐",
+        "condition_type": "dolamoney_world",
+        "condition_value": 3
+    },
+    {
+        "name": "Budget Boss",
+        "description": "Allocate a fixed budget wisely and handle unexpected changes!",
+        "icon": "📊",
+        "condition_type": "dolamoney_world",
+        "condition_value": 4
+    },
+    {
+        "name": "Banking Explorer",
+        "description": "Master deposits, withdrawals, and balances in DolaBank!",
+        "icon": "🏦",
+        "condition_type": "dolamoney_world",
+        "condition_value": 7
+    },
+    {
+        "name": "Profit Pro",
+        "description": "Master cost, revenue, and profit in your little business!",
+        "icon": "📈",
+        "condition_type": "dolamoney_world",
+        "condition_value": 5
+    },
+    {
+        "name": "Young Entrepreneur",
+        "description": "Launch, price, and reinvest in your growing business venture!",
+        "icon": "🚀",
+        "condition_type": "dolamoney_world",
+        "condition_value": 10
+    },
+    {
+        "name": "Money Wise",
+        "description": "Spot tricky money traps and scams by consulting trusted adults!",
+        "icon": "🛡️",
+        "condition_type": "dolamoney_world",
+        "condition_value": 9
+    },
+    {
+        "name": "Goal Getter",
+        "description": "Hit key savings milestones towards your dream goals!",
+        "icon": "🎯",
+        "condition_type": "dolamoney_world",
+        "condition_value": 8
+    },
+    {
+        "name": "DolaMoney Champion",
+        "description": "Conquer all DolaMoney Quest worlds with financial wisdom!",
+        "icon": "👑",
+        "condition_type": "dolamoney_champion",
         "condition_value": 1
     }
 ]
@@ -1597,6 +1675,131 @@ class PetRescueGetProgressView(APIView):
         })
 
 
+class DolaMoneySaveProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        child_id = request.data.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "permission_denied",
+                    "detail": "Unauthorized to update learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        prog, _ = DolaMoneyProgress.objects.get_or_create(user=user)
+
+        if 'dola_coins' in data:
+            prog.dola_coins = max(0, int(data['dola_coins']))
+        if 'xp_earned' in data:
+            prog.xp_earned = max(0, int(data['xp_earned']))
+        if 'savings_streak' in data:
+            prog.savings_streak = max(0, int(data['savings_streak']))
+        if 'savings_total' in data:
+            prog.savings_total = max(0, int(data['savings_total']))
+        if 'current_world' in data:
+            prog.current_world = max(1, min(10, int(data['current_world'])))
+        if 'time_spent_seconds' in data:
+            prog.time_spent_seconds = max(0, int(data['time_spent_seconds']))
+
+        if 'completed_worlds' in data and isinstance(data['completed_worlds'], list):
+            combined = set(prog.completed_worlds)
+            for w in data['completed_worlds']:
+                if str(w).isdigit():
+                    combined.add(int(w))
+            prog.completed_worlds = list(sorted(combined))
+
+        if 'world_levels' in data and isinstance(data['world_levels'], dict):
+            wl = dict(prog.world_levels)
+            wl.update(data['world_levels'])
+            prog.world_levels = wl
+
+        if 'active_savings_goal' in data and isinstance(data['active_savings_goal'], dict):
+            prog.active_savings_goal = data['active_savings_goal']
+
+        if 'business_stats' in data and isinstance(data['business_stats'], dict):
+            bs = dict(prog.business_stats)
+            bs.update(data['business_stats'])
+            prog.business_stats = bs
+
+        if 'bank_stats' in data and isinstance(data['bank_stats'], dict):
+            bk = dict(prog.bank_stats)
+            bk.update(data['bank_stats'])
+            prog.bank_stats = bk
+
+        if 'financial_skills' in data and isinstance(data['financial_skills'], dict):
+            fs = dict(prog.financial_skills)
+            fs.update(data['financial_skills'])
+            prog.financial_skills = fs
+
+        current_badges = list(prog.badges)
+        incoming_badges = data.get('badges', [])
+        if isinstance(incoming_badges, list):
+            for b in incoming_badges:
+                if b not in current_badges:
+                    current_badges.append(b)
+        prog.badges = current_badges
+
+        prog.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if 'stars_awarded' in data and int(data['stars_awarded']) > 0:
+            profile.points += int(data['stars_awarded'])
+        profile.save()
+
+        seed_default_badges()
+        newly_awarded = []
+        for badge_name in current_badges:
+            b_obj = Badge.objects.filter(name=badge_name).first()
+            if b_obj:
+                ub, ub_created = UserBadge.objects.get_or_create(user=user, badge=b_obj)
+                if ub_created:
+                    newly_awarded.append({
+                        "name": b_obj.name,
+                        "description": b_obj.description,
+                        "icon": b_obj.icon
+                    })
+
+        return Response({
+            "success": True,
+            "progress": DolaMoneyProgressSerializer(prog).data,
+            "newly_awarded_badges": newly_awarded,
+            "profile_points": profile.points
+        })
+
+
+class DolaMoneyGetProgressView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "permission_denied",
+                    "detail": "Unauthorized to access learning progress across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        prog, _ = DolaMoneyProgress.objects.get_or_create(user=user)
+        return Response({
+            "success": True,
+            "progress": DolaMoneyProgressSerializer(prog).data
+        })
+
+
 import os
 import urllib.request
 import json
@@ -2403,6 +2606,58 @@ class ParentDashboardView(APIView):
                     "badges": pr_prog.badges,
                 }
 
+            dm_prog = getattr(child, 'dolamoney_progress', None)
+            dolamoney_stats = None
+            if dm_prog:
+                skills_raw = dm_prog.financial_skills or {}
+                def get_skill_status(skill_key, world_num):
+                    if skill_key in skills_raw:
+                        return skills_raw[skill_key]
+                    if world_num in dm_prog.completed_worlds:
+                        return "Mastered"
+                    elif dm_prog.current_world >= world_num or (isinstance(dm_prog.world_levels, dict) and dm_prog.world_levels.get(f"world{world_num}", 0) > 0):
+                        return "Practising"
+                    return "Learning"
+
+                child_name = child.first_name or child.username
+                prompts = []
+                if 2 in dm_prog.completed_worlds or (isinstance(dm_prog.world_levels, dict) and dm_prog.world_levels.get("world2", 0) > 0):
+                    prompts.append(f"This week {child_name} explored Needs vs Wants. Next time you visit a store together, ask: 'Can you point out two things we NEED and one thing that is a WANT?'")
+                else:
+                    prompts.append(f"Ask {child_name}: 'If you were given ₦1,000 today, would you choose to spend it on a quick treat or save it for something bigger?'")
+
+                if dm_prog.savings_streak > 0 or 3 in dm_prog.completed_worlds:
+                    target_name = dm_prog.active_savings_goal.get('name', 'their goal') if isinstance(dm_prog.active_savings_goal, dict) and dm_prog.active_savings_goal else 'a dream toy'
+                    prompts.append(f"{child_name} is currently saving for {target_name} with a {dm_prog.savings_streak}-week streak! Ask: 'How does it feel to see your savings jar grow each week?'")
+                else:
+                    prompts.append(f"Ask {child_name}: 'What is one special goal or STEM kit you would like to save up for this term?'")
+
+                if 5 in dm_prog.completed_worlds or (isinstance(dm_prog.world_levels, dict) and dm_prog.world_levels.get("world5", 0) > 0):
+                    prompts.append(f"In 'My Little Business', {child_name} managed pricing and profit. Ask: 'When you ran your stall, how did setting the price too high or too low affect your customers?'")
+
+                dolamoney_stats = {
+                    "dola_coins": dm_prog.dola_coins,
+                    "xp_earned": dm_prog.xp_earned,
+                    "savings_streak": dm_prog.savings_streak,
+                    "savings_total": dm_prog.savings_total,
+                    "current_world": dm_prog.current_world,
+                    "completed_worlds": dm_prog.completed_worlds,
+                    "active_savings_goal": dm_prog.active_savings_goal,
+                    "business_stats": dm_prog.business_stats,
+                    "badges": dm_prog.badges,
+                    "time_spent_seconds": dm_prog.time_spent_seconds,
+                    "skills": {
+                        "money_recognition": {"name": "Money Recognition (Naira)", "status": get_skill_status("money_recognition", 1)},
+                        "needs_vs_wants": {"name": "Needs vs Wants", "status": get_skill_status("needs_vs_wants", 2)},
+                        "savings": {"name": "Savings & Goals", "status": get_skill_status("savings", 3)},
+                        "budgeting": {"name": "Budgeting & Planning", "status": get_skill_status("budgeting", 4)},
+                        "banking_basics": {"name": "Banking Basics (DolaBank)", "status": get_skill_status("banking_basics", 7)},
+                        "entrepreneurship": {"name": "Entrepreneurship & Profit", "status": get_skill_status("entrepreneurship", 5)},
+                        "decision_making": {"name": "Financial Decision-Making", "status": get_skill_status("decision_making", 9)}
+                    },
+                    "conversation_prompts": prompts
+                }
+
             child_user_data = UserSerializer(child).data
             child_user_data['pin'] = c_profile.pin if c_profile else None
             child_user_data['first_name'] = child.first_name
@@ -2424,6 +2679,7 @@ class ParentDashboardView(APIView):
                     "frog_adventure_stats": frog_adventure_stats,
                     "traffic_rescue_stats": traffic_rescue_stats,
                     "pet_rescue_stats": pet_rescue_stats,
+                    "dolamoney_stats": dolamoney_stats,
                     "weekly_report": {
                         "summary": summary,
                         "teacher_feedback": teacher_feedback,

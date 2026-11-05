@@ -234,6 +234,44 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* DolaMoney Quest Hero Showcase Card */}
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-[2.5rem] p-6 sm:p-8 mb-10 border-4 border-emerald-300/60 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-6 dash-element relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
+            🪙
+          </div>
+
+          <div className="flex items-center gap-5 relative z-10 text-center lg:text-left">
+            <div className="w-20 h-20 bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 rounded-3xl flex items-center justify-center text-4xl shrink-0 shadow-xl border-4 border-white group-hover:scale-105 group-hover:rotate-6 transition-transform">
+              🪙
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-900/60 border border-emerald-300/40 text-emerald-200 text-xs font-black uppercase tracking-wider mb-2">
+                <Sparkles size={13} className="text-yellow-300" /> New Interactive Section &bull; 10 Worlds
+              </div>
+              <h3 className="font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+                DolaMoney Quest
+              </h3>
+              <p className="text-emerald-100 font-bold text-sm sm:text-base mt-1">
+                Learn. Earn. Save. Spend. Build. &bull; <span className="text-yellow-300">Nigerian Naira (₦)</span>
+              </p>
+              <p className="text-emerald-50/80 text-xs sm:text-sm mt-1 max-w-xl">
+                Master real-world money habits through fun shopping games, savings jars, business simulations, and decision missions!
+              </p>
+            </div>
+          </div>
+
+          <div className="relative z-10 w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/dolamoney"
+              className="w-full lg:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#92400e] hover:shadow-[0_8px_0_#92400e] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>ENTER DOLAMONEY QUEST</span>
+              <span>&rarr;</span>
+            </Link>
+          </div>
+        </div>
+
         {/* Interactive Mini-Games Showcase */}
         <div className="dash-element mb-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
