@@ -74,6 +74,7 @@ class UserProfile(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
 
     # Gamification and streaks
+    pin = models.CharField(max_length=10, blank=True, null=True, help_text="4-digit access PIN for child login")
     points = models.IntegerField(default=0)
     current_streak = models.IntegerField(default=0)
     longest_streak = models.IntegerField(default=0)

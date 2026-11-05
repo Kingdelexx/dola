@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import (
     RegisterView, LoginView, UserDataView, AdminDashboardStatsView,
+    FamilyProfilesView, ChildPinLoginView,
+    ParentChildrenListView, ParentChildDetailView, SwitchToChildView,
     UpdateProgressView, BadgesListView, SubmitFeedbackView, ChatView,
     SuperAdminDashboardView, SchoolDashboardView, CreateClassroomView, AssignTeacherToClassView,
     ParentDashboardView, LinkChildView, ApproveSchoolView, DeleteSchoolView, AddSchoolTeacherView,
@@ -37,6 +39,8 @@ from .parent_admin_subscription_views import (
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),
+    path('auth/family-profiles/', FamilyProfilesView.as_view(), name='family_profiles'),
+    path('auth/child-pin-login/', ChildPinLoginView.as_view(), name='child_pin_login'),
     path('auth/google/', GoogleAuthView.as_view(), name='google_auth'),
     path('auth/user/', UserDataView.as_view(), name='user_data'),
     path('auth/join-class/', StudentJoinClassView.as_view(), name='join_class'),
@@ -73,6 +77,9 @@ urlpatterns = [
     path('teacher/dashboard/', TeacherDashboardView.as_view(), name='teacher_dashboard'),
     path('parent/dashboard/', ParentDashboardView.as_view(), name='parent_dashboard'),
     path('parent/link-child/', LinkChildView.as_view(), name='link_child'),
+    path('parent/children/', ParentChildrenListView.as_view(), name='parent_children_list'),
+    path('parent/children/<int:child_id>/', ParentChildDetailView.as_view(), name='parent_child_detail'),
+    path('parent/switch-to-child/', SwitchToChildView.as_view(), name='parent_switch_to_child'),
     path('parent/claim-account/', ClaimParentAccountView.as_view(), name='claim_parent_account'),
 
     # Web Dev Studio Endpoints

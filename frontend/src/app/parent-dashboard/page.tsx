@@ -7,7 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import { 
   Users, ArrowLeft, Star, Flame, 
   Sparkles, RefreshCw, ShieldAlert, UserPlus,
-  BookOpen, Calculator, Code, Clock, Award, FileText, CheckCircle2, CreditCard, LogOut
+  BookOpen, Calculator, Code, Clock, Award, FileText, CheckCircle2, CreditCard, LogOut,
+  Rocket, KeyRound, X, ChevronRight, Eye, EyeOff
 } from 'lucide-react';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import confetti from 'canvas-confetti';
@@ -206,8 +207,15 @@ interface ChildData {
   user: {
     id: number;
     username: string;
+    first_name?: string;
+    last_name?: string;
+    pin?: string;
     email: string;
     profile?: {
+      role?: string;
+      age?: number;
+      gender?: string;
+      pin?: string;
       points?: number;
       current_streak?: number;
       stage1_progress?: number;
@@ -227,17 +235,32 @@ interface ChildData {
 
 export default function ParentDashboardPage() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const [data, setData] = useState<{ parent?: any; parent_subscription?: ParentSubscription; children?: ChildData[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Link child modal
+  // Add / Link child modal state
   const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkMode, setLinkMode] = useState<'create' | 'existing'>('create');
+  const [childName, setChildName] = useState('');
+  const [childPin, setChildPin] = useState('');
+  const [childAge, setChildAge] = useState('');
+  const [childGender, setChildGender] = useState<'boy' | 'girl'>('boy');
   const [studentIdentifier, setStudentIdentifier] = useState('');
   const [linkError, setLinkError] = useState('');
   const [isLinking, setIsLinking] = useState(false);
+
+  // Edit PIN modal state
+  const [editingChild, setEditingChild] = useState<any | null>(null);
+  const [editPin, setEditPin] = useState('');
+  const [editPinError, setEditPinError] = useState('');
+  const [isUpdatingPin, setIsUpdatingPin] = useState(false);
+  const [showPinMap, setShowPinMap] = useState<{ [childId: number]: boolean }>({});
+
+  // Direct switch to child session
+  const [isSwitchingChild, setIsSwitchingChild] = useState<number | null>(null);
 
   // Subscription modal & payment verification
   const [showSubModal, setShowSubModal] = useState(false);
@@ -318,12 +341,38 @@ export default function ParentDashboardPage() {
 
   const handleLinkChild = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!studentIdentifier.trim()) return;
-
-    setIsLinking(true);
     setLinkError('');
     const authToken = token || localStorage.getItem('token');
+    if (!authToken) return;
 
+    let payload: any = {};
+    if (linkMode === 'create') {
+      if (!childName.trim()) {
+        setLinkError("Please enter your child's name.");
+        return;
+      }
+      if (!childPin.trim() || childPin.trim().length !== 4 || !/^\d+$/.test(childPin.trim())) {
+        setLinkError("PIN must be exactly 4 digits (e.g. 1234).");
+        return;
+      }
+      payload = {
+        name: childName.trim(),
+        pin: childPin.trim(),
+        age: childAge ? parseInt(childAge) : null,
+        gender: childGender
+      };
+    } else {
+      if (!studentIdentifier.trim()) {
+        setLinkError("Student username or email is required.");
+        return;
+      }
+      payload = {
+        identifier: studentIdentifier.trim(),
+        pin: childPin.trim() || undefined
+      };
+    }
+
+    setIsLinking(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/parent/link-child/`, {
         method: 'POST',
@@ -331,22 +380,92 @@ export default function ParentDashboardPage() {
           'Authorization': `Token ${authToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ identifier: studentIdentifier })
+        body: JSON.stringify(payload)
       });
 
       const json = await res.json();
       if (res.ok) {
+        setChildName('');
+        setChildPin('');
+        setChildAge('');
         setStudentIdentifier('');
         setShowLinkModal(false);
         fetchParentData();
       } else {
-        setLinkError(json.error || 'Could not link student.');
+        setLinkError(json.error || 'Could not create or link child account.');
       }
     } catch (err) {
       console.error(err);
-      setLinkError('Failed to link student. Try again.');
+      setLinkError('Failed to create or link child. Try again.');
     } finally {
       setIsLinking(false);
+    }
+  };
+
+  const handleUpdateChildPin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingChild) return;
+    setEditPinError('');
+
+    if (!editPin.trim() || editPin.trim().length !== 4 || !/^\d+$/.test(editPin.trim())) {
+      setEditPinError("PIN must be exactly 4 digits (e.g. 1234).");
+      return;
+    }
+
+    setIsUpdatingPin(true);
+    const authToken = token || localStorage.getItem('token');
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/parent/children/${editingChild.id}/`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Token ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pin: editPin.trim() })
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setEditingChild(null);
+        setEditPin('');
+        fetchParentData();
+      } else {
+        setEditPinError(json.error || 'Failed to update PIN.');
+      }
+    } catch (err) {
+      console.error(err);
+      setEditPinError('Network error updating PIN.');
+    } finally {
+      setIsUpdatingPin(false);
+    }
+  };
+
+  const handleLaunchChildDashboard = async (childId: number) => {
+    setIsSwitchingChild(childId);
+    const authToken = token || localStorage.getItem('token');
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/parent/switch-to-child/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ child_id: childId })
+      });
+
+      const json = await res.json();
+      if (res.ok && json.token) {
+        localStorage.setItem('token', json.token);
+        localStorage.setItem('user', JSON.stringify(json.user));
+        router.push('/dashboard');
+      } else {
+        alert(json.error || 'Failed to launch student session.');
+        setIsSwitchingChild(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error connecting to server.');
+      setIsSwitchingChild(null);
     }
   };
 
@@ -552,27 +671,89 @@ export default function ParentDashboardPage() {
                 <div key={childUser.id} className="rounded-3xl bg-white border border-slate-200/80 p-8 space-y-6 shadow-xl shadow-slate-200/50">
                   
                   {/* Child Profile Header */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-100 pb-6 gap-4">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between border-b border-slate-100 pb-6 gap-4">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center font-black text-white text-2xl shadow-md shadow-pink-500/20">
                         🎓
                       </div>
                       <div>
-                        <h3 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-                          {childUser.username}
-                        </h3>
-                        <p className="text-xs text-slate-500 font-medium">
-                          School: <strong className="text-slate-800">{profile?.school_details?.name || 'Not Enrolled in School'}</strong> | Class: <strong className="text-slate-800">{profile?.classroom_details?.name || 'Unassigned'}</strong>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-2xl font-black text-slate-900">
+                            {childUser.first_name || childUser.username}
+                          </h3>
+                          {profile?.age && (
+                            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold text-xs">
+                              Age {profile.age}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium mt-0.5">
+                          Username: <strong className="text-slate-700 font-mono">{childUser.username}</strong> | School: <strong className="text-slate-800">{profile?.school_details?.name || 'Home Learner'}</strong>
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                      {/* 4-digit PIN Quick Badge & Controls */}
+                      {childUser.pin ? (
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs font-bold shadow-xs">
+                          <KeyRound className="w-3.5 h-3.5 text-purple-600" />
+                          <span>Login PIN:</span>
+                          <span className="font-mono tracking-widest text-sm text-purple-950 font-black">
+                            {showPinMap[childUser.id] ? childUser.pin : '••••'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setShowPinMap(p => ({ ...p, [childUser.id]: !p[childUser.id] }))}
+                            className="p-1 hover:bg-purple-200 rounded-md transition-colors text-purple-600"
+                            title={showPinMap[childUser.id] ? "Hide PIN" : "Show PIN"}
+                          >
+                            {showPinMap[childUser.id] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingChild(childUser);
+                              setEditPin(childUser.pin || '');
+                              setEditPinError('');
+                            }}
+                            className="ml-1 text-[11px] underline text-purple-700 hover:text-purple-950 font-bold"
+                          >
+                            Change
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingChild(childUser);
+                            setEditPin('');
+                            setEditPinError('');
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold hover:bg-amber-100 transition-colors cursor-pointer shadow-xs"
+                        >
+                          <KeyRound className="w-3.5 h-3.5 text-amber-600" />
+                          Set 4-Digit Login PIN
+                        </button>
+                      )}
+
+                      {/* Launch Child Session Directly */}
+                      <button
+                        type="button"
+                        onClick={() => handleLaunchChildDashboard(childUser.id)}
+                        disabled={isSwitchingChild === childUser.id}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black shadow-md shadow-emerald-500/20 hover:shadow-lg transition-all cursor-pointer disabled:opacity-50"
+                        title="Directly launch learner dashboard without entering PIN"
+                      >
+                        <Rocket className="w-4 h-4" />
+                        <span>{isSwitchingChild === childUser.id ? 'Launching...' : 'Launch Learner World'}</span>
+                      </button>
+
                       <div className="px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold flex items-center gap-1.5 shadow-xs">
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {profile?.points || 0} Total Stars
+                        <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {profile?.points || 0} Stars
                       </div>
                       <div className="px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold flex items-center gap-1.5 shadow-xs">
-                        <Flame className="w-4 h-4 text-orange-500" /> {profile?.current_streak || 0} Day Streak
+                        <Flame className="w-4 h-4 text-orange-500" /> {profile?.current_streak || 0} Streak
                       </div>
                     </div>
                   </div>
@@ -1629,48 +1810,249 @@ export default function ParentDashboardPage() {
         )}
       </main>
 
-      {/* Link Child Modal */}
+      {/* Add / Link Child Modal */}
       {showLinkModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl animate-in fade-in zoom-in duration-150">
-            <h3 className="text-xl font-black text-slate-900">Link Student Account</h3>
-            <p className="text-xs text-slate-500">
-              Enter your child&apos;s DolaCode student username or email address to connect your parent account.
-            </p>
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                <UserPlus className="w-5 h-5 text-pink-600" />
+                Add Child Profile
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowLinkModal(false)}
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Mode Selector Tabs */}
+            <div className="flex p-1 bg-slate-100 rounded-2xl">
+              <button
+                type="button"
+                onClick={() => setLinkMode('create')}
+                className={`flex-1 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  linkMode === 'create'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Create New Profile (Name &amp; PIN)
+              </button>
+              <button
+                type="button"
+                onClick={() => setLinkMode('existing')}
+                className={`flex-1 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  linkMode === 'existing'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Link Existing Username
+              </button>
+            </div>
 
             {linkError && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-                {linkError}
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-rose-500" />
+                <span>{linkError}</span>
               </div>
             )}
 
             <form onSubmit={handleLinkChild} className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Student Username or Email</label>
-                <input
-                  type="text"
-                  placeholder="e.g. SamuelCoder or student@email.com"
-                  value={studentIdentifier}
-                  onChange={(e) => setStudentIdentifier(e.target.value)}
-                  required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all"
-                />
-              </div>
+              {linkMode === 'create' ? (
+                <>
+                  <div className="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-[11px] text-indigo-900 font-medium">
+                    ✨ <strong>Simple for Kids:</strong> No email address required. Your child signs in by entering your email (<strong>{user?.email || 'your email'}</strong>), picking their profile, and typing their 4-digit PIN!
+                  </div>
 
-              <div className="flex gap-2 pt-2">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">
+                      Child&apos;s Full Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Tobi Davies or Amina Bello"
+                      value={childName}
+                      onChange={(e) => setChildName(e.target.value)}
+                      required
+                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">
+                      4-Digit Child PIN <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      pattern="[0-9]{4}"
+                      maxLength={4}
+                      placeholder="e.g. 1234"
+                      value={childPin}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                        setChildPin(val);
+                      }}
+                      required
+                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl py-2.5 px-3.5 text-base tracking-widest font-mono text-center focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all font-bold"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Choose an easy 4-digit number your child can remember.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">Age (Optional)</label>
+                      <input
+                        type="number"
+                        min={4}
+                        max={18}
+                        placeholder="e.g. 7"
+                        value={childAge}
+                        onChange={(e) => setChildAge(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all font-medium"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">Gender</label>
+                      <select
+                        value={childGender}
+                        onChange={(e) => setChildGender(e.target.value as 'boy' | 'girl')}
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all font-medium"
+                      >
+                        <option value="boy">Boy</option>
+                        <option value="girl">Girl</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">
+                      Student Username or Email <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SamuelCoder or student@email.com"
+                      value={studentIdentifier}
+                      onChange={(e) => setStudentIdentifier(e.target.value)}
+                      required
+                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">
+                      Assign 4-Digit PIN (Optional)
+                    </label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      pattern="[0-9]{4}"
+                      maxLength={4}
+                      placeholder="4 digits e.g. 1234"
+                      value={childPin}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                        setChildPin(val);
+                      }}
+                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-xl py-2.5 px-3.5 text-base tracking-widest font-mono text-center focus:outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20 transition-all font-bold"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Set a PIN so this student can also sign in easily without typing passwords.
+                    </p>
+                  </div>
+                </>
+              )}
+
+              <div className="flex gap-3 pt-3">
                 <button
                   type="button"
                   onClick={() => setShowLinkModal(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors"
+                  className="flex-1 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLinking}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold text-xs cursor-pointer disabled:opacity-50 shadow-md shadow-pink-500/20 transition-all"
+                  className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-black text-xs cursor-pointer disabled:opacity-50 shadow-md shadow-pink-500/20 transition-all"
                 >
-                  {isLinking ? 'Linking...' : 'Link Child'}
+                  {isLinking ? 'Saving...' : linkMode === 'create' ? 'Create Child Profile' : 'Link Student'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit PIN Modal */}
+      {editingChild && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full space-y-4 shadow-2xl animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-purple-600" />
+                Change 4-Digit PIN
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingChild(null)}
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Update login PIN for <strong>{editingChild.first_name || editingChild.username}</strong>:
+            </p>
+
+            {editPinError && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                {editPinError}
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateChildPin} className="space-y-4">
+              <div>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength={4}
+                  autoFocus
+                  placeholder="Enter 4 digits"
+                  value={editPin}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                    setEditPin(val);
+                  }}
+                  required
+                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 rounded-2xl py-3 px-4 text-xl tracking-widest font-mono text-center focus:outline-none focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-500/20 transition-all font-black"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingChild(null)}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdatingPin}
+                  className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs cursor-pointer disabled:opacity-50 shadow-md shadow-purple-500/20 transition-all"
+                >
+                  {isUpdatingPin ? 'Saving...' : 'Update PIN'}
                 </button>
               </div>
             </form>

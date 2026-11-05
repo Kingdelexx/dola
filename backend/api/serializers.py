@@ -115,7 +115,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'role', 'age', 'learning_band', 'starting_score', 'gender', 'coding_experience', 'points', 
-            'current_streak', 'longest_streak', 'last_active_date',
+            'current_streak', 'longest_streak', 'last_active_date', 'pin',
             'stage1_progress', 'stage2_progress', 'stage3_progress', 'stage4_progress',
             'school', 'school_details', 'classroom', 'classroom_details'
         )

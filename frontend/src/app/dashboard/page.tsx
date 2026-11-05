@@ -5,7 +5,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, Bot, Store, ShieldCheck, UserCircle2 } from 'lucide-react';
-import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import { gsap } from 'gsap';
 
 export default function DashboardPage() {
@@ -28,13 +27,12 @@ export default function DashboardPage() {
   const [stage3Completed, setStage3Completed] = useState(false);
   const [allBadges, setAllBadges] = useState<any[]>([]);
   const [showStudentGuidance, setShowStudentGuidance] = useState(false);
-  const [showParentModal, setShowParentModal] = useState(false);
 
   const isUnpaid = user?.subscription_access && !user.subscription_access.has_access;
 
   const handleUnlockClick = () => {
     if (user?.profile?.role === 'parent') {
-      setShowParentModal(true);
+      router.push('/parent-dashboard');
     } else {
       setShowStudentGuidance(true);
     }
@@ -638,32 +636,16 @@ export default function DashboardPage() {
                 <span>Your stars, XP, and badges are 100% saved and will never be deleted.</span>
               </div>
               <div className="flex flex-col gap-2">
-                <Link
-                  href="/subscribe"
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-black text-sm text-center shadow-lg transition-transform active:scale-95"
-                >
-                  Go to Pricing &amp; Plans Page
-                </Link>
                 <button
                   onClick={() => setShowStudentGuidance(false)}
-                  className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-black text-sm text-center shadow-lg transition-transform active:scale-95 cursor-pointer"
                 >
-                  Close
+                  Got It! I&apos;ll Ask My Parent
                 </button>
               </div>
             </div>
           </div>
         )}
-
-        {/* Parent Subscription Modal */}
-        <SubscriptionModal
-          isOpen={showParentModal}
-          onClose={() => setShowParentModal(false)}
-          onSuccess={() => {
-            setShowParentModal(false);
-            window.location.reload();
-          }}
-        />
 
       </div>
     </div>

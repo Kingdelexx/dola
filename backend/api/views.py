@@ -7,7 +7,7 @@ from .serializers import (
     UserSerializer, LoginSerializer,
     BlocklyProjectSerializer, PythonProjectSerializer, AppStudioProjectSerializer
 )
-from .models import UserProfile, BlocklyProject, PythonProject, AppStudioProject
+from .models import UserProfile, BlocklyProject, PythonProject, AppStudioProject, ParentChild
 from .permissions import RequiresActiveSubscription, IsFamilyResourceOwner
 
 class RegisterView(APIView):
@@ -38,6 +38,144 @@ class LoginView(APIView):
                 "user": UserSerializer(user).data
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FamilyProfilesView(APIView):
+    """
+    Given a parent email, discovers all family member profiles (parent + children)
+    so children can easily choose their profile and log in with their 4-digit PIN.
+    Route: POST /api/auth/family-profiles/
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email', '').strip().lower()
+        if not email:
+            return Response({"error": "Parent email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from django.db.models import Q
+        parent_user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).first()
+
+        if not parent_user:
+            return Response({
+                "found": False,
+                "is_family": False,
+                "message": "No account found with this email."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        profile = getattr(parent_user, 'profile', None)
+        role = profile.role if profile else 'student'
+
+        # If not a parent or super_admin, this is not a family parent account
+        if role not in ['parent', 'super_admin']:
+            return Response({
+                "found": True,
+                "is_family": False,
+                "role": role,
+                "name": parent_user.first_name or parent_user.username
+            }, status=status.HTTP_200_OK)
+
+        # Get all linked children
+        relations = ParentChild.objects.filter(parent=parent_user).select_related('child', 'child__profile')
+
+        profiles = []
+        # Parent account entry
+        parent_name = parent_user.first_name or parent_user.username
+        profiles.append({
+            "id": parent_user.id,
+            "name": parent_name,
+            "role": "parent",
+            "is_parent": True,
+            "username": parent_user.username,
+            "avatar_letter": parent_name[0].upper() if parent_name else 'P',
+        })
+
+        for rel in relations:
+            child = rel.child
+            c_profile = getattr(child, 'profile', None)
+            display_name = child.first_name or child.username
+            profiles.append({
+                "id": child.id,
+                "name": display_name,
+                "role": "student",
+                "is_parent": False,
+                "username": child.username,
+                "age": c_profile.age if c_profile else None,
+                "gender": c_profile.gender if c_profile else None,
+                "points": c_profile.points if c_profile else 0,
+                "has_pin": bool(c_profile and c_profile.pin),
+                "avatar_letter": display_name[0].upper() if display_name else 'S',
+            })
+
+        return Response({
+            "found": True,
+            "is_family": True,
+            "parent_id": parent_user.id,
+            "parent_name": parent_name,
+            "parent_email": parent_user.email,
+            "children_count": len(relations),
+            "profiles": profiles
+        }, status=status.HTTP_200_OK)
+
+
+class ChildPinLoginView(APIView):
+    """
+    Authenticates a child using their parent's email, child profile ID, and 4-digit PIN.
+    Route: POST /api/auth/child-pin-login/
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        parent_email = request.data.get('parent_email', '').strip().lower()
+        child_id = request.data.get('child_id')
+        pin = str(request.data.get('pin', '')).strip()
+
+        if not parent_email:
+            return Response({"error": "Parent email is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not child_id:
+            return Response({"error": "Child profile ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not pin or len(pin) != 4 or not pin.isdigit():
+            return Response({"error": "Please enter a valid 4-digit PIN."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from django.db.models import Q
+        parent_user = User.objects.filter(Q(email__iexact=parent_email) | Q(username__iexact=parent_email)).first()
+        if not parent_user:
+            return Response({"error": "Parent account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        is_linked = ParentChild.objects.filter(parent=parent_user, child_id=child_id).exists()
+        if not is_linked:
+            return Response({"error": "Child account is not linked to this parent."}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            child = User.objects.get(id=child_id)
+        except User.DoesNotExist:
+            return Response({"error": "Child account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        c_profile = getattr(child, 'profile', None)
+        stored_pin = (c_profile.pin if c_profile else '') or ''
+
+        pin_matched = False
+        if stored_pin and stored_pin == pin:
+            pin_matched = True
+        elif child.check_password(pin):
+            pin_matched = True
+
+        if not pin_matched:
+            return Response({
+                "error": "Incorrect 4-digit PIN. Please try again or ask your parent to check the PIN in the Parent Dashboard."
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        from django.utils import timezone
+        if c_profile:
+            c_profile.last_active_date = timezone.now().date()
+            c_profile.save(update_fields=['last_active_date'])
+
+        token, _ = Token.objects.get_or_create(user=child)
+        return Response({
+            "token": token.key,
+            "user": UserSerializer(child).data,
+            "message": f"Welcome back to DolaCode, {child.first_name or child.username}!"
+        }, status=status.HTTP_200_OK)
 
 class GoogleAuthView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -2249,9 +2387,15 @@ class ParentDashboardView(APIView):
                     "badges": pr_prog.badges,
                 }
 
+            child_user_data = UserSerializer(child).data
+            child_user_data['pin'] = c_profile.pin if c_profile else None
+            child_user_data['first_name'] = child.first_name
+
             children_analytics.append({
-                "user": UserSerializer(child).data,
+                "user": child_user_data,
                 "analytics": {
+                    "pin": c_profile.pin if c_profile else None,
+                    "first_name": child.first_name,
                     "lessons_completed": total_lessons,
                     "homework_submitted": homework_submitted,
                     "numeracy_score": numeracy_score,
@@ -2329,9 +2473,67 @@ class LinkChildView(APIView):
         if not profile or profile.role not in ['parent', 'super_admin']:
             return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
 
+        # Mode A: Create child profile with Name and 4-digit PIN
+        name = request.data.get('name', '').strip()
+        pin = str(request.data.get('pin', '')).strip()
+        age = request.data.get('age')
+        gender = request.data.get('gender')
+
+        if name and pin:
+            if len(pin) != 4 or not pin.isdigit():
+                return Response({"error": "PIN must be exactly 4 digits (e.g. 1234)."}, status=status.HTTP_400_BAD_REQUEST)
+            if len(name) < 2:
+                return Response({"error": "Child's name must be at least 2 characters."}, status=status.HTTP_400_BAD_REQUEST)
+
+            import re, random
+            from django.contrib.auth.hashers import make_password
+
+            clean_name = re.sub(r'[^a-zA-Z0-9]', '', name).lower() or "child"
+            while True:
+                candidate_uname = f"{clean_name}_{random.randint(100, 9999)}"
+                if not User.objects.filter(username=candidate_uname).exists():
+                    break
+
+            domain = user.email.split('@')[-1] if ('@' in user.email) else 'dolacode.family'
+            internal_email = f"{candidate_uname}@{domain}"
+
+            age_val = None
+            if age:
+                try:
+                    age_val = int(age)
+                except (ValueError, TypeError):
+                    pass
+
+            child_user = User.objects.create_user(
+                username=candidate_uname,
+                email=internal_email,
+                first_name=name,
+                password=make_password(pin)
+            )
+
+            UserProfile.objects.create(
+                user=child_user,
+                role='student',
+                pin=pin,
+                age=age_val,
+                gender=gender or ''
+            )
+
+            ParentChild.objects.create(parent=user, child=child_user)
+
+            return Response({
+                "success": True,
+                "message": f"Successfully created and linked child profile for {name} with 4-digit PIN {pin}!",
+                "child": {
+                    **UserSerializer(child_user).data,
+                    "pin": pin
+                }
+            }, status=status.HTTP_201_CREATED)
+
+        # Mode B: Legacy Link existing account by username or email
         identifier = request.data.get('identifier', '').strip()
         if not identifier:
-            return Response({"error": "Student username or email is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Please provide your child's Name and 4-digit PIN."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             from django.db.models import Q
@@ -2340,11 +2542,173 @@ class LinkChildView(APIView):
             return Response({"error": "Student account not found with that username or email."}, status=status.HTTP_404_NOT_FOUND)
 
         rel, created = ParentChild.objects.get_or_create(parent=user, child=child_user)
+        if pin and len(pin) == 4 and pin.isdigit():
+            c_prof = getattr(child_user, 'profile', None)
+            if c_prof:
+                c_prof.pin = pin
+                c_prof.save(update_fields=['pin'])
+            from django.contrib.auth.hashers import make_password
+            child_user.password = make_password(pin)
+            child_user.save()
+
         return Response({
             "success": True,
-            "message": f"Successfully linked student {child_user.username}!",
+            "message": f"Successfully linked student {child_user.first_name or child_user.username}!",
             "child": UserSerializer(child_user).data
         })
+
+
+class ParentChildrenListView(APIView):
+    """
+    Lists and creates child accounts for the authenticated parent.
+    Route: GET, POST /api/parent/children/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['parent', 'super_admin']:
+            return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        relations = ParentChild.objects.filter(parent=user).select_related('child', 'child__profile')
+        children_data = []
+        for rel in relations:
+            child = rel.child
+            c_profile = getattr(child, 'profile', None)
+            display_name = child.first_name or child.username
+            children_data.append({
+                "id": child.id,
+                "name": display_name,
+                "username": child.username,
+                "email": child.email,
+                "pin": c_profile.pin if c_profile else None,
+                "age": c_profile.age if c_profile else None,
+                "gender": c_profile.gender if c_profile else None,
+                "points": c_profile.points if c_profile else 0,
+                "current_streak": c_profile.current_streak if c_profile else 0,
+                "stage1_progress": c_profile.stage1_progress if c_profile else 0,
+                "stage2_progress": c_profile.stage2_progress if c_profile else 0,
+                "stage3_progress": c_profile.stage3_progress if c_profile else 0,
+                "stage4_progress": c_profile.stage4_progress if c_profile else 0,
+                "linked_at": rel.linked_at.isoformat() if hasattr(rel, 'linked_at') and rel.linked_at else None
+            })
+
+        return Response({"children": children_data, "count": len(children_data)}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        return LinkChildView().post(request)
+
+
+class ParentChildDetailView(APIView):
+    """
+    Manages an individual linked child account (update PIN/name/age or unlink).
+    Route: PUT, DELETE /api/parent/children/<int:child_id>/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, child_id):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['parent', 'super_admin']:
+            return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        is_linked = ParentChild.objects.filter(parent=user, child_id=child_id).exists()
+        if not is_linked:
+            return Response({"error": "Child is not linked to this parent account."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            child = User.objects.get(id=child_id)
+        except User.DoesNotExist:
+            return Response({"error": "Child account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        c_profile = getattr(child, 'profile', None)
+
+        name = request.data.get('name', '').strip()
+        pin = str(request.data.get('pin', '')).strip()
+        age = request.data.get('age')
+        gender = request.data.get('gender')
+
+        if pin:
+            if len(pin) != 4 or not pin.isdigit():
+                return Response({"error": "PIN must be exactly 4 digits (e.g. 1234)."}, status=status.HTTP_400_BAD_REQUEST)
+            if c_profile:
+                c_profile.pin = pin
+            from django.contrib.auth.hashers import make_password
+            child.password = make_password(pin)
+
+        if name:
+            child.first_name = name
+
+        if age is not None and c_profile:
+            try:
+                c_profile.age = int(age)
+            except (ValueError, TypeError):
+                pass
+
+        if gender is not None and c_profile:
+            c_profile.gender = gender
+
+        child.save()
+        if c_profile:
+            c_profile.save()
+
+        return Response({
+            "success": True,
+            "message": f"Updated child profile for {child.first_name or child.username}!",
+            "child": {
+                **UserSerializer(child).data,
+                "pin": c_profile.pin if c_profile else None
+            }
+        }, status=status.HTTP_200_OK)
+
+    def delete(self, request, child_id):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['parent', 'super_admin']:
+            return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        rel = ParentChild.objects.filter(parent=user, child_id=child_id).first()
+        if not rel:
+            return Response({"error": "Child is not linked to this parent account."}, status=status.HTTP_404_NOT_FOUND)
+
+        rel.delete()
+        return Response({"success": True, "message": "Child account successfully unlinked from family."}, status=status.HTTP_200_OK)
+
+
+class SwitchToChildView(APIView):
+    """
+    Allows an authenticated parent to directly launch/switch into a child's learning session.
+    Route: POST /api/parent/switch-to-child/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, 'profile', None)
+        if not profile or profile.role not in ['parent', 'super_admin']:
+            return Response({"error": "Parent access required."}, status=status.HTTP_403_FORBIDDEN)
+
+        child_id = request.data.get('child_id')
+        if not child_id:
+            return Response({"error": "Child ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        is_linked = ParentChild.objects.filter(parent=user, child_id=child_id).exists()
+        if not is_linked:
+            return Response({"error": "Child is not linked to your parent account."}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            child = User.objects.get(id=child_id)
+        except User.DoesNotExist:
+            return Response({"error": "Child account not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        token, _ = Token.objects.get_or_create(user=child)
+        return Response({
+            "success": True,
+            "token": token.key,
+            "user": UserSerializer(child).data,
+            "message": f"Switched session to {child.first_name or child.username}."
+        }, status=status.HTTP_200_OK)
 
 class ApproveSchoolView(APIView):
     permission_classes = [permissions.IsAuthenticated]
