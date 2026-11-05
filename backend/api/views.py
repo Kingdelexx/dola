@@ -168,12 +168,28 @@ class ChildPinLoginView(APIView):
         from django.utils import timezone
         if c_profile:
             c_profile.last_active_date = timezone.now().date()
-            c_profile.save(update_fields=['last_active_date'])
+            needs_save = False
+            if c_profile.starting_score is None:
+                c_profile.starting_score = 50
+                needs_save = True
+            if not c_profile.learning_band:
+                c_profile.learning_band = 'Cadet'
+                needs_save = True
+            if needs_save:
+                c_profile.save(update_fields=['last_active_date', 'starting_score', 'learning_band'])
+            else:
+                c_profile.save(update_fields=['last_active_date'])
 
         token, _ = Token.objects.get_or_create(user=child)
+        user_data = UserSerializer(child).data
+        try:
+            from .subscription_service import is_student_accessible
+            user_data['subscription_access'] = is_student_accessible(child)
+        except Exception:
+            pass
         return Response({
             "token": token.key,
-            "user": UserSerializer(child).data,
+            "user": user_data,
             "message": f"Welcome back to DolaCode, {child.first_name or child.username}!"
         }, status=status.HTTP_200_OK)
 
@@ -2511,12 +2527,25 @@ class LinkChildView(APIView):
                 password=make_password(pin)
             )
 
+            learning_band = 'Cadet'
+            if age_val:
+                if age_val <= 7:
+                    learning_band = 'Cadet'
+                elif age_val <= 10:
+                    learning_band = 'Explorer'
+                elif age_val <= 13:
+                    learning_band = 'Creator'
+                else:
+                    learning_band = 'Innovator'
+
             UserProfile.objects.create(
                 user=child_user,
                 role='student',
                 pin=pin,
                 age=age_val,
-                gender=gender or ''
+                gender=gender or '',
+                starting_score=50,
+                learning_band=learning_band
             )
 
             ParentChild.objects.create(parent=user, child=child_user)
@@ -2702,11 +2731,29 @@ class SwitchToChildView(APIView):
         except User.DoesNotExist:
             return Response({"error": "Child account not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        c_profile = getattr(child, 'profile', None)
+        if c_profile:
+            needs_save = False
+            if c_profile.starting_score is None:
+                c_profile.starting_score = 50
+                needs_save = True
+            if not c_profile.learning_band:
+                c_profile.learning_band = 'Cadet'
+                needs_save = True
+            if needs_save:
+                c_profile.save(update_fields=['starting_score', 'learning_band'])
+
         token, _ = Token.objects.get_or_create(user=child)
+        user_data = UserSerializer(child).data
+        try:
+            from .subscription_service import is_student_accessible
+            user_data['subscription_access'] = is_student_accessible(child)
+        except Exception:
+            pass
         return Response({
             "success": True,
             "token": token.key,
-            "user": UserSerializer(child).data,
+            "user": user_data,
             "message": f"Switched session to {child.first_name or child.username}."
         }, status=status.HTTP_200_OK)
 

@@ -340,9 +340,9 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
-      if (res.ok && data.token) {
+      if (res.ok && data.token && data.user) {
         login(data.token, data.user);
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       } else {
         setPinShake(true);
         setTimeout(() => setPinShake(false), 600);

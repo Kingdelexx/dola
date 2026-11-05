@@ -235,7 +235,7 @@ interface ChildData {
 
 export default function ParentDashboardPage() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const [data, setData] = useState<{ parent?: any; parent_subscription?: ParentSubscription; children?: ChildData[] } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -286,6 +286,19 @@ export default function ParentDashboardPage() {
         const json = await res.json();
         setData(json);
       } else {
+        if (res.status === 403) {
+          // If current session is actually a student, seamlessly transition them to student dashboard
+          const userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+          if (userStr) {
+            try {
+              const u = JSON.parse(userStr);
+              if (u?.profile?.role === 'student' || u?.role === 'student') {
+                window.location.href = '/dashboard';
+                return;
+              }
+            } catch (e) {}
+          }
+        }
         setError('Parent authorization required.');
       }
     } catch (err) {
@@ -454,10 +467,9 @@ export default function ParentDashboardPage() {
       });
 
       const json = await res.json();
-      if (res.ok && json.token) {
-        localStorage.setItem('token', json.token);
-        localStorage.setItem('user', JSON.stringify(json.user));
-        router.push('/dashboard');
+      if (res.ok && json.token && json.user) {
+        login(json.token, json.user);
+        window.location.href = '/dashboard';
       } else {
         alert(json.error || 'Failed to launch student session.');
         setIsSwitchingChild(null);
