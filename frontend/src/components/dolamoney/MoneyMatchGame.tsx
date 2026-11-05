@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { NairaNote, NairaCoin } from './CurrencyNotes';
-import { Sparkles, Trophy, ArrowRight, RotateCcw, CheckCircle2, XCircle, Volume2 } from 'lucide-react';
+import { NairaNote } from './CurrencyNotes';
+import { Sparkles, Trophy, ArrowRight, RotateCcw, CheckCircle2, XCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface MoneyMatchGameProps {
@@ -32,9 +32,9 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.type = success ? 'triangle' : 'sine';
-      osc.frequency.setValueAtTime(success ? 587.33 : 220, ctx.currentTime); // D5 or A3
+      osc.frequency.setValueAtTime(success ? 587.33 : 220, ctx.currentTime);
       if (success) {
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2); // A5
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
       }
       gain.gain.setValueAtTime(0.15, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
@@ -75,7 +75,7 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
     cost: 300,
     paid: 500,
     changeNeeded: 200,
-    prompt: "You bought a school drawing book for ₦300. You paid with ₦500. How much change should you get back?",
+    prompt: "You bought a school drawing book for ₦300. You paid with ₦500. How much change do you get back?",
     options: [100, 200, 300, 50]
   };
 
@@ -191,18 +191,18 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
   };
 
   return (
-    <div className="bg-slate-900/90 backdrop-blur-xl border-4 border-emerald-500/30 rounded-3xl p-6 sm:p-8 text-white max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
+    <div className="bg-white border-4 border-emerald-300 rounded-[2.5rem] p-6 sm:p-9 text-slate-800 max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
       {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-emerald-500/20 pb-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-2xl shadow-lg border border-white/20">
+      <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4 mb-6">
+        <div className="flex items-center gap-3.5">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex items-center justify-center text-3xl shadow-lg border-2 border-white">
             🪙
           </div>
           <div>
-            <div className="text-xs uppercase tracking-widest text-emerald-400 font-black">
+            <div className="text-xs uppercase tracking-widest text-emerald-700 font-black">
               World 1 &bull; Money Match
             </div>
-            <h2 className="text-2xl font-black text-white">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
               Level {level} of 5: {
                 level === 1 ? 'Recognise Nigerian Currency' :
                 level === 2 ? 'Match Note to Value' :
@@ -213,24 +213,24 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-2">
-            <span className="text-yellow-400 text-lg">🪙</span>
-            <span className="font-black text-emerald-200">+{score} DolaCoins</span>
+        <div className="flex items-center gap-3">
+          <div className="bg-amber-100 border-2 border-amber-300 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-xs">
+            <span className="text-amber-500 text-lg">🪙</span>
+            <span className="font-black text-amber-900 text-sm">+{score} DolaCoins</span>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white px-3 py-1 rounded-xl bg-white/5 hover:bg-white/10 font-bold text-sm transition-all"
+            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition-all cursor-pointer"
           >
-            ✕ Exit
+            ✕
           </button>
         </div>
       </div>
 
       {/* Level Progress Bar */}
-      <div className="w-full bg-slate-800 rounded-full h-3 mb-8 overflow-hidden p-0.5 border border-white/10">
+      <div className="w-full bg-slate-100 rounded-full h-3.5 mb-8 overflow-hidden p-0.5 border border-slate-200">
         <div
-          className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500"
+          className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500"
           style={{ width: `${(level / 5) * 100}%` }}
         />
       </div>
@@ -240,10 +240,10 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
         {/* LEVEL 1 */}
         {level === 1 && (
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-sm font-black mb-4 border border-emerald-400/30">
-              <Sparkles size={16} /> Mission 1: Currency Recognition
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black uppercase mb-4 border border-emerald-300">
+              <Sparkles size={14} className="text-amber-500" /> Mission 1: Currency Recognition
             </div>
-            <p className="text-xl sm:text-2xl font-black text-white mb-6 max-w-xl mx-auto leading-relaxed">
+            <p className="text-xl sm:text-2xl font-black text-slate-900 mb-6 max-w-xl mx-auto leading-relaxed">
               {l1Question.prompt}
             </p>
 
@@ -264,10 +264,10 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
         {/* LEVEL 2 */}
         {level === 2 && (
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-sm font-black mb-4 border border-amber-400/30">
-              <Sparkles size={16} /> Mission 2: Value Matching
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-black uppercase mb-4 border border-amber-300">
+              <Sparkles size={14} className="text-amber-500" /> Mission 2: Value Matching
             </div>
-            <p className="text-xl sm:text-2xl font-black text-white mb-6 max-w-xl mx-auto leading-relaxed">
+            <p className="text-xl sm:text-2xl font-black text-slate-900 mb-6 max-w-xl mx-auto leading-relaxed">
               {l2Question.prompt}
             </p>
 
@@ -289,31 +289,31 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
         {level === 3 && (
           <div>
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 text-sm font-black mb-3 border border-cyan-400/30">
-                <Sparkles size={16} /> Mission 3: Build Exact Money Amounts
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-100 text-cyan-800 text-xs font-black uppercase mb-3 border border-cyan-300">
+                <Sparkles size={14} className="text-amber-500" /> Mission 3: Build Exact Money Amounts
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-white">
-                Target: Put exact <span className="text-emerald-400">₦{l3Target}</span> in your wallet!
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900">
+                Target: Put exact <span className="text-emerald-600">₦{l3Target}</span> in your wallet!
               </h3>
-              <p className="text-slate-300 text-sm mt-1">
+              <p className="text-slate-600 text-sm font-medium mt-1">
                 Tap notes to add them. You can use ₦500, or combination like ₦200 + ₦200 + ₦100!
               </p>
             </div>
 
             {/* Wallet Display Box */}
-            <div className="bg-slate-800/80 border-2 border-emerald-400/40 rounded-2xl p-5 mb-6 text-center shadow-inner">
+            <div className="bg-emerald-50/70 border-3 border-emerald-300 rounded-3xl p-5 mb-6 text-center shadow-inner">
               <div className="flex items-center justify-between mb-3 text-sm font-black">
-                <span className="text-slate-300 flex items-center gap-2">
+                <span className="text-emerald-900 flex items-center gap-2">
                   👛 YOUR WALLET
                 </span>
-                <span className="text-emerald-300 text-lg">
+                <span className="text-emerald-700 text-lg">
                   Total: ₦{currentWalletTotal} / ₦{l3Target}
                 </span>
               </div>
 
               {walletNotes.length === 0 ? (
-                <div className="py-6 text-slate-400 text-sm italic font-medium">
-                  Your wallet is empty. Tap notes below to add them!
+                <div className="py-6 text-slate-500 text-sm font-medium">
+                  Your wallet is empty. Tap notes in the drawer below to add them!
                 </div>
               ) : (
                 <div className="flex flex-wrap items-center justify-center gap-3 py-2">
@@ -327,7 +327,7 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
                 <div className="mt-3 flex justify-center">
                   <button
                     onClick={removeLastNote}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-black border border-rose-400/30 transition-all"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white hover:bg-rose-50 text-rose-600 text-xs font-black border-2 border-rose-200 transition-all shadow-xs cursor-pointer"
                   >
                     <RotateCcw size={12} /> Remove Last Note
                   </button>
@@ -336,8 +336,8 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
             </div>
 
             {/* Cash Drawer */}
-            <div className="text-center">
-              <div className="text-xs uppercase font-black tracking-wider text-slate-400 mb-3">
+            <div className="text-center bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+              <div className="text-xs uppercase font-black tracking-wider text-slate-500 mb-3">
                 Cash Drawer (Tap to add to wallet)
               </div>
               <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
@@ -357,10 +357,10 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
         {/* LEVEL 4 */}
         {level === 4 && (
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/20 text-purple-300 text-sm font-black mb-4 border border-purple-400/30">
-              <Sparkles size={16} /> Mission 4: Compare Money Amounts
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100 text-purple-800 text-xs font-black uppercase mb-4 border border-purple-300">
+              <Sparkles size={14} className="text-amber-500" /> Mission 4: Compare Money Amounts
             </div>
-            <p className="text-2xl font-black text-white mb-6">
+            <p className="text-2xl font-black text-slate-900 mb-6">
               {l4Question.prompt}
             </p>
 
@@ -368,15 +368,15 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
               {/* Option A */}
               <div
                 onClick={() => handleLevel4Submit('A')}
-                className="bg-slate-800/80 hover:bg-slate-800 border-2 border-slate-600 hover:border-emerald-400 p-6 rounded-2xl cursor-pointer transition-all hover:scale-102 flex flex-col items-center justify-between gap-4"
+                className="bg-white hover:bg-emerald-50 border-3 border-slate-200 hover:border-emerald-400 p-6 rounded-3xl cursor-pointer transition-all hover:scale-102 flex flex-col items-center justify-between gap-4 shadow-sm"
               >
-                <div className="font-black text-slate-200">{l4Question.optionA.label}</div>
+                <div className="font-black text-slate-800">{l4Question.optionA.label}</div>
                 <div className="flex gap-2">
                   {l4Question.optionA.notes.map((n, i) => (
                     <NairaNote key={i} value={n} size="sm" />
                   ))}
                 </div>
-                <button className="px-5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 font-black text-sm border border-emerald-400/30">
+                <button className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-emerald-500 hover:text-white text-slate-800 font-black text-xs border border-slate-300 transition-colors">
                   Choose Wallet A
                 </button>
               </div>
@@ -384,15 +384,15 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
               {/* Option B */}
               <div
                 onClick={() => handleLevel4Submit('B')}
-                className="bg-slate-800/80 hover:bg-slate-800 border-2 border-slate-600 hover:border-emerald-400 p-6 rounded-2xl cursor-pointer transition-all hover:scale-102 flex flex-col items-center justify-between gap-4"
+                className="bg-white hover:bg-emerald-50 border-3 border-slate-200 hover:border-emerald-400 p-6 rounded-3xl cursor-pointer transition-all hover:scale-102 flex flex-col items-center justify-between gap-4 shadow-sm"
               >
-                <div className="font-black text-slate-200">{l4Question.optionB.label}</div>
+                <div className="font-black text-slate-800">{l4Question.optionB.label}</div>
                 <div className="flex gap-2">
                   {l4Question.optionB.notes.map((n, i) => (
                     <NairaNote key={i} value={n} size="sm" />
                   ))}
                 </div>
-                <button className="px-5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 font-black text-sm border border-emerald-400/30">
+                <button className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-emerald-500 hover:text-white text-slate-800 font-black text-xs border border-slate-300 transition-colors">
                   Choose Wallet B
                 </button>
               </div>
@@ -403,16 +403,16 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
         {/* LEVEL 5 */}
         {level === 5 && (
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-sm font-black mb-4 border border-emerald-400/30">
-              <Sparkles size={16} /> Mission 5: Calculate Change
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black uppercase mb-4 border border-emerald-300">
+              <Sparkles size={14} className="text-amber-500" /> Mission 5: Calculate Change
             </div>
-            <p className="text-xl sm:text-2xl font-black text-white mb-2 max-w-xl mx-auto leading-relaxed">
+            <p className="text-xl sm:text-2xl font-black text-slate-900 mb-2 max-w-xl mx-auto leading-relaxed">
               {l5Question.prompt}
             </p>
-            <div className="flex items-center justify-center gap-4 my-4 text-sm font-black text-slate-300">
-              <span className="bg-slate-800 px-3 py-1 rounded-lg">Cost: ₦{l5Question.cost}</span>
+            <div className="flex items-center justify-center gap-4 my-4 text-sm font-black text-slate-700">
+              <span className="bg-slate-100 px-4 py-1.5 rounded-full border border-slate-200">Cost: ₦{l5Question.cost}</span>
               <span>&bull;</span>
-              <span className="bg-slate-800 px-3 py-1 rounded-lg">You Paid: ₦{l5Question.paid}</span>
+              <span className="bg-slate-100 px-4 py-1.5 rounded-full border border-slate-200">You Paid: ₦{l5Question.paid}</span>
             </div>
 
             <div className="flex flex-wrap justify-center gap-4 sm:gap-6 my-6">
@@ -433,13 +433,13 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
         {feedback.message && (
           <div className={`mt-6 p-4 rounded-2xl flex items-center justify-center gap-3 font-black text-base animate-fadeIn ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/20 text-emerald-200 border-2 border-emerald-400/40'
+              ? 'bg-emerald-100 text-emerald-900 border-2 border-emerald-400'
               : feedback.type === 'retry'
-              ? 'bg-rose-500/20 text-rose-200 border-2 border-rose-400/40'
-              : 'bg-slate-800 text-slate-300 border border-slate-700'
+              ? 'bg-rose-100 text-rose-900 border-2 border-rose-400'
+              : 'bg-slate-100 text-slate-800 border-2 border-slate-300'
           }`}>
-            {feedback.type === 'success' && <CheckCircle2 size={24} className="text-emerald-400 shrink-0" />}
-            {feedback.type === 'retry' && <XCircle size={24} className="text-rose-400 shrink-0" />}
+            {feedback.type === 'success' && <CheckCircle2 size={24} className="text-emerald-600 shrink-0" />}
+            {feedback.type === 'retry' && <XCircle size={24} className="text-rose-600 shrink-0" />}
             <span>{feedback.message}</span>
           </div>
         )}
@@ -447,38 +447,38 @@ export const MoneyMatchGame: React.FC<MoneyMatchGameProps> = ({
 
       {/* Celebration Modal when all 5 levels complete */}
       {showCelebration && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-gradient-to-b from-slate-900 to-emerald-950 border-4 border-yellow-400 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl relative animate-scaleUp">
-            <div className="w-20 h-20 rounded-full bg-yellow-400 text-slate-900 mx-auto flex items-center justify-center text-4xl shadow-xl border-4 border-white mb-4 animate-bounce">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white border-4 border-yellow-400 rounded-[2.5rem] p-8 max-w-md w-full text-center shadow-2xl relative animate-scaleUp">
+            <div className="w-22 h-22 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 text-slate-900 mx-auto flex items-center justify-center text-4xl shadow-xl border-4 border-white mb-4 animate-bounce">
               🏆
             </div>
-            <h3 className="text-3xl font-black text-white mb-2">
+            <h3 className="text-3xl font-black text-slate-900 mb-2">
               World 1 Conquered!
             </h3>
-            <p className="text-emerald-200 text-sm font-semibold mb-6">
+            <p className="text-slate-600 text-sm font-semibold mb-6">
               You mastered recognizing Nigerian Naira, counting denominations, and calculating change!
             </p>
 
-            <div className="bg-black/30 rounded-2xl p-4 border border-white/10 mb-6 flex items-center justify-around">
+            <div className="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 mb-6 flex items-center justify-around">
               <div>
-                <div className="text-2xl font-black text-yellow-300">+{score}</div>
-                <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">DolaCoins</div>
+                <div className="text-2xl font-black text-amber-600">+{score}</div>
+                <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">DolaCoins</div>
               </div>
-              <div className="w-px h-10 bg-white/10" />
+              <div className="w-px h-10 bg-amber-200" />
               <div>
-                <div className="text-2xl font-black text-cyan-300">+300</div>
-                <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">XP Earned</div>
+                <div className="text-2xl font-black text-cyan-600">+300</div>
+                <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">XP Earned</div>
               </div>
-              <div className="w-px h-10 bg-white/10" />
+              <div className="w-px h-10 bg-amber-200" />
               <div>
                 <div className="text-2xl">🪙</div>
-                <div className="text-[10px] font-black uppercase text-yellow-400 tracking-wider">Money Starter</div>
+                <div className="text-[10px] font-black uppercase text-amber-600 tracking-wider">Money Starter</div>
               </div>
             </div>
 
             <button
               onClick={onClose}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-900 font-black text-base uppercase tracking-wider shadow-xl transition-all transform active:scale-98 cursor-pointer"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-base uppercase tracking-wider shadow-[0_4px_0_#d97706] hover:shadow-[0_6px_0_#d97706] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
             >
               Back to World Map &rarr;
             </button>

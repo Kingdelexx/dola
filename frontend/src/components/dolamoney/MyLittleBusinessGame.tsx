@@ -45,7 +45,6 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
     if (!selectedBiz) return;
     setStage('simulating');
 
-    // Price elasticity logic
     let buyersCount = 0;
     const reactions: { emoji: string; text: string; bought: boolean }[] = [];
 
@@ -63,15 +62,15 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
         text = bought ? 'Great price! I love it!' : 'Maybe next time!';
         emoji = bought ? '😊' : '🤔';
       } else if (sellingPrice === 300) {
-        bought = Math.random() > 0.15; // 8-10 buyers
+        bought = Math.random() > 0.15;
         text = bought ? 'Fair price and looks delicious!' : 'Just looking today!';
         emoji = bought ? '😋' : '👋';
       } else if (sellingPrice === 500) {
-        bought = Math.random() > 0.6; // 3-4 buyers
+        bought = Math.random() > 0.6;
         text = bought ? 'A bit pricey, but I will try one!' : 'Too expensive for me!';
         emoji = bought ? '💸' : '😬';
       } else {
-        bought = Math.random() > 0.85; // 1-2 buyers
+        bought = Math.random() > 0.85;
         text = 'Way too high! ₦800 is unreasonable!';
         emoji = '🙅';
       }
@@ -102,18 +101,18 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
   };
 
   return (
-    <div className="bg-slate-900/90 backdrop-blur-xl border-4 border-amber-500/30 rounded-3xl p-6 sm:p-8 text-white max-w-4xl mx-auto shadow-2xl relative">
+    <div className="bg-white border-4 border-amber-300 rounded-[2.5rem] p-6 sm:p-9 text-slate-800 max-w-4xl mx-auto shadow-2xl relative">
       {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-amber-500/20 pb-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-2xl shadow-lg border border-white/20">
+      <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4 mb-6">
+        <div className="flex items-center gap-3.5">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-white flex items-center justify-center text-3xl shadow-lg border-2 border-white">
             🏪
           </div>
           <div>
-            <div className="text-xs uppercase tracking-widest text-amber-400 font-black">
+            <div className="text-xs uppercase tracking-widest text-amber-700 font-black">
               World 5 &bull; My Little Business
             </div>
-            <h2 className="text-2xl font-black text-white">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
               {stage === 'pick_business' ? 'Choose Your Business' : selectedBiz?.name}
             </h2>
           </div>
@@ -121,9 +120,9 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
 
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white px-3 py-1 rounded-xl bg-white/5 hover:bg-white/10 font-bold text-sm transition-all"
+          className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition-all cursor-pointer"
         >
-          ✕ Exit
+          ✕
         </button>
       </div>
 
@@ -131,10 +130,10 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
       {stage === 'pick_business' && (
         <div>
           <div className="text-center mb-6">
-            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">
+            <h3 className="text-2xl font-black text-slate-900 mb-2">
               Which business would you like to launch today?
             </h3>
-            <p className="text-slate-300 text-sm max-w-lg mx-auto">
+            <p className="text-slate-600 text-sm font-medium max-w-lg mx-auto">
               Learn how buying stock, setting prices, and calculating profit makes a business thrive!
             </p>
           </div>
@@ -144,21 +143,21 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
               <div
                 key={biz.id}
                 onClick={() => handleSelectBiz(biz)}
-                className="bg-slate-800/80 hover:bg-slate-800 border-2 border-slate-700 hover:border-amber-400 p-5 rounded-2xl cursor-pointer transition-all hover:scale-102 flex items-center gap-4 group"
+                className="bg-slate-50 hover:bg-amber-50/60 border-3 border-slate-200 hover:border-amber-400 p-5 rounded-3xl cursor-pointer transition-all hover:scale-102 flex items-center gap-4 group shadow-sm"
               >
-                <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform shadow-xs border border-slate-200">
                   {biz.icon}
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-black text-white text-base">{biz.name}</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <h4 className="font-black text-slate-900 text-base">{biz.name}</h4>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
                     10 {biz.itemName} @ ₦{biz.unitCost} cost each
                   </p>
-                  <div className="text-xs font-bold text-amber-300 mt-2">
+                  <div className="text-xs font-black text-amber-600 mt-2">
                     Total Startup Cost: ₦{(biz.unitCost * biz.itemCount).toLocaleString()}
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-xl bg-amber-500/20 group-hover:bg-amber-500 text-amber-300 group-hover:text-slate-900 flex items-center justify-center font-bold text-sm transition-colors">
+                <div className="w-9 h-9 rounded-2xl bg-amber-100 group-hover:bg-amber-500 text-amber-800 group-hover:text-white flex items-center justify-center font-black text-base transition-colors shadow-xs">
                   &rarr;
                 </div>
               </div>
@@ -171,27 +170,27 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
       {stage === 'set_price' && selectedBiz && (
         <div className="max-w-2xl mx-auto">
           {/* Inventory Cost Recap */}
-          <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">{selectedBiz.icon}</span>
+          <div className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-5 mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3.5">
+              <span className="text-4xl">{selectedBiz.icon}</span>
               <div>
-                <div className="font-black text-white">{selectedBiz.name}</div>
-                <div className="text-xs text-slate-400">
+                <div className="font-black text-slate-900 text-lg">{selectedBiz.name}</div>
+                <div className="text-xs text-slate-500 font-medium">
                   Bought {selectedBiz.itemCount} {selectedBiz.itemName} at ₦{selectedBiz.unitCost} each
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-xs uppercase font-black tracking-wider text-rose-400">Total Spent</div>
-              <div className="text-xl font-black text-white">₦{totalCost.toLocaleString()}</div>
+              <div className="text-xs uppercase font-black tracking-wider text-rose-600">Total Spent</div>
+              <div className="text-2xl font-black text-slate-900">₦{totalCost.toLocaleString()}</div>
             </div>
           </div>
 
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-black text-white mb-2">
+            <h3 className="text-2xl font-black text-slate-900 mb-2">
               Choose Your Selling Price
             </h3>
-            <p className="text-slate-300 text-sm">
+            <p className="text-slate-600 text-sm font-medium">
               If you set it too high, fewer customers buy. If too low, you make less profit!
             </p>
           </div>
@@ -206,17 +205,17 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
                   key={p}
                   onClick={() => setSellingPrice(p)}
                   className={`
-                    p-4 rounded-2xl border-2 cursor-pointer text-center transition-all
+                    p-4 rounded-3xl border-3 cursor-pointer text-center transition-all
                     ${isSelected
-                      ? 'bg-amber-500/20 border-amber-400 ring-2 ring-amber-400 scale-105 shadow-xl'
-                      : 'bg-slate-800/80 border-slate-700 hover:border-slate-500'
+                      ? 'bg-amber-50 border-amber-400 ring-4 ring-amber-300/40 scale-105 shadow-md'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
                     }
                   `}
                 >
-                  <div className="text-xs font-bold text-slate-400 mb-1">Sell For</div>
-                  <div className="text-xl font-black text-white">₦{p}</div>
+                  <div className="text-xs font-bold text-slate-500 mb-1">Sell For</div>
+                  <div className="text-xl font-black text-slate-900">₦{p}</div>
                   <div className={`text-[10px] font-black uppercase mt-1 ${
-                    unitProfit < 0 ? 'text-rose-400' : unitProfit > 0 ? 'text-emerald-400' : 'text-slate-400'
+                    unitProfit < 0 ? 'text-rose-600' : unitProfit > 0 ? 'text-emerald-600' : 'text-slate-500'
                   }`}>
                     {unitProfit < 0 ? 'Loss!' : `+₦${unitProfit} gain`}
                   </div>
@@ -228,7 +227,7 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
           {/* Launch Day Button */}
           <button
             onClick={startDaySimulation}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-900 font-black text-base uppercase tracking-wider shadow-xl transition-all transform active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-base uppercase tracking-wider shadow-[0_4px_0_#d97706] hover:shadow-[0_6px_0_#d97706] active:translate-y-1 active:shadow-none transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             Open Stall & Serve Customers! <ArrowRight size={18} />
           </button>
@@ -238,11 +237,11 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
       {/* STEP 3: SIMULATING CUSTOMERS */}
       {stage === 'simulating' && (
         <div className="text-center py-12 max-w-md mx-auto">
-          <div className="text-6xl mb-4 animate-bounce">🏪</div>
-          <h3 className="text-2xl font-black text-white mb-2">
+          <div className="text-7xl mb-4 animate-bounce">🏪</div>
+          <h3 className="text-3xl font-black text-slate-900 mb-2">
             Customers are arriving at your stall...
           </h3>
-          <p className="text-amber-200 text-sm font-semibold">
+          <p className="text-amber-700 text-sm font-semibold">
             Selling at ₦{sellingPrice} per item. Let&apos;s see how many buy!
           </p>
         </div>
@@ -252,10 +251,10 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
       {stage === 'results' && selectedBiz && (
         <div className="max-w-2xl mx-auto animate-fadeIn">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black mb-2 border border-emerald-400/30">
-              <Sparkles size={14} /> End of Day Financial Report
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black uppercase mb-2 border border-emerald-300">
+              <Sparkles size={14} className="text-amber-500" /> End of Day Financial Report
             </div>
-            <h3 className="text-2xl font-black text-white">
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900">
               You sold {itemsSold} out of {selectedBiz.itemCount} items!
             </h3>
           </div>
@@ -263,57 +262,57 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
           {/* The Exact Visual Containers Requested in Prompt */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {/* 1. MONEY IN */}
-            <div className="bg-emerald-950/60 border-2 border-emerald-500/50 p-5 rounded-2xl text-center shadow-lg">
-              <div className="text-xs font-black uppercase tracking-wider text-emerald-400 mb-1 flex items-center justify-center gap-1">
+            <div className="bg-emerald-50 border-3 border-emerald-400 p-5 rounded-3xl text-center shadow-md">
+              <div className="text-xs font-black uppercase tracking-wider text-emerald-800 mb-1 flex items-center justify-center gap-1">
                 📥 MONEY IN
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white my-1">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 my-1">
                 ₦{totalRevenue.toLocaleString()}
               </div>
-              <div className="text-[10px] text-emerald-300 font-bold">
+              <div className="text-[10px] text-emerald-700 font-bold">
                 {itemsSold} sold &times; ₦{sellingPrice}
               </div>
             </div>
 
             {/* 2. MONEY SPENT */}
-            <div className="bg-rose-950/60 border-2 border-rose-500/50 p-5 rounded-2xl text-center shadow-lg">
-              <div className="text-xs font-black uppercase tracking-wider text-rose-400 mb-1 flex items-center justify-center gap-1">
+            <div className="bg-rose-50 border-3 border-rose-300 p-5 rounded-3xl text-center shadow-md">
+              <div className="text-xs font-black uppercase tracking-wider text-rose-700 mb-1 flex items-center justify-center gap-1">
                 📤 MONEY SPENT
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white my-1">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 my-1">
                 ₦{totalCost.toLocaleString()}
               </div>
-              <div className="text-[10px] text-rose-300 font-bold">
+              <div className="text-[10px] text-rose-600 font-bold">
                 {selectedBiz.itemCount} stock &times; ₦{selectedBiz.unitCost}
               </div>
             </div>
 
             {/* 3. MONEY LEFT (PROFIT) */}
-            <div className={`p-5 rounded-2xl text-center shadow-xl border-2 ${
+            <div className={`p-5 rounded-3xl text-center shadow-xl border-4 ${
               profit >= 0
-                ? 'bg-amber-950/60 border-yellow-400 ring-2 ring-yellow-400/40'
-                : 'bg-slate-900 border-rose-500'
+                ? 'bg-amber-50 border-amber-400 ring-4 ring-amber-300/40'
+                : 'bg-rose-50 border-rose-400'
             }`}>
-              <div className="text-xs font-black uppercase tracking-wider text-yellow-300 mb-1 flex items-center justify-center gap-1">
+              <div className="text-xs font-black uppercase tracking-wider text-amber-800 mb-1 flex items-center justify-center gap-1">
                 💰 MONEY LEFT
               </div>
               <div className={`text-2xl sm:text-3xl font-black my-1 ${
-                profit >= 0 ? 'text-yellow-400' : 'text-rose-400'
+                profit >= 0 ? 'text-amber-600' : 'text-rose-600'
               }`}>
                 {profit >= 0 ? `₦${profit.toLocaleString()}` : `-₦${Math.abs(profit).toLocaleString()}`}
               </div>
-              <div className="text-[10px] text-yellow-200 font-black uppercase">
+              <div className="text-[10px] text-amber-800 font-black uppercase">
                 {profit >= 0 ? 'Your Profit!' : 'Loss'}
               </div>
             </div>
           </div>
 
           {/* Educational Concept Reveal */}
-          <div className="bg-slate-800/90 border border-slate-700 rounded-2xl p-5 mb-8 text-center">
-            <div className="text-sm text-slate-200 font-semibold leading-relaxed">
+          <div className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-5 mb-8 text-center font-medium">
+            <div className="text-sm text-slate-700 leading-relaxed">
               {profit > 0 ? (
                 <>
-                  That <strong className="text-yellow-300">₦{profit.toLocaleString()}</strong> left over is your <strong>PROFIT</strong>!
+                  That <strong className="text-amber-600 font-black">₦{profit.toLocaleString()}</strong> left over is your <strong>PROFIT</strong>!
                   Profit is the money you keep after paying for all your materials and supplies.
                 </>
               ) : profit === 0 ? (
@@ -329,15 +328,15 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
           </div>
 
           {/* Customer Sample Speech Bubbles */}
-          <div className="bg-black/30 rounded-2xl p-4 border border-white/10 mb-8">
-            <div className="text-xs uppercase font-black tracking-wider text-slate-400 mb-3 text-center">
+          <div className="bg-slate-100 rounded-2xl p-4 border border-slate-200 mb-8">
+            <div className="text-xs uppercase font-black tracking-wider text-slate-500 mb-3 text-center">
               Customer Feedback
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               {customerReactions.slice(0, 4).map((c, i) => (
-                <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+                <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-xs font-medium shadow-2xs">
                   <span>{c.emoji}</span>
-                  <span className="text-slate-300">{c.text}</span>
+                  <span className="text-slate-700">{c.text}</span>
                 </div>
               ))}
             </div>
@@ -345,7 +344,7 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
 
           <button
             onClick={() => setStage('reinvest')}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-900 font-black text-base uppercase tracking-wider shadow-xl transition-all transform active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-base uppercase tracking-wider shadow-[0_4px_0_#047857] hover:shadow-[0_6px_0_#047857] active:translate-y-1 active:shadow-none transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             Decide What To Do With Your Profit <ArrowRight size={18} />
           </button>
@@ -355,13 +354,13 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
       {/* STEP 5: REINVESTMENT DECISION */}
       {stage === 'reinvest' && (
         <div className="max-w-xl mx-auto text-center py-4">
-          <div className="w-16 h-16 rounded-2xl bg-yellow-400 text-slate-900 mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg border-2 border-white">
+          <div className="w-18 h-18 rounded-3xl bg-gradient-to-tr from-yellow-400 to-amber-500 text-slate-950 mx-auto flex items-center justify-center text-4xl mb-3 shadow-xl border-4 border-white">
             🚀
           </div>
-          <h3 className="text-2xl font-black text-white mb-2">
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">
             The Entrepreneur&apos;s Big Decision
           </h3>
-          <p className="text-slate-300 text-sm mb-6">
+          <p className="text-slate-600 text-sm font-medium mb-6">
             <strong>Reinvesting</strong> means putting some profit back into your business to buy better equipment, bigger stock, or advertising so your business can grow!
           </p>
 
@@ -369,31 +368,31 @@ export const MyLittleBusinessGame: React.FC<MyLittleBusinessGameProps> = ({ onCo
             {/* SPEND */}
             <div
               onClick={() => handleReinvestDecision('spend')}
-              className="p-5 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border-2 border-slate-700 hover:border-pink-400 cursor-pointer transition-all hover:scale-105"
+              className="p-5 rounded-3xl bg-slate-50 hover:bg-pink-50 border-3 border-slate-200 hover:border-pink-300 cursor-pointer transition-all hover:scale-105 shadow-xs"
             >
-              <div className="text-3xl mb-2">🍭</div>
-              <div className="font-black text-white text-sm">SPEND</div>
-              <div className="text-[11px] text-slate-400 mt-1">Buy immediate treats for yourself</div>
+              <div className="text-4xl mb-2">🍭</div>
+              <div className="font-black text-slate-900 text-sm">SPEND</div>
+              <div className="text-[11px] text-slate-500 mt-1">Buy immediate treats for yourself</div>
             </div>
 
             {/* SAVE */}
             <div
               onClick={() => handleReinvestDecision('save')}
-              className="p-5 rounded-2xl bg-slate-800/80 hover:bg-slate-800 border-2 border-slate-700 hover:border-cyan-400 cursor-pointer transition-all hover:scale-105"
+              className="p-5 rounded-3xl bg-slate-50 hover:bg-cyan-50 border-3 border-slate-200 hover:border-cyan-300 cursor-pointer transition-all hover:scale-105 shadow-xs"
             >
-              <div className="text-3xl mb-2">🏦</div>
-              <div className="font-black text-white text-sm">SAVE</div>
-              <div className="text-[11px] text-slate-400 mt-1">Deposit in DolaBank for the future</div>
+              <div className="text-4xl mb-2">🏦</div>
+              <div className="font-black text-slate-900 text-sm">SAVE</div>
+              <div className="text-[11px] text-slate-500 mt-1">Deposit in DolaBank for the future</div>
             </div>
 
             {/* REINVEST */}
             <div
               onClick={() => handleReinvestDecision('reinvest')}
-              className="p-5 rounded-2xl bg-emerald-950/60 hover:bg-emerald-900/80 border-2 border-emerald-400 cursor-pointer transition-all hover:scale-105 shadow-xl ring-2 ring-emerald-400/40"
+              className="p-5 rounded-3xl bg-emerald-50 hover:bg-emerald-100 border-3 border-emerald-400 cursor-pointer transition-all hover:scale-105 shadow-md ring-4 ring-emerald-300/40"
             >
-              <div className="text-3xl mb-2">🌱</div>
-              <div className="font-black text-emerald-300 text-sm">REINVEST</div>
-              <div className="text-[11px] text-emerald-100 mt-1">Buy cooler tools & expand shop!</div>
+              <div className="text-4xl mb-2">🌱</div>
+              <div className="font-black text-emerald-800 text-sm">REINVEST</div>
+              <div className="text-[11px] text-emerald-900 mt-1 font-semibold">Buy cooler tools & expand shop!</div>
             </div>
           </div>
         </div>

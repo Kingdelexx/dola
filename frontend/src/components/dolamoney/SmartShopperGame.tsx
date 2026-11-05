@@ -129,18 +129,18 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
   };
 
   return (
-    <div className="bg-slate-900/90 backdrop-blur-xl border-4 border-amber-500/30 rounded-3xl p-6 sm:p-8 text-white max-w-4xl mx-auto shadow-2xl relative">
+    <div className="bg-white border-4 border-amber-300 rounded-[2.5rem] p-6 sm:p-9 text-slate-800 max-w-4xl mx-auto shadow-2xl relative">
       {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-amber-500/20 pb-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-2xl shadow-lg border border-white/20">
+      <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4 mb-6">
+        <div className="flex items-center gap-3.5">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 text-white flex items-center justify-center text-3xl shadow-lg border-2 border-white">
             🛒
           </div>
           <div>
-            <div className="text-xs uppercase tracking-widest text-amber-400 font-black">
+            <div className="text-xs uppercase tracking-widest text-amber-700 font-black">
               World 2 &bull; Smart Shopper
             </div>
-            <h2 className="text-2xl font-black text-white">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
               {stage === 'comparison' ? 'Price Comparison Challenge' : 'Needs vs Wants Shopping'}
             </h2>
           </div>
@@ -148,9 +148,9 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
 
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white px-3 py-1 rounded-xl bg-white/5 hover:bg-white/10 font-bold text-sm transition-all"
+          className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition-all cursor-pointer"
         >
-          ✕ Exit
+          ✕
         </button>
       </div>
 
@@ -159,32 +159,32 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
         <div>
           {/* Mission & Budget Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div className="bg-amber-950/40 border border-amber-400/30 p-4 rounded-2xl">
-              <div className="text-xs font-black uppercase tracking-wider text-amber-400 mb-1 flex items-center gap-1.5">
+            <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl">
+              <div className="text-xs font-black uppercase tracking-wider text-amber-700 mb-1 flex items-center gap-1.5">
                 <ShoppingBag size={14} /> Mission Objective
               </div>
-              <p className="text-sm font-bold text-amber-100">
-                You need a <span className="underline decoration-amber-400">School Notebook</span> and a <span className="underline decoration-amber-400">Water Bottle</span> for school!
+              <p className="text-sm font-bold text-amber-950">
+                You need a <span className="underline decoration-amber-500 font-black">School Notebook</span> and a <span className="underline decoration-amber-500 font-black">Water Bottle</span> for school!
               </p>
             </div>
 
-            <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl flex items-center justify-between">
+            <div className="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex items-center justify-between">
               <div>
-                <div className="text-xs font-black uppercase tracking-wider text-slate-400">Shopping Budget</div>
-                <div className="text-2xl font-black text-white">₦{budget.toLocaleString()}</div>
+                <div className="text-xs font-black uppercase tracking-wider text-slate-500">Shopping Budget</div>
+                <div className="text-2xl font-black text-slate-900">₦{budget.toLocaleString()}</div>
               </div>
               <div className="text-right">
-                <div className="text-xs font-black uppercase tracking-wider text-emerald-400">Remaining</div>
-                <div className="text-2xl font-black text-emerald-300">₦{remainingBudget.toLocaleString()}</div>
+                <div className="text-xs font-black uppercase tracking-wider text-emerald-600">Remaining</div>
+                <div className="text-2xl font-black text-emerald-600">₦{remainingBudget.toLocaleString()}</div>
               </div>
             </div>
           </div>
 
           {/* Educational Concept Callout */}
-          <div className="flex items-center gap-3 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-3 mb-6 text-xs text-indigo-200">
-            <HelpCircle size={18} className="text-indigo-400 shrink-0" />
+          <div className="flex items-center gap-3 bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-3.5 mb-6 text-xs text-indigo-900 font-medium">
+            <HelpCircle size={18} className="text-indigo-600 shrink-0" />
             <span>
-              <strong>Smart Rule:</strong> <strong>NEED</strong> = something important we must have. <strong>WANT</strong> = something nice to have that can wait.
+              <strong>Smart Rule:</strong> <span className="font-black text-indigo-700">NEED</span> = something important we must have. <span className="font-black text-purple-700">WANT</span> = something nice to have that can wait.
             </span>
           </div>
 
@@ -197,34 +197,34 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
                   key={item.id}
                   onClick={() => toggleCartItem(item)}
                   className={`
-                    p-5 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden flex items-center gap-4
+                    p-5 rounded-3xl border-3 transition-all cursor-pointer relative overflow-hidden flex items-center gap-4
                     ${inCart
-                      ? 'bg-amber-500/20 border-amber-400 shadow-lg scale-102 ring-2 ring-amber-400/50'
-                      : 'bg-slate-800/80 border-slate-700 hover:border-slate-500 hover:bg-slate-800'
+                      ? 'bg-amber-50/80 border-amber-400 shadow-lg scale-102 ring-4 ring-amber-300/40'
+                      : 'bg-white border-slate-200 hover:border-amber-300 hover:bg-amber-50/30'
                     }
                   `}
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shrink-0 shadow-inner">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl shrink-0 shadow-inner border border-slate-200">
                     {item.icon}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-black text-white text-base">{item.name}</h4>
-                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                      <h4 className="font-black text-slate-900 text-base">{item.name}</h4>
+                      <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
                         item.category === 'NEED'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30'
-                          : 'bg-purple-500/20 text-purple-300 border border-purple-400/30'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : 'bg-purple-100 text-purple-800 border border-purple-300'
                       }`}>
                         {item.category}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 mt-0.5">{item.description}</p>
-                    <div className="text-base font-black text-amber-400 mt-2">
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">{item.description}</p>
+                    <div className="text-base font-black text-amber-600 mt-2">
                       ₦{item.price.toLocaleString()}
                     </div>
                   </div>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center font-bold text-xs ${
-                    inCart ? 'bg-amber-400 text-slate-900 border-amber-300' : 'border-slate-600'
+                  <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center font-bold text-xs ${
+                    inCart ? 'bg-amber-400 text-slate-950 border-amber-500 shadow-xs' : 'border-slate-300 text-slate-400'
                   }`}>
                     {inCart ? '✓' : '+'}
                   </div>
@@ -234,16 +234,16 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
           </div>
 
           {/* Checkout Button */}
-          <div className="flex items-center justify-between bg-slate-800/90 border border-slate-700 p-4 rounded-2xl">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl">
             <div className="text-sm">
-              <span className="text-slate-400">Cart Total: </span>
-              <span className="font-black text-white text-lg">₦{cartTotal.toLocaleString()}</span>
+              <span className="text-slate-500 font-bold">Cart Total: </span>
+              <span className="font-black text-slate-900 text-lg">₦{cartTotal.toLocaleString()}</span>
               <span className="text-slate-500 text-xs ml-2">({cart.length} items)</span>
             </div>
             <button
               disabled={cart.length === 0}
               onClick={handleCheckout}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-900 font-black text-sm uppercase tracking-wider shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all transform active:scale-98"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_4px_0_#d97706] hover:shadow-[0_6px_0_#d97706] active:translate-y-1 active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               Checkout & See Result &rarr;
             </button>
@@ -254,17 +254,17 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
       {/* STAGE 2: CONSEQUENCE FEEDBACK */}
       {stage === 'consequence' && (
         <div className="text-center py-6 max-w-xl mx-auto animate-fadeIn">
-          <div className={`w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4 shadow-xl border-4 ${
-            consequenceFeedback.success ? 'bg-emerald-500/20 border-emerald-400 text-emerald-400' : 'bg-amber-500/20 border-amber-400 text-amber-400'
+          <div className={`w-22 h-22 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4 shadow-xl border-4 ${
+            consequenceFeedback.success ? 'bg-emerald-100 border-emerald-400 text-emerald-600' : 'bg-amber-100 border-amber-400 text-amber-600'
           }`}>
             {consequenceFeedback.success ? '🎉' : '💡'}
           </div>
 
-          <h3 className="text-2xl font-black text-white mb-3">
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3">
             {consequenceFeedback.title}
           </h3>
 
-          <p className="text-slate-200 text-base leading-relaxed bg-slate-800/80 border border-slate-700 p-5 rounded-2xl mb-8 text-left">
+          <p className="text-slate-700 text-base leading-relaxed bg-slate-50 border-2 border-slate-200 p-6 rounded-3xl mb-8 text-left font-medium">
             {consequenceFeedback.explanation}
           </p>
 
@@ -272,14 +272,14 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
             {!consequenceFeedback.success ? (
               <button
                 onClick={resetShopping}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all"
+                className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_0_#d97706] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
               >
                 <RotateCcw size={16} /> Try Again
               </button>
             ) : (
               <button
                 onClick={handleProceedToComparison}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-900 font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_0_#047857] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
               >
                 Next Mission: Price Comparison <ArrowRight size={16} />
               </button>
@@ -291,13 +291,13 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
       {/* STAGE 3: PRICE COMPARISON */}
       {stage === 'comparison' && (
         <div className="text-center py-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-black mb-3 border border-cyan-400/30">
-            <Sparkles size={14} /> Mission 2: Comparison Shopping
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-100 text-cyan-800 text-xs font-black uppercase mb-3 border border-cyan-300">
+            <Sparkles size={14} className="text-amber-500" /> Mission 2: Comparison Shopping
           </div>
-          <h3 className="text-2xl font-black text-white mb-2">
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">
             Which shop saves you more money?
           </h3>
-          <p className="text-slate-300 text-sm mb-6">
+          <p className="text-slate-600 text-sm font-medium mb-6">
             Both shops sell the exact same sturdy school backpack!
           </p>
 
@@ -305,17 +305,17 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
             {/* Shop A */}
             <div
               onClick={() => handleComparisonSelect('A')}
-              className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
+              className={`p-6 rounded-3xl border-3 cursor-pointer transition-all ${
                 comparisonChoice === 'A'
-                  ? 'bg-rose-500/20 border-rose-400'
-                  : 'bg-slate-800/80 border-slate-700 hover:border-amber-400'
+                  ? 'bg-rose-50 border-rose-400'
+                  : 'bg-white border-slate-200 hover:border-amber-400 shadow-sm'
               }`}
             >
-              <div className="text-3xl mb-2">🏬</div>
-              <h4 className="font-black text-lg text-white">Super Store A</h4>
-              <p className="text-xs text-slate-400 mt-1">School Backpack</p>
-              <div className="text-2xl font-black text-rose-400 my-3">₦8,000</div>
-              <button className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-black">
+              <div className="text-4xl mb-2">🏬</div>
+              <h4 className="font-black text-lg text-slate-900">Super Store A</h4>
+              <p className="text-xs text-slate-500 mt-1">School Backpack</p>
+              <div className="text-2xl font-black text-rose-600 my-3">₦8,000</div>
+              <button className="px-4 py-2 rounded-xl bg-slate-100 text-slate-800 text-xs font-black">
                 Buy at Store A
               </button>
             </div>
@@ -323,25 +323,25 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
             {/* Shop B */}
             <div
               onClick={() => handleComparisonSelect('B')}
-              className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
+              className={`p-6 rounded-3xl border-3 cursor-pointer transition-all ${
                 comparisonChoice === 'B'
-                  ? 'bg-emerald-500/20 border-emerald-400 shadow-xl ring-2 ring-emerald-400'
-                  : 'bg-slate-800/80 border-slate-700 hover:border-emerald-400'
+                  ? 'bg-emerald-50 border-emerald-400 shadow-xl ring-4 ring-emerald-300/40'
+                  : 'bg-white border-slate-200 hover:border-emerald-400 shadow-sm'
               }`}
             >
-              <div className="text-3xl mb-2">🏪</div>
-              <h4 className="font-black text-lg text-white">Community Market B</h4>
-              <p className="text-xs text-slate-400 mt-1">Exact Same Backpack</p>
-              <div className="text-2xl font-black text-emerald-400 my-3">₦6,500</div>
-              <button className="px-4 py-2 rounded-xl bg-emerald-500 text-slate-900 text-xs font-black shadow-md">
+              <div className="text-4xl mb-2">🏪</div>
+              <h4 className="font-black text-lg text-slate-900">Community Market B</h4>
+              <p className="text-xs text-slate-500 mt-1">Exact Same Backpack</p>
+              <div className="text-2xl font-black text-emerald-600 my-3">₦6,500</div>
+              <button className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black shadow-md cursor-pointer">
                 Buy at Store B (Saves ₦1,500!)
               </button>
             </div>
           </div>
 
           {comparisonChoice === 'A' && (
-            <div className="p-3 bg-rose-500/20 border border-rose-400/40 rounded-xl text-rose-200 text-sm font-bold flex items-center justify-center gap-2">
-              <AlertTriangle size={16} /> Store A charges ₦8,000, which is ₦1,500 more expensive! Choose the cheaper store.
+            <div className="p-3.5 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 text-sm font-bold flex items-center justify-center gap-2">
+              <AlertTriangle size={16} className="text-rose-600" /> Store A charges ₦8,000, which is ₦1,500 more expensive! Choose the cheaper store.
             </div>
           )}
         </div>
@@ -350,36 +350,36 @@ export const SmartShopperGame: React.FC<SmartShopperGameProps> = ({ onComplete, 
       {/* STAGE 4: COMPLETION */}
       {stage === 'complete' && (
         <div className="text-center py-6 max-w-md mx-auto animate-scaleUp">
-          <div className="w-20 h-20 rounded-full bg-yellow-400 text-slate-900 mx-auto flex items-center justify-center text-4xl shadow-xl border-4 border-white mb-4 animate-bounce">
+          <div className="w-22 h-22 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 text-slate-950 mx-auto flex items-center justify-center text-4xl shadow-xl border-4 border-white mb-4 animate-bounce">
             🛒
           </div>
-          <h3 className="text-3xl font-black text-white mb-2">
+          <h3 className="text-3xl font-black text-slate-900 mb-2">
             Smart Shopper Mastered!
           </h3>
-          <p className="text-slate-300 text-sm mb-6">
+          <p className="text-slate-600 text-sm font-medium mb-6">
             You know how to prioritize Needs over Wants and compare prices before spending!
           </p>
 
-          <div className="bg-black/30 rounded-2xl p-4 border border-white/10 mb-6 flex items-center justify-around">
+          <div className="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 mb-6 flex items-center justify-around">
             <div>
-              <div className="text-2xl font-black text-yellow-300">+50</div>
-              <div className="text-[10px] font-black uppercase text-slate-400">DolaCoins</div>
+              <div className="text-2xl font-black text-amber-600">+50</div>
+              <div className="text-[10px] font-black uppercase text-slate-500">DolaCoins</div>
             </div>
-            <div className="w-px h-10 bg-white/10" />
+            <div className="w-px h-10 bg-amber-200" />
             <div>
-              <div className="text-2xl font-black text-cyan-300">+100</div>
-              <div className="text-[10px] font-black uppercase text-slate-400">XP Earned</div>
+              <div className="text-2xl font-black text-cyan-600">+100</div>
+              <div className="text-[10px] font-black uppercase text-slate-500">XP Earned</div>
             </div>
-            <div className="w-px h-10 bg-white/10" />
+            <div className="w-px h-10 bg-amber-200" />
             <div>
               <div className="text-2xl">🛒</div>
-              <div className="text-[10px] font-black uppercase text-yellow-400">Smart Shopper</div>
+              <div className="text-[10px] font-black uppercase text-amber-600">Smart Shopper</div>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-900 font-black text-base uppercase tracking-wider shadow-xl transition-all transform active:scale-98"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-base uppercase tracking-wider shadow-[0_4px_0_#d97706] hover:shadow-[0_6px_0_#d97706] active:translate-y-1 active:shadow-none transition-all cursor-pointer"
           >
             Back to World Map &rarr;
           </button>
