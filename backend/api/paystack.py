@@ -13,6 +13,15 @@ def get_base_url() -> str:
 
 def get_secret_key() -> str:
     key = getattr(settings, 'PAYSTACK_SECRET_KEY', '') or ''
+    if not key or not key.strip():
+        key = os.environ.get('PAYSTACK_SECRET_KEY', '') or "sk_test_b25287325f36bacd82ed2e69ff3eb9df4f6acd54"
+    return key.strip()
+
+
+def get_public_key() -> str:
+    key = getattr(settings, 'PAYSTACK_PUBLIC_KEY', '') or ''
+    if not key or not key.strip():
+        key = os.environ.get('PAYSTACK_PUBLIC_KEY', '') or "pk_test_55ce37cbca78414b4ab56ed6a070aadfba2b3f98"
     return key.strip()
 
 

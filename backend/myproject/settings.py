@@ -166,10 +166,10 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 
 # Paystack Configuration
-PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
-PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY", "")
-PAYSTACK_BASE_URL = os.environ.get("PAYSTACK_BASE_URL", "https://api.paystack.co")
-PAYSTACK_WEBHOOK_SECRET = os.environ.get("PAYSTACK_WEBHOOK_SECRET", "") or PAYSTACK_SECRET_KEY
+PAYSTACK_SECRET_KEY = (os.environ.get("PAYSTACK_SECRET_KEY") or "sk_test_b25287325f36bacd82ed2e69ff3eb9df4f6acd54").strip()
+PAYSTACK_PUBLIC_KEY = (os.environ.get("PAYSTACK_PUBLIC_KEY") or "pk_test_55ce37cbca78414b4ab56ed6a070aadfba2b3f98").strip()
+PAYSTACK_BASE_URL = (os.environ.get("PAYSTACK_BASE_URL") or "https://api.paystack.co").strip()
+PAYSTACK_WEBHOOK_SECRET = (os.environ.get("PAYSTACK_WEBHOOK_SECRET") or PAYSTACK_SECRET_KEY).strip()
 
 # Email Configuration
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
