@@ -48,7 +48,7 @@ export default function ContactPage() {
   const faqs = [
     {
       question: "How do I get DolaCode for my school or academy?",
-      answer: "We offer tailored school onboarding packages with teacher training and student management dashboards. Contact us at support@devnaija.com or call 09152690938 to speak with our school success team."
+      answer: "We offer tailored school onboarding packages with teacher training and student management dashboards. Contact us at hello@devnaija.com or call 09152690938 to speak with our school success team."
     },
     {
       question: "What are your support hours?",
@@ -184,12 +184,12 @@ export default function ContactPage() {
                 <p className="text-xs font-semibold text-slate-500 mt-1">Send us an email anytime</p>
               </div>
               <div className="pt-1">
-                <p className="text-sm font-black text-purple-600 break-all">support@devnaija.com</p>
+                <p className="text-sm font-black text-purple-600 break-all">hello@devnaija.com</p>
               </div>
             </div>
             <div className="pt-3">
               <a 
-                href="mailto:support@devnaija.com"
+                href="mailto:hello@devnaija.com"
                 className="inline-flex items-center gap-1.5 text-xs font-bold bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors"
               >
                 <Mail size={12} /> Send Email

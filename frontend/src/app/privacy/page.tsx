@@ -136,7 +136,7 @@ export default function PrivacyPolicyPage() {
                     Need help or want your account data removed?
                   </p>
                   <a 
-                    href="mailto:privacy@dolacode.com"
+                    href="mailto:hello@devnaija.com"
                     className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-pink-600 hover:text-pink-700"
                   >
                     <Mail size={12} /> Email Privacy Team
@@ -377,7 +377,7 @@ export default function PrivacyPolicyPage() {
                   To permanently delete your DolaCode account and wipe all stored data:
                 </p>
                 <ol className="list-decimal pl-5 text-xs text-slate-700 space-y-1 font-medium">
-                  <li>Send an email to <a href="mailto:privacy@dolacode.com" className="text-pink-600 font-bold underline">privacy@dolacode.com</a> or <a href="mailto:hello@dolacode.com" className="text-pink-600 font-bold underline">hello@dolacode.com</a> with the subject line <em>&ldquo;Account Deletion Request&rdquo;</em>.</li>
+                  <li>Send an email to <a href="mailto:hello@devnaija.com" className="text-pink-600 font-bold underline">hello@devnaija.com</a> with the subject line <em>&ldquo;Account Deletion Request&rdquo;</em>.</li>
                   <li>Include the email address associated with your DolaCode or Google Sign-In account.</li>
                   <li>Our support team will process your request and permanently delete your record within <strong>7 business days</strong>.</li>
                 </ol>
@@ -397,8 +397,7 @@ export default function PrivacyPolicyPage() {
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
                 <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-pink-600">Privacy & Support Email</h4>
-                  <p className="text-sm font-bold text-slate-800">privacy@dolacode.com</p>
-                  <p className="text-xs text-slate-500">hello@dolacode.com</p>
+                  <p className="text-sm font-bold text-slate-800">hello@devnaija.com</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-purple-600">Platform Developer</h4>

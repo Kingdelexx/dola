@@ -138,7 +138,7 @@ class Command(BaseCommand):
 
                     <div style="background-color: #f1f5f9; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
                         <p style="margin: 0; font-size: 11px; color: #94a3b8; font-family: sans-serif;">
-                            Sent automatically by DolaCode Mission Control. Add updates@dolacode.com to your contact card to keep receiving progress updates.
+                            Sent automatically by DolaCode Mission Control. Add hello@devnaija.com to your contact card to keep receiving progress updates.
                         </p>
                     </div>
                 </div>
@@ -150,7 +150,7 @@ class Command(BaseCommand):
             try:
                 # If Resend API is in sandbox test mode, it requires sending to verified emails, or onboarding@resend.dev
                 # If they use verified domain DolaCode, it will send normally
-                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <no-reply@dolacode.com.ng>')
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <hello@devnaija.com>')
 
                 response = httpx.post(
                     "https://api.resend.com/emails",

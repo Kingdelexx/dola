@@ -134,7 +134,7 @@ export default function TermsOfServicePage() {
                     Legal inquiries or terms questions:
                   </p>
                   <a 
-                    href="mailto:legal@dolacode.com"
+                    href="mailto:hello@devnaija.com"
                     className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-purple-600 hover:text-purple-700"
                   >
                     <Mail size={12} /> Email Legal Desk
@@ -297,8 +297,7 @@ export default function TermsOfServicePage() {
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
                 <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-purple-600">Legal Contact Email</h4>
-                  <p className="text-sm font-bold text-slate-800">legal@dolacode.com</p>
-                  <p className="text-xs text-slate-500">hello@dolacode.com</p>
+                  <p className="text-sm font-bold text-slate-800">hello@devnaija.com</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-pink-600">Operating Entity</h4>

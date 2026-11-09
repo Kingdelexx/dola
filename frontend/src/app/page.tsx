@@ -527,7 +527,7 @@ export default function Home() {
               <li><Link href="/terms" className="hover:text-yellow-300 hover:pl-2 transition-all block">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-yellow-300 hover:pl-2 transition-all block">Privacy Policy</Link></li>
               <li><Link href="/child-safety" className="hover:text-yellow-300 hover:pl-2 transition-all block">Child Safety Policy</Link></li>
-              <li className="flex items-center gap-3 mt-6 text-slate-400 bg-slate-800 p-3 rounded-xl border border-slate-700"><Mail size={18} className="text-sky-400" /> hello@dolacode.com</li>
+              <li className="flex items-center gap-3 mt-6 text-slate-400 bg-slate-800 p-3 rounded-xl border border-slate-700"><Mail size={18} className="text-sky-400" /> hello@devnaija.com</li>
             </ul>
           </div>
         </div>

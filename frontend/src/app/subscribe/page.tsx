@@ -910,7 +910,7 @@ export default function SubscribePage() {
             <ul className="space-y-2.5 text-xs font-semibold text-slate-400">
               <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li className="pt-2 text-slate-500 text-[11px]">hello@dolacode.com.ng</li>
+              <li className="pt-2 text-slate-500 text-[11px]">hello@devnaija.com</li>
             </ul>
           </div>
         </div>

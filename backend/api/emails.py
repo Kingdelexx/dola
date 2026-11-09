@@ -38,7 +38,7 @@ def _parse_sender(from_email):
     Parses 'Name <email@domain.com>' or 'email@domain.com' into dict {'name': ..., 'email': ...}
     """
     if not from_email:
-        return {"name": "DolaCode", "email": "hello@dolacode.com.ng"}
+        return {"name": "DolaCode", "email": "hello@devnaija.com"}
     if "<" in from_email and ">" in from_email:
         name_part, email_part = from_email.split("<", 1)
         name = name_part.strip().strip("\"'")
@@ -111,7 +111,7 @@ def _dispatch_email(subject, recipient_email, text_content, html_content):
 
     brevo_api_key = os.environ.get("BREVO_API_KEY") or getattr(settings, "BREVO_API_KEY", "")
     resend_api_key = os.environ.get("RESEND_API_KEY") or getattr(settings, "RESEND_API_KEY", "")
-    from_email = os.environ.get("DEFAULT_FROM_EMAIL") or getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <hello@dolacode.com.ng>')
+    from_email = os.environ.get("DEFAULT_FROM_EMAIL") or getattr(settings, 'DEFAULT_FROM_EMAIL', 'DolaCode <hello@devnaija.com>')
 
     # 1. Primary: Brevo API
     if brevo_api_key:
@@ -289,7 +289,7 @@ def send_school_registration_email(school, recipient_email=None):
 
         <div class="footer">
           <p>© {school.created_at.year if hasattr(school, 'created_at') and school.created_at else 2026} DolaCode Platform. All rights reserved.<br>
-          If you have questions, contact us at <a href="mailto:support@dolacode.com.ng" style="color: #60a5fa;">support@dolacode.com.ng</a>.</p>
+          If you have questions, contact us at <a href="mailto:hello@devnaija.com" style="color: #60a5fa;">hello@devnaija.com</a>.</p>
         </div>
       </div>
     </body>
@@ -401,7 +401,7 @@ def send_school_approval_email(school, recipient_email=None):
 
         <div class="footer">
           <p>© {school.created_at.year if hasattr(school, 'created_at') and school.created_at else 2026} DolaCode Platform. All rights reserved.<br>
-          Need assistance? Contact our team at <a href="mailto:support@dolacode.com.ng" style="color: #60a5fa;">support@dolacode.com.ng</a>.</p>
+          Need assistance? Contact our team at <a href="mailto:hello@devnaija.com" style="color: #60a5fa;">hello@devnaija.com</a>.</p>
         </div>
       </div>
     </body>
@@ -444,7 +444,7 @@ Update Payment:
 
 Warm regards,
 The DolaCode Team
-hello@dolacode.com.ng
+hello@devnaija.com
 """
 
     html_content = f"""
@@ -491,7 +491,7 @@ hello@dolacode.com.ng
 
         <div class="footer">
           <p>© 2026 DolaCode Platform. All rights reserved.<br>
-          Questions? Reply directly to this email or reach us at <a href="mailto:hello@dolacode.com.ng" style="color: #818cf8;">hello@dolacode.com.ng</a>.</p>
+          Questions? Reply directly to this email or reach us at <a href="mailto:hello@devnaija.com" style="color: #818cf8;">hello@devnaija.com</a>.</p>
         </div>
       </div>
     </body>
@@ -531,7 +531,7 @@ Manage your subscription and view your payment receipts anytime:
 
 Warm regards,
 The DolaCode Team
-hello@dolacode.com.ng
+hello@devnaija.com
 """
 
     html_content = f"""
@@ -573,7 +573,7 @@ hello@dolacode.com.ng
 
         <div class="footer">
           <p>© 2026 DolaCode Platform. All rights reserved.<br>
-          Questions? Reply directly to this email or reach us at <a href="mailto:hello@dolacode.com.ng" style="color: #818cf8;">hello@dolacode.com.ng</a>.</p>
+          Questions? Reply directly to this email or reach us at <a href="mailto:hello@devnaija.com" style="color: #818cf8;">hello@devnaija.com</a>.</p>
         </div>
       </div>
     </body>
@@ -621,7 +621,7 @@ From your Parent Dashboard, you can monitor your children's completed coding sta
 Access your Parent Dashboard now:
 {portal_url}
 
-If you have any questions or need guidance getting started, simply reply directly to this email or reach us at hello@dolacode.com.ng.
+If you have any questions or need guidance getting started, simply reply directly to this email or reach us at hello@devnaija.com.
 
 Warm regards,
 The DolaCode Team
@@ -691,7 +691,7 @@ https://dolacode.com.ng
 
         <div class="footer">
           <p>© 2026 DolaCode Platform. All rights reserved.<br>
-          Questions? Reply directly to this email or contact us at <a href="mailto:hello@dolacode.com.ng" style="color: #60a5fa;">hello@dolacode.com.ng</a>.</p>
+          Questions? Reply directly to this email or contact us at <a href="mailto:hello@devnaija.com" style="color: #60a5fa;">hello@devnaija.com</a>.</p>
         </div>
       </div>
     </body>

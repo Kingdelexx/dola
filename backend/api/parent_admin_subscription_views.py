@@ -334,7 +334,7 @@ class ParentPaymentReceiptView(APIView):
             "issuer": {
                 "name": "DolaCode (Devnaija Tech)",
                 "website": "https://dolacode.com.ng",
-                "support_email": "support@dolacode.com.ng",
+                "support_email": "hello@devnaija.com",
                 "country": "Nigeria"
             }
         }

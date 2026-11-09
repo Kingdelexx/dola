@@ -135,7 +135,7 @@ export default function ChildSafetyPage() {
                     Parents or educators with safety inquiries:
                   </p>
                   <a 
-                    href="mailto:safety@dolacode.com"
+                    href="mailto:hello@devnaija.com"
                     className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-pink-600 hover:text-pink-700"
                   >
                     <Mail size={12} /> Contact Safety Desk
@@ -332,8 +332,7 @@ export default function ChildSafetyPage() {
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
                 <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-pink-600">Child Safety Email</h4>
-                  <p className="text-sm font-bold text-slate-800">safety@dolacode.com</p>
-                  <p className="text-xs text-slate-500">hello@dolacode.com</p>
+                  <p className="text-sm font-bold text-slate-800">hello@devnaija.com</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
                   <h4 className="font-bold text-xs uppercase tracking-wider text-purple-600">Organization</h4>
