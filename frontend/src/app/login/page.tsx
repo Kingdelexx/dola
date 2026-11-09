@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { gsap } from 'gsap';
 import { 
   Mail, Lock, ChevronRight, Gamepad2, Star, Rocket, Zap, ChevronDown,
-  Users, KeyRound, ArrowLeft, Check, Sparkles, AlertCircle, RefreshCw, Delete
+  Users, KeyRound, ArrowLeft, Check, Sparkles, AlertCircle, RefreshCw, Delete,
+  Eye, EyeOff
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const [portalRole, setPortalRole] = useState<'auto' | 'teacher' | 'school_admin' | 'parent' | 'student'>('auto');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showGmailModal, setShowGmailModal] = useState(false);
@@ -36,6 +38,7 @@ export default function LoginPage() {
   const [selectedProfile, setSelectedProfile] = useState<any | null>(null);
   const [pinDigits, setPinDigits] = useState<string[]>(['', '', '', '']);
   const [parentPasswordInput, setParentPasswordInput] = useState('');
+  const [showParentPassword, setShowParentPassword] = useState(false);
   const [familyError, setFamilyError] = useState('');
   const [isFamilyLoading, setIsFamilyLoading] = useState(false);
   const [pinShake, setPinShake] = useState(false);
@@ -752,14 +755,22 @@ export default function LoginPage() {
                           <Lock size={18} />
                         </div>
                         <input
-                          type="password"
+                          type={showParentPassword ? "text" : "password"}
                           required
                           autoFocus
                           placeholder="••••••••"
                           value={parentPasswordInput}
                           onChange={(e) => setParentPasswordInput(e.target.value)}
-                          className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-800 text-sm font-semibold placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all shadow-xs"
+                          className="w-full bg-white border-2 border-slate-200 rounded-xl py-3 pl-10 pr-11 text-slate-800 text-sm font-semibold placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all shadow-xs"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowParentPassword(!showParentPassword)}
+                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors cursor-pointer"
+                          aria-label={showParentPassword ? "Hide password" : "Show password"}
+                        >
+                          {showParentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
                       </div>
                     </div>
 
@@ -877,7 +888,7 @@ export default function LoginPage() {
                         <Lock size={18} />
                       </div>
                       <input 
-                        type="password" 
+                        type={showPassword ? "text" : "password"} 
                         placeholder="••••••••" 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -885,8 +896,16 @@ export default function LoginPage() {
                         disabled={isLoading}
                         onFocus={() => setFocusedInput('password')}
                         onBlur={() => setFocusedInput(null)}
-                        className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-800 text-xs font-medium placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all shadow-xs"
+                        className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 pr-11 text-slate-800 text-xs font-medium placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all shadow-xs"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors cursor-pointer"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
                   </div>
 

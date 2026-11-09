@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Rocket, Sparkles, Key, CheckCircle2, ChevronRight, User, Calendar, Smile } from 'lucide-react';
+import { Rocket, Sparkles, Key, CheckCircle2, ChevronRight, User, Calendar, Smile, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import RocketLoader from '@/components/RocketLoader';
 
@@ -26,6 +26,7 @@ export default function StudentJoinClassPage() {
   const [age, setAge] = useState('');
   const [gender, setGender] = useState<'girl' | 'boy'>('girl');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   const [submitError, setSubmitError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -245,14 +246,24 @@ export default function StudentJoinClassPage() {
             {/* PIN / Password */}
             <div>
               <label className="block text-xs font-black text-slate-700 mb-1">Create Secret PIN / Password (Optional)</label>
-              <input 
-                type="password" 
-                placeholder="4-digit PIN or Password (default: Student123!)" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold focus:outline-none focus:border-amber-500 focus:bg-white transition-all"
-              />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="4-digit PIN or Password (default: Student123!)" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-2.5 pl-3 pr-11 text-xs font-bold focus:outline-none focus:border-amber-500 focus:bg-white transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors cursor-pointer"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <button 
