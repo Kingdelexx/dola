@@ -102,20 +102,32 @@ export default function Home() {
 
   const faqs = [
     {
+      question: "What exactly will my child learn?",
+      answer: "DolaCode provides a structured, progressive learning journey: Stage 1 (Math & Computational Thinking) develops logic, patterns, and problem solving; Stage 2 (Visual Block Coding) teaches algorithms, loops, and game logic; Stage 3 (App Studio) teaches UI design and building real interactive web apps; Stage 4 (Python Pro) introduces real text-based Python programming with Lizzy AI assistance; and DolaMoney Quest teaches practical financial literacy (currency, budgeting, saving, profit, and simple entrepreneurship in Nigerian Naira ₦)."
+    },
+    {
+      question: "Will my child actually enjoy it?",
+      answer: "Yes! DolaCode is built like an engaging adventure game rather than a boring lecture. Children play missions, rescue pets, run virtual shops, solve interactive puzzles, earn DolaCoins, collect badges, and level up. With friendly real-time encouragement from our AI tutor Lizzy, learning feels exciting and rewarding rather than frustrating."
+    },
+    {
+      question: "Can I see what my child is learning?",
+      answer: "Absolutely. Parents have complete visibility through a dedicated Parent Dashboard. You can monitor weekly learning streaks, completed modules, projects built, and financial milestones. You can also create simple 4-digit PINs for hassle-free child sign-in without sharing sensitive passwords."
+    },
+    {
+      question: "Why should I pay when there are free videos online?",
+      answer: "Watching free videos is passive — children quickly lose focus, skip around, or copy code without understanding the underlying logic. DolaCode is 100% interactive and hands-on: children code directly in their browser, experiment, fix bugs, and build real projects. You get a curated, age-appropriate curriculum, 24/7 personalized guidance from Lizzy AI, and a safe, ad-free environment without distractions or unsafe online rabbit holes."
+    },
+    {
       question: "What age is this platform designed for?",
-      answer: "DolaCode is built specifically for kids and teens aged 5 to 16. Our new DolaCode Numeracy (Stage 1) is perfect for younger kids to build coding readiness. Stage 2 (Block Coding) and Stage 3 (App Studio) are perfect for starting visual coding and building apps, while Stage 4 (Python Pro) offers real-world text-based programming with an AI sidekick."
+      answer: "DolaCode is built specifically for kids and teens aged 5 to 16. Younger learners (ages 5–8) build strong numeracy and block coding foundations, while older learners (ages 9–16) advance through app building, game design, text-based Python programming, and practical money management in DolaMoney Quest."
     },
     {
       question: "Do I need prior coding experience?",
-      answer: "Not at all! Our curriculum assumes zero prior knowledge. Kids start with basic maths for coding readiness (counting, logic, patterns) in Stage 1, drag visual blocks in Stage 2, and transition into writing real Python code in Stage 3."
-    },
-    {
-      question: "Is DolaCode free to use?",
-      answer: "Yes, creating an account and playing through the first several modules is completely free. We offer a premium subscription that unlocks advanced AI tutoring and unlimited project saves."
+      answer: "Not at all! Our curriculum assumes zero prior knowledge. Children start with playful logic and visual blocks in Stages 1 and 2, learn how computers think, and smoothly transition to building working apps in Stage 3 and writing professional Python code in Stage 4."
     },
     {
       question: "Does it work on iPads and Chromebooks?",
-      answer: "Yes! The platform runs entirely in your web browser. There is nothing to install, making it perfectly compatible with Chromebooks, iPads, Macs, and Windows PCs."
+      answer: "Yes! The platform runs entirely in your web browser with nothing to download or install. It works seamlessly on iPads, Android tablets, Chromebooks, Windows PCs, and Macs."
     }
   ];
 

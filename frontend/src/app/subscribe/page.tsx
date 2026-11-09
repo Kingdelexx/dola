@@ -662,106 +662,163 @@ export default function SubscribePage() {
             >
               <span className="flex items-center gap-2.5">
                 <Brain size={18} className="text-pink-600 shrink-0" />
-                What will my child learn?
+                What exactly will my child learn?
               </span>
               {openFaqIndex === 1 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             {openFaqIndex === 1 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                DolaCode provides a structured 4-stage continuum for kids aged 5 to 16. Beginners start with Stage 1 (Math &amp; Computational Readiness), advance to Stage 2 (Visual Block Coding with Blockly), create web &amp; mobile interfaces in Stage 3 (App Studio), and write professional text-based code in Stage 4 (Python Quest with Lizzy AI guidance).
+                DolaCode provides a structured 4-stage coding continuum plus practical financial literacy: Stage 1 (Math &amp; Computational Readiness), Stage 2 (Visual Block Coding with Blockly), Stage 3 (App Studio for web and mobile interfaces), Stage 4 (Python Pro text coding with Lizzy AI guidance), and our all-new DolaMoney Quest (Nigerian Naira currency recognition, budgeting, smart shopping, saving, and entrepreneurship).
               </div>
             )}
           </div>
 
-          {/* FAQ 3: Multiple children */}
+          {/* FAQ 3: Enjoyment */}
           <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
             <button
               onClick={() => toggleFaq(2)}
               className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <Users size={18} className="text-emerald-600 shrink-0" />
-                Can I add multiple children under one subscription?
+                <Heart size={18} className="text-rose-500 shrink-0" />
+                Will my child actually enjoy it?
               </span>
               {openFaqIndex === 2 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             {openFaqIndex === 2 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                <strong>Yes, absolutely!</strong> Unlike other platforms that charge per child, DolaCode operates on a family-first model. One active parent subscription covers all linked children under your account at no extra charge. Each child has their own individual student login, profile, and progress tracking.
+                Yes! DolaCode is designed from the ground up like a vibrant video game. Instead of dry lectures or tedious worksheets, kids rescue pets, operate pizza kitchens, race frogs, build real games, and launch apps. They earn DolaCoins, collect badges, and receive friendly hints from Lizzy AI whenever they need help, keeping motivation high.
               </div>
             )}
           </div>
 
-          {/* FAQ 4: How recurring payments work */}
+          {/* FAQ 4: Parent Visibility */}
           <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
             <button
               onClick={() => toggleFaq(3)}
               className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <CreditCard size={18} className="text-purple-600 shrink-0" />
-                How do recurring payments work with Paystack?
+                <ShieldCheck size={18} className="text-sky-600 shrink-0" />
+                Can I see what my child is learning?
               </span>
               {openFaqIndex === 3 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             {openFaqIndex === 3 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                All transactions are processed securely in Nigerian Naira (NGN) through Paystack, Nigeria&apos;s leading payment gateway. You can pay with your Nigerian Mastercard, Visa, or Verve debit card, bank transfer, or USSD. For card payments, renewals occur automatically at the end of each billing period (monthly or annually). We never store your card details on our servers.
+                Yes, completely! You have access to a dedicated Parent Dashboard where you can monitor real-time weekly activity streaks, completed modules, projects built, and financial literacy milestones. You can also assign easy 4-digit PINs for seamless child sign-in without sharing sensitive passwords.
               </div>
             )}
           </div>
 
-          {/* FAQ 5: How cancellation works */}
+          {/* FAQ 5: Free videos online comparison */}
           <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
             <button
               onClick={() => toggleFaq(4)}
               className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <Lock size={18} className="text-amber-600 shrink-0" />
-                How does cancellation work?
+                <Zap size={18} className="text-amber-500 shrink-0" />
+                Why should I pay when there are free videos online?
               </span>
               {openFaqIndex === 4 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             {openFaqIndex === 4 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                You can cancel your subscription at any time with one click inside your Parent Dashboard. There are zero cancellation fees or penalties. When you cancel, your children will continue to enjoy full uninterrupted access until the end of the billing period you already paid for.
+                Watching free videos is passive — children quickly lose focus, skip ahead, or simply copy code without understanding the concepts. DolaCode is 100% interactive and hands-on: children write code directly in their browser, experiment, solve challenges, and build real projects. You get a structured step-by-step curriculum, 24/7 personalized guidance from Lizzy AI, parent progress tracking, and a safe, ad-free environment without distractions or unsafe online rabbit holes.
               </div>
             )}
           </div>
 
-          {/* FAQ 6: School access */}
+          {/* FAQ 6: Multiple children */}
           <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
             <button
               onClick={() => toggleFaq(5)}
               className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <Crown size={18} className="text-sky-600 shrink-0" />
-                What if my child&apos;s school is already using DolaCode?
+                <Users size={18} className="text-emerald-600 shrink-0" />
+                Can I add multiple children under one subscription?
               </span>
               {openFaqIndex === 5 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             {openFaqIndex === 5 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                If your child is enrolled in an approved partner school and has joined an active classroom with a class code, their access is sponsored by the school! You do not need to purchase a parent subscription for school-sponsored students. You can still link your child to monitor their weekly homework and performance for free.
+                <strong>Yes, absolutely!</strong> Unlike other platforms that charge per child, DolaCode operates on a family-first model. One active parent subscription covers all linked children under your account at no extra charge. Each child has their own individual student login, profile, and progress tracking.
               </div>
             )}
           </div>
 
-          {/* FAQ 7: School Custom Pricing */}
+          {/* FAQ 7: How recurring payments work */}
           <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
             <button
               onClick={() => toggleFaq(6)}
               className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <Building size={18} className="text-emerald-600 shrink-0" />
-                Do you offer custom pricing for schools and institutions?
+                <CreditCard size={18} className="text-purple-600 shrink-0" />
+                How do recurring payments work with Paystack?
               </span>
               {openFaqIndex === 6 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             {openFaqIndex === 6 && (
+              <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
+                All transactions are processed securely in Nigerian Naira (NGN) through Paystack, Nigeria&apos;s leading payment gateway. You can pay with your Nigerian Mastercard, Visa, or Verve debit card, bank transfer, or USSD. For card payments, renewals occur automatically at the end of each billing period (monthly or annually). We never store your card details on our servers.
+              </div>
+            )}
+          </div>
+
+          {/* FAQ 8: How cancellation works */}
+          <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
+            <button
+              onClick={() => toggleFaq(7)}
+              className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2.5">
+                <Lock size={18} className="text-amber-600 shrink-0" />
+                How does cancellation work?
+              </span>
+              {openFaqIndex === 7 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {openFaqIndex === 7 && (
+              <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
+                You can cancel your subscription at any time with one click inside your Parent Dashboard. There are zero cancellation fees or penalties. When you cancel, your children will continue to enjoy full uninterrupted access until the end of the billing period you already paid for.
+              </div>
+            )}
+          </div>
+
+          {/* FAQ 9: School access */}
+          <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
+            <button
+              onClick={() => toggleFaq(8)}
+              className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2.5">
+                <Crown size={18} className="text-sky-600 shrink-0" />
+                What if my child&apos;s school is already using DolaCode?
+              </span>
+              {openFaqIndex === 8 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {openFaqIndex === 8 && (
+              <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
+                If your child is enrolled in an approved partner school and has joined an active classroom with a class code, their access is sponsored by the school! You do not need to purchase a parent subscription for school-sponsored students. You can still link your child to monitor their weekly homework and performance for free.
+              </div>
+            )}
+          </div>
+
+          {/* FAQ 10: School Custom Pricing */}
+          <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-xs">
+            <button
+              onClick={() => toggleFaq(9)}
+              className="w-full p-5 text-left flex items-center justify-between gap-4 font-black text-slate-900 text-base hover:text-indigo-600 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2.5">
+                <Building size={18} className="text-emerald-600 shrink-0" />
+                Do you offer custom pricing for schools and institutions?
+              </span>
+              {openFaqIndex === 9 ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {openFaqIndex === 9 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
                 <strong>Yes, absolutely!</strong> We partner directly with primary schools, secondary schools, computer academies, and coding clubs across Nigeria. School packages include custom per-pupil pricing, teacher administrative dashboards, bulk student onboarding, curriculum alignment, and dedicated training for ICT educators. Please reach out to our educational team via our{" "}
                 <Link href="/contact?subject=School%20Pricing%20Inquiry" className="text-indigo-600 font-bold hover:underline">
