@@ -9,6 +9,7 @@ import {
   Brain, Code, Terminal, LayoutGrid, Gamepad2, Award, ChevronDown,
   ChevronUp, HelpCircle, Users, Heart, Zap, AlertCircle, CreditCard, Lock, Building
 } from 'lucide-react';
+import { FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 
 interface Plan {
@@ -872,6 +873,12 @@ export default function SubscribePage() {
             <p className="text-xs text-slate-400 leading-relaxed">
               Empowering the next generation of African tech leaders with gamified mathematics, block coding, and Python programming.
             </p>
+            <div className="flex items-center gap-2.5 pt-1">
+              <a href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" target="_blank" rel="noopener noreferrer" title="Join DolaCode WhatsApp Community" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 text-emerald-400 hover:text-white transition-all"><FaWhatsapp size={16} /></a>
+              <a href="https://www.facebook.com/DevnaijaAcademykids" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Facebook" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-all"><FaFacebook size={15} /></a>
+              <a href="https://www.instagram.com/devnaijaacademykids13/" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Instagram" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all"><FaInstagram size={15} /></a>
+              <a href="https://www.youtube.com/@DevnaijaKids-z8p" target="_blank" rel="noopener noreferrer" title="Devnaija Kids YouTube" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white transition-all"><FaYoutube size={15} /></a>
+            </div>
           </div>
 
           <div>

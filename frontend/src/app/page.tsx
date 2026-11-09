@@ -11,7 +11,7 @@ import {
   Coins, Brain, ShieldCheck, Users, ArrowRight, Laptop, CheckCircle2, Store,
   Flame, Award, Lightbulb, Zap, Code
 } from 'lucide-react';
-import { FaTwitter, FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
@@ -808,10 +808,9 @@ export default function Home() {
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" target="_blank" rel="noopener noreferrer" title="Join DolaCode WhatsApp Community" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 text-emerald-400 hover:text-white transition-all transform hover:-translate-y-2"><FaWhatsapp size={22} /></a>
-              <a href="#" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-sky-400 hover:border-sky-400 hover:text-white transition-all transform hover:-translate-y-2"><FaTwitter size={20} /></a>
-              <a href="#" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-all transform hover:-translate-y-2"><FaFacebook size={20} /></a>
-              <a href="#" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all transform hover:-translate-y-2"><FaInstagram size={20} /></a>
-              <a href="#" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white transition-all transform hover:-translate-y-2"><FaYoutube size={20} /></a>
+              <a href="https://www.facebook.com/DevnaijaAcademykids" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Facebook" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-all transform hover:-translate-y-2"><FaFacebook size={20} /></a>
+              <a href="https://www.instagram.com/devnaijaacademykids13/" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Instagram" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all transform hover:-translate-y-2"><FaInstagram size={20} /></a>
+              <a href="https://www.youtube.com/@DevnaijaKids-z8p" target="_blank" rel="noopener noreferrer" title="Devnaija Kids YouTube" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white transition-all transform hover:-translate-y-2"><FaYoutube size={20} /></a>
             </div>
           </div>
 
