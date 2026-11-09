@@ -7,7 +7,9 @@ import 'animate.css';
 import {
   Blocks, Terminal, Bot, Rocket, Star, Sparkles, ChevronRight,
   Play, MousePointerClick, Unlock, Ghost, LayoutGrid, Quote, UserCircle2,
-  Plus, Minus, Mail, MapPin, Cloud, Trophy, Gamepad2, Sun, Crown, Heart
+  Plus, Minus, Mail, MapPin, Cloud, Trophy, Gamepad2, Sun, Crown, Heart,
+  Coins, Brain, ShieldCheck, Users, ArrowRight, Laptop, CheckCircle2, Store,
+  Flame, Award, Lightbulb, Zap, Code
 } from 'lucide-react';
 import { FaTwitter, FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
@@ -188,20 +190,43 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <main className="relative z-10 flex flex-col items-center justify-center pt-16 pb-32 px-6">
+      <main className="relative z-10 flex flex-col items-center justify-center pt-14 pb-28 px-6">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-center lg:text-left space-y-8">
+          <div className="text-center lg:text-left space-y-6">
+            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md border-2 border-white px-4 py-1.5 rounded-full text-xs font-black text-purple-900 shadow-sm">
+              <Sparkles size={16} className="text-amber-500 animate-spin" />
+              <span>Ages 5–16 &bull; STEM, Coding &amp; Financial Literacy</span>
+            </div>
             <h1 ref={titleRef} className="text-5xl lg:text-7xl font-black leading-[1.1] text-slate-800 drop-shadow-sm">
-              Code your own <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Games</span> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-505 to-green-400">Adventures!</span>
+              Code your own <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Games</span> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-emerald-500">Adventures!</span>
             </h1>
-            <p ref={subtitleRef} className="text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium">
-              Join new generation of creators in learning to build games, animations, and apps. No boring lessons—just pure fun
+            <p ref={subtitleRef} className="text-lg sm:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
+              Join the next generation of young tech creators! Master playful numeracy, visual block coding, web app creation, real Python, and our all-new <strong>DolaMoney Quest</strong>.
             </p>
-            <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-              <Link href={user ? "/dashboard" : "/signup"} className="group relative px-10 py-5 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full font-black text-xl text-white shadow-[0_8px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_10px_0_#c026d3] active:translate-y-[6px] active:shadow-[0_2px_0_#c026d3] transition-all w-full sm:w-auto text-center flex items-center justify-center gap-3">
-                <Gamepad2 size={28} className="group-hover:rotate-12 transition-transform" />
-                {user ? "Go to Dashboard" : "Start Playing"}
+            <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <Link href={user ? "/dashboard" : "/signup"} className="group relative px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full font-black text-lg text-white shadow-[0_8px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_10px_0_#c026d3] active:translate-y-[6px] active:shadow-[0_2px_0_#c026d3] transition-all w-full sm:w-auto text-center flex items-center justify-center gap-2.5 cursor-pointer">
+                <Gamepad2 size={24} className="group-hover:rotate-12 transition-transform" />
+                <span>{user ? "Go to Dashboard" : "Start Playing Free"}</span>
               </Link>
+              <Link href="/dolamoney" className="px-7 py-4 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 rounded-full font-black text-base shadow-[0_6px_0_#d97706] hover:translate-y-[-2px] active:translate-y-[4px] active:shadow-none transition-all w-full sm:w-auto text-center flex items-center justify-center gap-2 border-2 border-white cursor-pointer">
+                <Coins size={20} className="text-slate-900" />
+                <span>DolaMoney Quest 🪙</span>
+              </Link>
+            </div>
+            {/* Quick platform highlights */}
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs font-bold text-slate-500">
+              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
+                <CheckCircle2 size={14} className="text-emerald-500" /> 4 Coding Worlds
+              </span>
+              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
+                <CheckCircle2 size={14} className="text-emerald-500" /> 6 Adventure Mini-Games
+              </span>
+              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
+                <CheckCircle2 size={14} className="text-emerald-500" /> 10 DolaMoney Worlds (₦)
+              </span>
+              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
+                <Bot size={14} className="text-purple-500" /> Lizzy AI Tutor
+              </span>
             </div>
           </div>
           <div className="relative flex justify-center items-center h-[400px] lg:h-[500px]">
@@ -259,59 +284,336 @@ export default function Home() {
               </div>
             </div>
           </div>
+          {/* 4 Core Coding Worlds */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Card 1 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-indigo-200 hover:border-indigo-400 shadow-[0_15px_30px_-5px_rgba(99,102,241,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-indigo-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white">
-                <Star className="text-white fill-white" size={32} />
+            {/* World 1 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-indigo-200 hover:border-indigo-400 shadow-[0_15px_30px_-5px_rgba(99,102,241,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-indigo-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white text-white">
+                  <Brain size={32} />
+                </div>
+                <div className="inline-block bg-indigo-50 text-indigo-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  Ages 5–8 &bull; 14 Parts &bull; 6 Games
+                </div>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-indigo-600 transition-colors">1. DolaCode Numeracy</h3>
+                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
+                  Maths &amp; computational readiness. 14 progressive chapters covering number sense, operations, spatial grids, fractions, and 6 standalone interactive games!
+                </p>
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-indigo-500 transition-colors">1. Numeracy (8 Parts)</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Maths for coding readiness. Part 1 covers number sense, Part 2 covers operations, Part 3 covers logic loops, Part 4 covers spatial grids, Part 5 covers real-life measurement variables, Part 6 covers fractions & decimals, Part 7 covers data & stats, and Part 8 covers problem solving & algorithms.</p>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
+                <span>Playful Foundation</span>
+                <ChevronRight size={16} />
+              </div>
             </div>
-            {/* Card 2 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-pink-200 hover:border-pink-400 shadow-[0_15px_30px_-5px_rgba(236,72,153,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(236,72,153,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-pink-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white animate-pulse">
-                <Blocks className="text-white" size={32} />
+
+            {/* World 2 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-pink-200 hover:border-pink-400 shadow-[0_15px_30px_-5px_rgba(236,72,153,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(236,72,153,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-4 flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-pink-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white text-white animate-pulse">
+                  <Blocks size={32} />
+                </div>
+                <div className="inline-block bg-pink-50 text-pink-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  Ages 7–11 &bull; Visual Logic
+                </div>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-pink-600 transition-colors">2. Visual Block Coding</h3>
+                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
+                  Snap colorful Blockly blocks together like digital Legos! Master sequencing, repeat loops, variables, and conditional IF/THEN rules without typing mistakes.
+                </p>
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-pink-500 transition-colors">2. Block Logic</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Snap colorful Blockly blocks together like digital Legos! Learn structured programming without typing mistakes.</p>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-pink-600">
+                <span>Game Logic</span>
+                <ChevronRight size={16} />
+              </div>
             </div>
-            {/* Card 3 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white">
-                <Terminal className="text-white" size={32} />
+
+            {/* World 3 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-sky-200 hover:border-sky-400 shadow-[0_15px_30px_-5px_rgba(56,189,248,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-8 flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white text-white">
+                  <LayoutGrid size={32} />
+                </div>
+                <div className="inline-block bg-sky-50 text-sky-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  Ages 9–14 &bull; Apps &amp; Web
+                </div>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-sky-600 transition-colors">3. App Studio &amp; Web</h3>
+                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
+                  Design real apps with interactive buttons, sounds, and canvas graphics in App Studio, plus write real HTML, CSS &amp; JavaScript in Web Studio with live previews!
+                </p>
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-purple-500 transition-colors">3. Python Pro</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Write real text-based Python code and build advanced programs with a helpful AI tutor sidekick.</p>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-sky-600">
+                <span>UI &amp; Web Design</span>
+                <ChevronRight size={16} />
+              </div>
             </div>
-            {/* Card 4 - App Studio moved to World 4 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-sky-200 hover:border-sky-400 shadow-[0_15px_30px_-5px_rgba(56,189,248,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-12 relative overflow-hidden">
-              <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white">
-                <LayoutGrid className="text-white" size={32} />
+
+            {/* World 4 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-12 flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white text-white">
+                  <Terminal size={32} />
+                </div>
+                <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  Ages 10–16 &bull; Real Python
+                </div>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">4. Python Pro &amp; Quest</h3>
+                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
+                  Write industry-standard text-based Python code! Build programs, games, and algorithms with 24/7 personalized hints and syntax error help from Lizzy AI.
+                </p>
               </div>
-              <h3 className="text-xl font-black mb-3 text-slate-800 group-hover:text-sky-500 transition-colors">4. App Studio</h3>
-              <p className="text-slate-655 leading-relaxed font-semibold text-sm">Design beautiful user interfaces, add buttons and sliders, and write JavaScript to build your own real-time apps.</p>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
+                <span>AI Tutor Powered</span>
+                <ChevronRight size={16} />
+              </div>
+            </div>
+          </div>
+
+          {/* DolaMoney Quest Hero Spotlight */}
+          <div className="mt-14 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-emerald-300/80 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
+              🪙
+            </div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="space-y-4 text-center lg:text-left max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-300/40 text-emerald-200 text-xs font-black uppercase tracking-wider">
+                  <Coins size={14} className="text-yellow-300" /> New Financial Literacy Adventure &bull; 10 Worlds
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+                  DolaMoney Quest: <span className="text-yellow-300">Learn. Earn. Save. Spend. Build.</span>
+                </h3>
+                <p className="text-emerald-100 text-sm sm:text-base font-medium leading-relaxed">
+                  Teach practical financial intelligence to children aged 6–12 through games, simulations, and real decisions using Nigerian Naira (₦). No boring economics theory—just pure fun, DolaCoins, and real-life habits!
+                </p>
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1 text-xs font-bold text-emerald-100">
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🪙 Money Match</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🛒 Smart Shopper (Needs vs Wants)</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🏺 Savings Jar Streaks</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">📊 Budget Challenge</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🍋 Little Business (Costs &amp; Profit)</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🏦 DolaBank Adventures</span>
+                </div>
+              </div>
+
+              <div className="shrink-0 flex flex-col items-center gap-3 w-full sm:w-auto">
+                <Link
+                  href="/dolamoney"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#92400e] hover:shadow-[0_8px_0_#92400e] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Coins size={20} />
+                  <span>Enter DolaMoney Quest</span>
+                  <span>&rarr;</span>
+                </Link>
+                <span className="text-[11px] text-emerald-200 font-semibold text-center">
+                  Includes Virtual Wallet, Badges &amp; Streaks
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 6 Interactive Adventure Games Arcade */}
+          <div className="mt-16">
+            <div className="text-center mb-10 space-y-3">
+              <div className="inline-block bg-pink-100 text-pink-700 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider">
+                <Gamepad2 size={16} className="inline mr-1.5 -mt-0.5" /> Interactive Games Arcade
+              </div>
+              <h3 className="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">
+                Play &amp; Learn With <span className="text-pink-500">6 Adventure Games</span>
+              </h3>
+              <p className="text-slate-600 text-sm sm:text-base font-medium max-w-2xl mx-auto">
+                Children build solid mathematical and computational intuition while playing hands-on story missions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* 1. Pizza Shop */}
+              <div className="bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 rounded-[2rem] p-6 text-white shadow-lg border-4 border-white flex flex-col justify-between group hover:scale-102 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Fractions &amp; Loops
+                    </span>
+                    <span className="text-3xl">🍕</span>
+                  </div>
+                  <h4 className="text-xl font-black mb-1">Dola&apos;s Pizza Shop</h4>
+                  <p className="text-orange-100 text-xs font-semibold leading-relaxed">
+                    Serve friendly orders, slice pizzas, balance fractions, share evenly with friends, and discover loops through baking!
+                  </p>
+                </div>
+                <Link
+                  href="/stage1/pizza-shop"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-white text-orange-600 hover:text-orange-700 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Play Pizza Shop</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {/* 2. Robot Maze */}
+              <div className="bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 rounded-[2rem] p-6 text-white shadow-lg border-4 border-white flex flex-col justify-between group hover:scale-102 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Algorithms &amp; Debugging
+                    </span>
+                    <span className="text-3xl">🤖</span>
+                  </div>
+                  <h4 className="text-xl font-black mb-1">Robot Maze</h4>
+                  <p className="text-teal-100 text-xs font-semibold leading-relaxed">
+                    Program Robo through maze grids! Arrange directional arrows, use repeat loops, avoid obstacles, and test code.
+                  </p>
+                </div>
+                <Link
+                  href="/stage1/robot-maze"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-white text-teal-700 hover:text-teal-800 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Play Robot Maze</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {/* 3. My Little Shop */}
+              <div className="bg-gradient-to-br from-amber-500 via-emerald-600 to-teal-600 rounded-[2rem] p-6 text-white shadow-lg border-4 border-white flex flex-col justify-between group hover:scale-102 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Currency (₦) &amp; Retail
+                    </span>
+                    <span className="text-3xl">🏪</span>
+                  </div>
+                  <h4 className="text-xl font-black mb-1">My Little Shop</h4>
+                  <p className="text-emerald-100 text-xs font-semibold leading-relaxed">
+                    Manage a colorful Nigerian corner shop! Count Naira notes, calculate change, restock items, and master loop math.
+                  </p>
+                </div>
+                <Link
+                  href="/stage1/my-little-shop"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-white text-emerald-800 hover:text-emerald-900 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Play Little Shop</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {/* 4. Frog Adventure */}
+              <div className="bg-gradient-to-br from-lime-500 via-emerald-600 to-teal-600 rounded-[2rem] p-6 text-white shadow-lg border-4 border-white flex flex-col justify-between group hover:scale-102 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Number Line Jumps
+                    </span>
+                    <span className="text-3xl">🐸</span>
+                  </div>
+                  <h4 className="text-xl font-black mb-1">Frog Adventure</h4>
+                  <p className="text-lime-100 text-xs font-semibold leading-relaxed">
+                    Guide Hoppy across river lilypads! Count jumps, turn directions, follow sequence patterns, and debug leap paths.
+                  </p>
+                </div>
+                <Link
+                  href="/stage1/frog-adventure"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-white text-emerald-800 hover:text-emerald-900 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Play Frog Adventure</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {/* 5. Traffic Rescue */}
+              <div className="bg-gradient-to-br from-amber-500 via-rose-600 to-indigo-600 rounded-[2rem] p-6 text-white shadow-lg border-4 border-white flex flex-col justify-between group hover:scale-102 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Signals &amp; IF/THEN Rules
+                    </span>
+                    <span className="text-3xl">🚦</span>
+                  </div>
+                  <h4 className="text-xl font-black mb-1">Traffic Rescue</h4>
+                  <p className="text-amber-100 text-xs font-semibold leading-relaxed">
+                    Control mini city intersections! Program traffic lights, protect zebra crossings, and prevent gridlocks with logic.
+                  </p>
+                </div>
+                <Link
+                  href="/stage1/traffic-rescue"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-white text-indigo-900 hover:text-indigo-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Play Traffic Rescue</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {/* 6. Pet Rescue */}
+              <div className="bg-gradient-to-br from-rose-500 via-pink-600 to-amber-500 rounded-[2rem] p-6 text-white shadow-lg border-4 border-white flex flex-col justify-between group hover:scale-102 transition-all">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Coordinates &amp; Sorting
+                    </span>
+                    <span className="text-3xl">🐶</span>
+                  </div>
+                  <h4 className="text-xl font-black mb-1">Pet Rescue</h4>
+                  <p className="text-pink-100 text-xs font-semibold leading-relaxed">
+                    Care for cute rescue animals! Map coordinates, sort treats, follow care algorithms, and learn IF/THEN condition rules.
+                  </p>
+                </div>
+                <Link
+                  href="/stage1/pet-rescue"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-white text-rose-700 hover:text-rose-800 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Play Pet Rescue</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Lizzy AI Coding Tutor Section */}
+          <div className="mt-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-purple-400/40 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-5">
+              <div className="w-20 h-20 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-3xl flex items-center justify-center text-4xl shadow-xl border-4 border-white/20 shrink-0">
+                <Bot className="w-10 h-10 text-white" />
+              </div>
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-800/80 text-purple-200 text-xs font-black uppercase tracking-wider">
+                  <Sparkles size={12} className="text-amber-400" /> 24/7 AI Coding Sidekick
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-white">Meet Lizzy AI: Every Child&apos;s Friendly Tutor</h3>
+                <p className="text-purple-200 text-xs sm:text-sm max-w-xl font-medium leading-relaxed">
+                  Coding can sometimes feel tricky. Lizzy AI provides gentle hints, explains syntax errors in kid-friendly language, celebrates achievements, and ensures no child ever feels stuck or discouraged.
+                </p>
+              </div>
+            </div>
+            <div className="shrink-0 flex items-center gap-3">
+              <Link
+                href="/signup"
+                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white font-black text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <span>Code With Lizzy AI</span>
+                <ArrowRight size={14} />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works Section (Map/Adventure theme) */}
+      {/* How It Works Section (Curriculum Roadmap theme) */}
       <section className="relative z-10 py-32 bg-amber-50 text-slate-800 px-6 border-t-8 border-dashed border-amber-200" ref={howItWorksRef}>
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <h2 className="text-4xl lg:text-6xl font-black text-amber-600">Your <span className="text-pink-500">Curriculum</span> Map</h2>
-            <p className="text-xl text-amber-700/70 max-w-2xl mx-auto font-medium">Progress through 4 exciting stages at your own pace!</p>
+          <div className="text-center mb-16 space-y-4">
+            <div className="inline-block bg-amber-200/80 text-amber-900 px-4 py-1.5 rounded-full font-black text-xs uppercase tracking-wider">
+              Step-by-Step Pathway
+            </div>
+            <h2 className="text-4xl lg:text-6xl font-black text-amber-600">Your <span className="text-pink-500">Curriculum</span> Roadmap</h2>
+            <p className="text-lg sm:text-xl text-amber-800/80 max-w-2xl mx-auto font-medium">Progress through 4 structured coding stages at your own pace!</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             {/* Wavy path background for desktop */}
             <div className="hidden md:block absolute top-1/2 left-[10%] w-[80%] h-4 bg-amber-200 -translate-y-1/2 z-0 rounded-full"></div>
 
             {[
-              { step: 1, title: "1. Numeracy (8 Parts)", desc: "Number sense, operations, logic, measurement, fractions, data, and algorithms.", icon: Star, color: "indigo" },
-              { step: 2, title: "2. Block Coding", desc: "Snap Blockly code cards to control robots.", icon: Blocks, color: "pink" },
-              { step: 3, title: "3. Python Pro", desc: "Write real text-based Python code with an AI sidekick.", icon: Terminal, color: "purple" },
-              { step: 4, title: "4. App Studio", desc: "Design interfaces and code custom app behaviors.", icon: LayoutGrid, color: "sky" }
+              { step: 1, title: "1. Numeracy & Logic", desc: "14 progressive parts & 6 adventure games: numbers, logic, patterns, and spatial grids.", icon: Brain, color: "indigo" },
+              { step: 2, title: "2. Visual Block Coding", desc: "Snap Blockly code cards to control robots, animate characters, and build games.", icon: Blocks, color: "pink" },
+              { step: 3, title: "3. App & Web Studio", desc: "Design interactive app interfaces and write live HTML & CSS web pages.", icon: LayoutGrid, color: "sky" },
+              { step: 4, title: "4. Python Pro + AI", desc: "Write real text-based Python code with personalized guidance from Lizzy AI.", icon: Terminal, color: "purple" }
             ].map((item, i) => (
               <div key={i} className={`step-${item.step} bg-white p-6 rounded-[2rem] border-4 border-slate-100 relative z-10 text-center flex flex-col items-center shadow-xl`}>
                 <div className={`step-icon w-16 h-16 bg-indigo-500 rounded-[1.5rem] rotate-3 flex items-center justify-center mb-4 border-4 border-white shadow-lg`}>
@@ -322,6 +624,31 @@ export default function Home() {
                 <p className="text-slate-500 font-medium text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
+          </div>
+
+          {/* DolaMoney Quest Curriculum Bridge */}
+          <div className="mt-12 bg-white rounded-3xl p-6 sm:p-8 border-4 border-amber-300 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+            <div className="flex items-center gap-4 text-center sm:text-left">
+              <div className="w-14 h-14 bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-md">
+                🪙
+              </div>
+              <div>
+                <span className="text-[11px] font-black uppercase text-amber-700 tracking-wider">
+                  Companion Arena &bull; All Learners
+                </span>
+                <h4 className="text-xl font-black text-slate-900">DolaMoney Quest (10 Gamified Worlds)</h4>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                  Complements every stage with real-life Nigerian Naira (₦) budgeting, needs vs wants, saving jars, and business simulations!
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/dolamoney"
+              className="shrink-0 px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider shadow-md hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Explore DolaMoney</span>
+              <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>
@@ -491,11 +818,17 @@ export default function Home() {
           {/* Platform Links */}
           <div>
             <h4 className="text-white font-black text-lg mb-6 uppercase tracking-widest text-sky-400">Worlds</h4>
-            <ul className="space-y-4 font-bold">
+            <ul className="space-y-3 font-bold text-sm">
               <li><Link href="/stage1" className="hover:text-pink-400 hover:pl-2 transition-all block">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-pink-400 hover:pl-2 transition-all block">2. Block Coding</Link></li>
-              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Pro</Link></li>
-              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">4. App Studio</Link></li>
+              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">3. App Studio</Link></li>
+              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Python Pro</Link></li>
+              <li><Link href="/web-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">5. Web Studio</Link></li>
+              <li>
+                <Link href="/dolamoney" className="hover:text-yellow-300 hover:pl-2 transition-all block text-yellow-400 font-black">
+                  🪙 DolaMoney Quest (₦)
+                </Link>
+              </li>
             </ul>
           </div>
 
