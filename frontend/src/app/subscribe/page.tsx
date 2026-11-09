@@ -890,6 +890,16 @@ export default function SubscribePage() {
             <ul className="space-y-2.5 text-xs font-semibold text-slate-400">
               <li><Link href="/parent-dashboard" className="hover:text-white transition-colors">Parent Dashboard</Link></li>
               <li><Link href="/subscribe" className="hover:text-white transition-colors">Pricing &amp; Plans</Link></li>
+              <li>
+                <a 
+                  href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-emerald-400 hover:text-emerald-300 transition-colors font-bold"
+                >
+                  WhatsApp Community
+                </a>
+              </li>
               <li><Link href="/child-safety" className="hover:text-white transition-colors">Child Safety Policy</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
             </ul>

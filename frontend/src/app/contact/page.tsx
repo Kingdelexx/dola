@@ -19,7 +19,8 @@ import {
   ChevronUp,
   ShieldCheck,
   Globe,
-  Headphones
+  Headphones,
+  Users
 } from 'lucide-react';
 
 export default function ContactPage() {
@@ -159,7 +160,15 @@ export default function ContactPage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors"
               >
-                <MessageSquare size={12} /> WhatsApp
+                <MessageSquare size={12} /> Direct Chat
+              </a>
+              <a 
+                href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors shadow-xs w-full justify-center"
+              >
+                <Users size={12} /> Join WhatsApp Group
               </a>
             </div>
           </div>
@@ -206,6 +215,28 @@ export default function ContactPage() {
             </div>
           </div>
 
+        </div>
+
+        {/* WhatsApp Community Banner */}
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 border-2 border-emerald-400">
+          <div className="space-y-2 text-center md:text-left">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-black uppercase tracking-wider">
+              <Users size={14} /> Official Community
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-black text-white">Join the DolaCode WhatsApp Community</h3>
+            <p className="text-emerald-100 text-sm max-w-xl font-medium">
+              Connect directly with our education team, fellow parents, and coding mentors. Get immediate assistance, early platform updates, and weekly STEM learning tips.
+            </p>
+          </div>
+          <a
+            href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-6 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl font-black text-sm shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <MessageSquare size={18} className="text-emerald-600" />
+            <span>Join Community Group</span>
+          </a>
         </div>
 
         {/* Contact Form Section */}
