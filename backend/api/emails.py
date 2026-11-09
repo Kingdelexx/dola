@@ -583,4 +583,120 @@ hello@dolacode.com.ng
     return _dispatch_email(subject, recipients, text_content, html_content)
 
 
+def send_parent_welcome_email(parent):
+    """
+    Sends a warm welcome email to parents upon signup with actionable steps to:
+    - Link their children
+    - Set up 4-digit PINs for seamless child login
+    - Access and navigate their Parent Dashboard
+    """
+    if not parent or not getattr(parent, 'email', None):
+        return False
+
+    recipients = _normalize_recipients([parent.email])
+    if not recipients:
+        return False
+
+    parent_name = parent.first_name or parent.username or "Parent"
+    subject = "Welcome to DolaCode – Your Family Learning Portal is Ready! 🚀"
+    portal_url = "https://dolacode.com.ng/parent-dashboard"
+    login_url = "https://dolacode.com.ng/login"
+
+    text_content = f"""
+Hello {parent_name},
+
+Welcome to DolaCode! We are thrilled to partner with you in empowering your child's coding, STEM, and creative problem-solving journey.
+
+Here is how to get your family set up in 3 simple steps:
+
+1. LINK YOUR CHILDREN
+Head to your Parent Dashboard and click "Add / Link Child". Enter your child's name and choose a 4-digit PIN they can easily remember.
+
+2. EASY & SAFE CHILD LOGIN
+When it's time to code, your child simply visits {login_url}, enters your parent email address, chooses their profile, and enters their 4-digit PIN. No complex passwords required!
+
+3. TRACK PROGRESS ANYTIME
+From your Parent Dashboard, you can monitor your children's completed coding stages, numeracy exercises, weekly progress reports, and earned certificates.
+
+Access your Parent Dashboard now:
+{portal_url}
+
+If you have any questions or need guidance getting started, simply reply directly to this email or reach us at hello@dolacode.com.ng.
+
+Warm regards,
+The DolaCode Team
+https://dolacode.com.ng
+"""
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 24px; color: #f8fafc; }}
+        .container {{ max-width: 620px; margin: 0 auto; background-color: #1e293b; border-radius: 24px; border: 1px solid #334155; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }}
+        .badge {{ display: inline-block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2)); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 16px; border-radius: 9999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; }}
+        h1 {{ color: #ffffff; font-size: 26px; font-weight: 800; margin: 0 0 16px; line-height: 1.3; }}
+        p {{ font-size: 15px; line-height: 1.6; color: #cbd5e1; margin: 0 0 16px; }}
+        .step-box {{ background-color: #0f172a; border-radius: 18px; border: 1px solid #334155; padding: 20px; margin: 24px 0; }}
+        .step-item {{ display: flex; align-items: flex-start; margin-bottom: 16px; }}
+        .step-item:last-child {{ margin-bottom: 0; }}
+        .step-number {{ background: linear-gradient(135deg, #10b981, #06b6d4); color: #ffffff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; margin-right: 14px; flex-shrink: 0; margin-top: 2px; }}
+        .step-content h3 {{ color: #f8fafc; font-size: 15px; font-weight: 700; margin: 0 0 4px; }}
+        .step-content p {{ color: #94a3b8; font-size: 13px; margin: 0; line-height: 1.5; }}
+        .btn {{ display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; text-decoration: none; padding: 15px 32px; border-radius: 14px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4); }}
+        .btn-container {{ text-align: center; margin: 32px 0 20px; }}
+        .footer {{ border-top: 1px solid #334155; margin-top: 32px; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center; line-height: 1.6; }}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <span class="badge">🚀 Welcome to DolaCode</span>
+        <h1>Welcome, {parent_name}!</h1>
+        <p>Thank you for creating your parent account on DolaCode. We are delighted to partner with you in guiding your child&apos;s coding and future-ready technology journey.</p>
+        
+        <div class="step-box">
+          <div class="step-item">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Link Your Children</h3>
+              <p>Log in to your Parent Dashboard and click <strong>&quot;Add / Link Child&quot;</strong>. Enter your child&apos;s name and create a simple 4-digit PIN.</p>
+            </div>
+          </div>
+          <div class="step-item" style="margin-top: 16px;">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Kid-Friendly Sign-In</h3>
+              <p>Your child can log in from any computer or tablet: they enter your email, choose their name, and type their 4-digit PIN.</p>
+            </div>
+          </div>
+          <div class="step-item" style="margin-top: 16px;">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Track Learning &amp; Mastery</h3>
+              <p>Stay updated on completed stages, numeracy practice, weekly progress reports, and earned certificates all in one place.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-container">
+          <a href="{portal_url}" class="btn">Open Parent Dashboard →</a>
+        </div>
+
+        <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 16px;">
+          Need to sign your child in directly? Visit <a href="{login_url}" style="color: #34d399; text-decoration: none; font-weight: 600;">{login_url}</a>.
+        </p>
+
+        <div class="footer">
+          <p>© 2026 DolaCode Platform. All rights reserved.<br>
+          Questions? Reply directly to this email or contact us at <a href="mailto:hello@dolacode.com.ng" style="color: #60a5fa;">hello@dolacode.com.ng</a>.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+
     return _dispatch_email(subject, recipients, text_content, html_content)
+

@@ -295,6 +295,13 @@ class GoogleAuthView(APIView):
                 school=school_obj
             )
 
+            if role == 'parent':
+                try:
+                    from .emails import send_parent_welcome_email
+                    send_parent_welcome_email(user)
+                except Exception as e:
+                    print("Error sending parent welcome email (Google Auth):", e)
+
         token, _ = Token.objects.get_or_create(user=user)
         return Response({
             "token": token.key,

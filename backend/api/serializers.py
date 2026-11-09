@@ -303,6 +303,14 @@ class UserSerializer(serializers.ModelSerializer):
             learning_band=learning_band,
             school=school_obj
         )
+
+        if role == 'parent':
+            try:
+                from .emails import send_parent_welcome_email
+                send_parent_welcome_email(user)
+            except Exception as e:
+                print("Error triggering parent welcome email:", e)
+
         return user
 
 
