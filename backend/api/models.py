@@ -85,6 +85,7 @@ class UserProfile(models.Model):
     stage2_progress = models.IntegerField(default=0)
     stage3_progress = models.IntegerField(default=0)
     stage4_progress = models.IntegerField(default=0)
+    stage5_progress = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username}'s Profile ({self.get_role_display()})"
@@ -179,6 +180,7 @@ class WebChallenge(models.Model):
     instructions_markdown = models.TextField()
     starter_html = models.TextField(blank=True, default='')
     starter_css = models.TextField(blank=True, default='')
+    starter_js = models.TextField(blank=True, default='')
     solution_criteria = models.JSONField(default=dict)
     reward_xp = models.IntegerField(default=50)
 
@@ -191,6 +193,39 @@ class StudentChallengeProgress(models.Model):
     challenge = models.ForeignKey(WebChallenge, on_delete=models.CASCADE, related_name='student_progresses')
     saved_html = models.TextField(blank=True, null=True)
     saved_css = models.TextField(blank=True, null=True)
+    saved_js = models.TextField(blank=True, null=True)
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('student', 'challenge')
+
+    def __str__(self):
+        return f"{self.student.username} - {self.challenge.title} ({'Completed' if self.is_completed else 'In Progress'})"
+
+
+class AppChallenge(models.Model):
+    slug = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=200)
+    class_number = models.PositiveIntegerField(default=1)
+    stage_order = models.PositiveIntegerField(default=1)
+    instructions_markdown = models.TextField()
+    starter_screens = models.JSONField(default=list)
+    starter_code = models.TextField(blank=True, default='')
+    starter_blockly = models.TextField(blank=True, default='')
+    solution_criteria = models.JSONField(default=dict)
+    reward_xp = models.IntegerField(default=50)
+
+    def __str__(self):
+        return f"Class {self.class_number} - {self.title} ({self.slug})"
+
+
+class StudentAppChallengeProgress(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='app_challenge_progresses')
+    challenge = models.ForeignKey(AppChallenge, on_delete=models.CASCADE, related_name='student_app_progresses')
+    saved_screens = models.JSONField(default=list, blank=True)
+    saved_code = models.TextField(blank=True, null=True)
+    saved_blockly = models.TextField(blank=True, null=True)
     is_completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
 

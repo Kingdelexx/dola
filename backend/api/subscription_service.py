@@ -351,7 +351,7 @@ def normalize_feature_category(feature: str, stage: int = None) -> str:
             return 'numeracy'
         elif stage == 2:
             return 'block_coding'
-        elif stage == 3:
+        elif stage in [3, 5]:
             return 'app_studio'
         elif stage == 4:
             return 'python_quest'
@@ -364,7 +364,7 @@ def normalize_feature_category(feature: str, stage: int = None) -> str:
         return 'numeracy'
     if f in ['stage2', 'block_coding', 'block-coding', 'blockly']:
         return 'block_coding'
-    if f in ['stage3', 'app_studio', 'app-studio', 'appstudio']:
+    if f in ['stage3', 'stage5', 'app_studio', 'app-studio', 'appstudio', 'appdev']:
         return 'app_studio'
     if f in ['stage4', 'python_quest', 'python-quest', 'python', 'python_execution']:
         return 'python_quest'

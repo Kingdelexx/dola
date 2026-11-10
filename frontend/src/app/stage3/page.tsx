@@ -29,6 +29,8 @@ export default function Stage3Page() {
         router.push('/login');
       } else if (user.profile?.role === 'parent' || user.role === 'parent') {
         router.push('/parent-dashboard');
+      } else {
+        router.replace('/app-studio');
       }
     }
   }, [user, loading, router]);

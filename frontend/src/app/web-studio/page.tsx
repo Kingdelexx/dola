@@ -59,7 +59,7 @@ export default function WebStudioPage() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-full text-xs font-bold text-amber-400">
             <Sparkles size={14} className="animate-spin" />
-            <span>HTML & CSS Explorer</span>
+            <span>HTML, CSS &amp; JavaScript</span>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function WebStudioPage() {
       {/* Lizzy AI Tutor Floating Chatbot */}
       <LizzyChat 
         stage={4}
-        contextInfo="Web Dev Studio: Kids writing HTML and CSS code side-by-side with live iframe preview. Help them with HTML tags like <h1>, <p>, <img>, <button> and CSS properties like background, color, border, padding, and text-align."
+        contextInfo="Web Dev Studio: Kids learning web development across 5 classes: Class 1 (Website Builder Island - HTML without memorising, dragging headings <h1>, pictures <img>, buttons, paragraphs <p>), Class 2 (Colour Magic Kingdom - CSS design, colors, fonts, borders, backgrounds), Class 3 (Button Power City - JavaScript actions, color changer, message revealer, click counter), Class 4 (My Online Shop - HTML+CSS+JS virtual store simulation with Nigerian Naira ₦ prices and shopping basket), and Class 5 (Web Creator Challenge - original responsive website). Encourage them, explain concepts playfully without giving away full answers!"
       />
     </div>
     </PaywallGuard>

@@ -3480,9 +3480,9 @@ class RobustHTMLTagExtractor(HTMLParser):
     def handle_startendtag(self, tag, attrs):
         self.handle_starttag(tag, attrs)
 
-def validate_html_solution(html_code, css_code, criteria):
+def validate_html_solution(html_code, css_code, criteria, js_code=''):
     """
-    Safely validates HTML & CSS against solution criteria without throwing exceptions on empty, malformed, or nested code.
+    Safely validates HTML, CSS & JavaScript against solution criteria without throwing exceptions on empty, malformed, or nested code.
     Returns: (is_passed: bool, results: list of dicts)
     """
     results = []
@@ -3492,6 +3492,7 @@ def validate_html_solution(html_code, css_code, criteria):
     req_tags = criteria.get('required_tags', [])
     req_classes = criteria.get('required_classes', [])
     req_css = criteria.get('required_css_rules', [])
+    req_js = criteria.get('required_js_rules', [])
 
     extractor = RobustHTMLTagExtractor()
     if html_code:
@@ -3534,12 +3535,23 @@ def validate_html_solution(html_code, css_code, criteria):
         if not has_rule:
             passed_all = False
 
+    # 4. Check required JavaScript rules
+    js_combined = (str(js_code or '') + " " + str(html_code or '')).lower()
+    for js_rule in req_js:
+        has_js = js_rule.lower() in js_combined
+        results.append({
+            "criterion": f"Must include JavaScript logic or event '{js_rule}'",
+            "passed": has_js
+        })
+        if not has_js:
+            passed_all = False
+
     return passed_all, results
 
 
 from django.utils import timezone
-from .models import WebChallenge, StudentChallengeProgress, ProgressLog
-from .serializers import WebChallengeSerializer, StudentChallengeProgressSerializer
+from .models import WebChallenge, StudentChallengeProgress, AppChallenge, StudentAppChallengeProgress, ProgressLog
+from .serializers import WebChallengeSerializer, StudentChallengeProgressSerializer, AppChallengeSerializer, StudentAppChallengeProgressSerializer
 
 class WebChallengeDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
@@ -3583,6 +3595,7 @@ class WebChallengeDetailView(APIView):
             student_progress_data = {
                 "saved_html": progress.saved_html,
                 "saved_css": progress.saved_css,
+                "saved_js": getattr(progress, 'saved_js', ''),
                 "is_completed": progress.is_completed,
                 "completed_at": progress.completed_at
             }
@@ -3602,6 +3615,7 @@ class WebChallengeSaveDraftView(APIView):
         slug = request.data.get('slug')
         saved_html = request.data.get('saved_html', '')
         saved_css = request.data.get('saved_css', '')
+        saved_js = request.data.get('saved_js', '')
 
         if not slug:
             return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
@@ -3622,6 +3636,8 @@ class WebChallengeSaveDraftView(APIView):
         )
         progress.saved_html = saved_html
         progress.saved_css = saved_css
+        if hasattr(progress, 'saved_js'):
+            progress.saved_js = saved_js
         progress.save()
 
         return Response({
@@ -3638,6 +3654,7 @@ class WebChallengeSubmitView(APIView):
         slug = request.data.get('slug')
         html_code = request.data.get('html', '')
         css_code = request.data.get('css', '')
+        js_code = request.data.get('js', '')
 
         if not slug:
             return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
@@ -3660,11 +3677,14 @@ class WebChallengeSubmitView(APIView):
         passed, criteria_results = validate_html_solution(
             html_code,
             css_code,
-            challenge.solution_criteria
+            challenge.solution_criteria,
+            js_code=js_code
         )
 
         progress.saved_html = html_code
         progress.saved_css = css_code
+        if hasattr(progress, 'saved_js'):
+            progress.saved_js = js_code
 
         reward_xp = 0
         if passed:
@@ -3694,7 +3714,7 @@ class WebChallengeSubmitView(APIView):
             "success": passed,
             "is_completed": progress.is_completed,
             "reward_xp": reward_xp,
-            "message": "Mission Accomplished! You built a superhero badge! 🎉" if passed else "Almost there! Keep tweaking your code to complete all mission goals.",
+            "message": f"Mission Accomplished! You completed {challenge.title}! 🎉" if passed else "Almost there! Keep tweaking your code to complete all mission goals.",
             "criteria_results": criteria_results
         })
 
@@ -3738,9 +3758,308 @@ class WebChallengeProjectsListView(APIView):
                 "reward_xp": c.reward_xp,
                 "saved_html": p.saved_html if p and p.saved_html else c.starter_html,
                 "saved_css": p.saved_css if p and p.saved_css else c.starter_css,
+                "saved_js": getattr(p, 'saved_js', '') if p and getattr(p, 'saved_js', None) else getattr(c, 'starter_js', ''),
                 "is_completed": p.is_completed if p else False,
                 "completed_at": p.completed_at if p else None,
-                "has_draft": True if (p and p.saved_html) else False
+                "has_draft": True if (p and (p.saved_html or getattr(p, 'saved_js', None))) else False
+            })
+
+        return Response({
+            "success": True,
+            "projects": projects
+        })
+
+
+def validate_app_solution(screens, code, criteria):
+    """
+    Validates App Studio challenge solution:
+    - required_elements: list of component types ('button', 'label', 'image', 'input')
+    - required_min_screens: integer
+    - required_events: list of events ('onEvent', 'click')
+    - required_keywords: list of keywords in code ('happiness', 'hunger', 'energy', 'score', etc.)
+    """
+    results = []
+    if not isinstance(criteria, dict):
+        criteria = {}
+
+    req_elements = criteria.get('required_elements', [])
+    req_min_screens = criteria.get('required_min_screens', 1)
+    req_events = criteria.get('required_events', [])
+    req_keywords = criteria.get('required_keywords', [])
+
+    present_types = set()
+    total_elements = 0
+    if isinstance(screens, list):
+        for s in screens:
+            if isinstance(s, dict) and 'elements' in s:
+                for el in s.get('elements', []):
+                    total_elements += 1
+                    if isinstance(el, dict) and 'type' in el:
+                        present_types.add(str(el['type']).lower())
+                    if isinstance(el, dict) and 'events' in el and el['events']:
+                        present_types.add('event')
+
+    code_str = str(code or '').lower()
+    passed_all = True
+
+    # 1. Check required elements
+    for el_type in req_elements:
+        has_el = el_type.lower() in present_types
+        results.append({
+            "criterion": f"Must include '{el_type}' component on screen",
+            "passed": has_el
+        })
+        if not has_el:
+            passed_all = False
+
+    # 2. Check min screens
+    if req_min_screens > 1:
+        num_screens = len(screens) if isinstance(screens, list) else 1
+        passed_screens = num_screens >= req_min_screens
+        results.append({
+            "criterion": f"Must have at least {req_min_screens} screens (currently {num_screens})",
+            "passed": passed_screens
+        })
+        if not passed_screens:
+            passed_all = False
+
+    # 3. Check required events
+    for evt in req_events:
+        has_evt = (evt.lower() in code_str) or ('event' in present_types)
+        results.append({
+            "criterion": f"Must trigger action event '{evt}'",
+            "passed": has_evt
+        })
+        if not has_evt:
+            passed_all = False
+
+    # 4. Check required keywords
+    for kw in req_keywords:
+        has_kw = kw.lower() in code_str
+        results.append({
+            "criterion": f"Must use logic or variable '{kw}'",
+            "passed": has_kw
+        })
+        if not has_kw:
+            passed_all = False
+
+    return passed_all, results
+
+
+class AppChallengeDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'app_studio'
+
+    def get(self, request, slug):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to view student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        challenge = AppChallenge.objects.filter(slug=slug).first()
+        if not challenge:
+            challenge = AppChallenge.objects.create(
+                slug=slug,
+                title="Class 1: My First Hello App",
+                class_number=1,
+                stage_order=1,
+                instructions_markdown="## Class 1 — App Builder Playground 📱\nUnderstand app screens and components! Drag a label, image, and button onto your phone simulator.",
+                starter_screens=[{
+                    "id": "screen1",
+                    "name": "Home Screen",
+                    "backgroundColor": "#0f172a",
+                    "elements": [
+                        {"id": "title1", "type": "label", "name": "Title", "text": "My Hello App 👋", "style": {"x": 40, "y": 60, "width": 240, "height": 40, "fontSize": 22, "color": "#facc15", "textAlign": "center"}},
+                        {"id": "btn1", "type": "button", "name": "Greeting Button", "text": "Say Hello! 🌟", "style": {"x": 40, "y": 280, "width": 240, "height": 50, "backgroundColor": "#10b981", "color": "#ffffff", "borderRadius": 14, "fontSize": 16}}
+                    ]
+                }],
+                starter_code="onEvent('btn1', 'click', () => {\n  setProperty('title1', 'text', 'Hello World! Welcome to my app! 🚀');\n});",
+                solution_criteria={"required_elements": ["button", "label"]},
+                reward_xp=50
+            )
+
+        student_progress_data = None
+        if target_user and target_user.is_authenticated:
+            progress, _ = StudentAppChallengeProgress.objects.get_or_create(
+                student=target_user,
+                challenge=challenge
+            )
+            student_progress_data = {
+                "saved_screens": progress.saved_screens,
+                "saved_code": progress.saved_code,
+                "is_completed": progress.is_completed,
+                "completed_at": progress.completed_at
+            }
+
+        return Response({
+            "success": True,
+            "challenge": AppChallengeSerializer(challenge).data,
+            "student_progress": student_progress_data
+        })
+
+
+class AppChallengeSaveDraftView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'app_studio'
+
+    def post(self, request):
+        slug = request.data.get('slug')
+        saved_screens = request.data.get('saved_screens', [])
+        saved_code = request.data.get('saved_code', '')
+
+        if not slug:
+            return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        challenge, _ = AppChallenge.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "title": slug.replace('-', ' ').title(),
+                "class_number": 1,
+                "stage_order": 1,
+                "solution_criteria": {"required_elements": ["button"]},
+                "reward_xp": 50
+            }
+        )
+
+        progress, _ = StudentAppChallengeProgress.objects.get_or_create(
+            student=request.user,
+            challenge=challenge
+        )
+        progress.saved_screens = saved_screens
+        progress.saved_code = saved_code
+        progress.save()
+
+        return Response({
+            "success": True,
+            "message": "App draft saved successfully!"
+        })
+
+
+class AppChallengeSubmitView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'app_studio'
+
+    def post(self, request):
+        slug = request.data.get('slug')
+        screens = request.data.get('screens', [])
+        code = request.data.get('code', '')
+
+        if not slug:
+            return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        challenge, _ = AppChallenge.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "title": slug.replace('-', ' ').title(),
+                "class_number": 1,
+                "stage_order": 1,
+                "solution_criteria": {"required_elements": ["button"]},
+                "reward_xp": 50
+            }
+        )
+
+        progress, _ = StudentAppChallengeProgress.objects.get_or_create(
+            student=request.user,
+            challenge=challenge
+        )
+
+        passed, criteria_results = validate_app_solution(
+            screens,
+            code,
+            challenge.solution_criteria
+        )
+
+        progress.saved_screens = screens
+        progress.saved_code = code
+
+        reward_xp = 0
+        if passed:
+            if not progress.is_completed:
+                progress.is_completed = True
+                progress.completed_at = timezone.now()
+                reward_xp = challenge.reward_xp
+                
+                # Award XP to user profile
+                if hasattr(request.user, 'profile'):
+                    request.user.profile.points += reward_xp
+                    if hasattr(request.user.profile, 'stage5_progress'):
+                        request.user.profile.stage5_progress = max(request.user.profile.stage5_progress, challenge.stage_order)
+                    request.user.profile.save()
+
+                # Log progress
+                ProgressLog.objects.create(
+                    user=request.user,
+                    stage=5,
+                    progress=challenge.stage_order,
+                    points_earned=reward_xp
+                )
+            else:
+                reward_xp = challenge.reward_xp
+
+        progress.save()
+
+        return Response({
+            "success": passed,
+            "is_completed": progress.is_completed,
+            "reward_xp": reward_xp,
+            "message": f"App Challenge Cleared! You built {challenge.title}! 🎉" if passed else "Almost there! Keep tweaking your app components and events to complete all goals.",
+            "criteria_results": criteria_results
+        })
+
+
+class AppChallengeProjectsListView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'app_studio'
+
+    def get(self, request):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to view student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        challenges = AppChallenge.objects.all().order_by('stage_order')
+        projects = []
+
+        progress_map = {}
+        if target_user and target_user.is_authenticated:
+            all_progress = StudentAppChallengeProgress.objects.filter(student=target_user)
+            for p in all_progress:
+                progress_map[p.challenge_id] = p
+
+        for c in challenges:
+            p = progress_map.get(c.id)
+            projects.append({
+                "id": c.id,
+                "slug": c.slug,
+                "title": c.title,
+                "class_number": c.class_number,
+                "stage_order": c.stage_order,
+                "reward_xp": c.reward_xp,
+                "saved_screens": p.saved_screens if p and p.saved_screens else c.starter_screens,
+                "saved_code": p.saved_code if p and p.saved_code else c.starter_code,
+                "is_completed": p.is_completed if p else False,
+                "completed_at": p.completed_at if p else None,
+                "has_draft": True if (p and p.saved_screens) else False
             })
 
         return Response({

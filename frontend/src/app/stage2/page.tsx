@@ -401,7 +401,7 @@ await run_bad_ai_det()
 
   const handleFeedbackClose = () => {
     setShowFeedbackModal(false);
-    router.push('/stage3');
+    router.push('/stage4');
   };
 
   const handleWorkspaceChange = (spriteId: string, state: any, code: string) => {

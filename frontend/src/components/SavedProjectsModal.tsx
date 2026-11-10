@@ -25,6 +25,7 @@ export interface SavedProjectItem {
   reward_xp?: number;
   saved_html: string;
   saved_css: string;
+  saved_js?: string;
   is_completed?: boolean;
   completed_at?: string | null;
   has_draft?: boolean;
@@ -34,7 +35,7 @@ export interface SavedProjectItem {
 interface SavedProjectsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenProject: (slug: string, html?: string, css?: string) => void;
+  onOpenProject: (slug: string, html?: string, css?: string, js?: string) => void;
   onNewProject: () => void;
 }
 
@@ -228,7 +229,7 @@ export default function SavedProjectsModal({
                 {/* Open & Edit Action */}
                 <button
                   onClick={() => {
-                    onOpenProject(proj.slug, proj.saved_html, proj.saved_css);
+                    onOpenProject(proj.slug, proj.saved_html, proj.saved_css, proj.saved_js);
                     onClose();
                   }}
                   className="w-full py-2 bg-slate-800 hover:bg-amber-500 text-slate-200 hover:text-slate-950 font-black text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"

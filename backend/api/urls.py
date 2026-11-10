@@ -9,7 +9,10 @@ from .views import (
     AddSchoolStudentView, InviteParentView, BulkUploadStudentsView, TeacherDashboardView,
     ClaimParentAccountView, GoogleAuthView, SubmitOnboardingDiagnosticView,
     WebChallengeDetailView, WebChallengeSaveDraftView, WebChallengeSubmitView,
-    WebChallengeProjectsListView, SchoolJoinInfoView, ClassJoinInfoView, StudentJoinClassView,
+    WebChallengeProjectsListView,
+    AppChallengeDetailView, AppChallengeSaveDraftView, AppChallengeSubmitView,
+    AppChallengeProjectsListView,
+    SchoolJoinInfoView, ClassJoinInfoView, StudentJoinClassView,
     PizzaShopSaveProgressView, PizzaShopGetProgressView,
     RobotMazeSaveProgressView, RobotMazeGetProgressView,
     MyLittleShopSaveProgressView, MyLittleShopGetProgressView,
@@ -103,6 +106,10 @@ urlpatterns = [
     # App Studio APIs
     path('app-studio/projects/', AppStudioProjectsListView.as_view(), name='app_studio_projects_list'),
     path('app-studio/projects/<str:pk>/', AppStudioProjectDetailView.as_view(), name='app_studio_project_detail'),
+    path('app-studio/challenges/<str:slug>/', AppChallengeDetailView.as_view(), name='app_challenge_detail'),
+    path('app-studio/save-draft/', AppChallengeSaveDraftView.as_view(), name='app_challenge_save_draft'),
+    path('app-studio/submit/', AppChallengeSubmitView.as_view(), name='app_challenge_submit'),
+    path('app-studio/projects-list/', AppChallengeProjectsListView.as_view(), name='app_challenge_projects_list'),
 
     # Premium Content Delivery
     path('curriculum/premium-content/', PremiumContentDeliveryView.as_view(), name='premium_content_delivery'),

@@ -98,7 +98,7 @@ class WebDevStudioAPITests(TestCase):
         from api.models import WebChallenge
 
         self.client = APIClient()
-        self.student = User.objects.create_user(username="web_kid", email="kid@dola.com", password="password123")
+        self.student = User.objects.create_user(username="web_kid", email="kid@dola.com", password="password123", is_staff=True)
         self.profile = UserProfile.objects.create(user=self.student, role="student", points=10)
         self.client.force_authenticate(user=self.student)
 
@@ -166,4 +166,61 @@ class WebDevStudioAPITests(TestCase):
         res_nested = self.client.post('/api/web-studio/submit/', {"slug": "hero-badge", "html": nested_html, "css": ".card { }"}, format='json')
         self.assertEqual(res_nested.status_code, 200)
         self.assertTrue(res_nested.data.get('success'))
+
+
+class AppDevStudioAPITests(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from api.models import AppChallenge
+
+        self.client = APIClient()
+        self.student = User.objects.create_user(username="app_kid", email="app_kid@dola.com", password="password123", is_staff=True)
+        self.profile = UserProfile.objects.create(user=self.student, role="student", points=20)
+        self.client.force_authenticate(user=self.student)
+
+        self.challenge = AppChallenge.objects.create(
+            slug="test-hello-app",
+            title="My First Hello App",
+            class_number=1,
+            stage_order=1,
+            instructions_markdown="Build a phone app with a label and button",
+            starter_screens=[{
+                "id": "s1",
+                "elements": [
+                    {"id": "l1", "type": "label", "text": "Hello"},
+                    {"id": "b1", "type": "button", "text": "Tap Me", "events": {"click": "greet()"}}
+                ]
+            }],
+            starter_code="onEvent('b1', 'click', () => {});",
+            solution_criteria={"required_elements": ["button", "label"], "required_events": ["click"]},
+            reward_xp=60
+        )
+
+    def test_get_app_challenge_detail(self):
+        response = self.client.get('/api/app-studio/challenges/test-hello-app/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+        self.assertEqual(response.data['challenge']['slug'], 'test-hello-app')
+
+    def test_save_app_draft(self):
+        payload = {
+            "slug": "test-hello-app",
+            "saved_screens": [{"id": "s1", "elements": [{"id": "b1", "type": "button"}]}],
+            "saved_code": "let x = 1;"
+        }
+        response = self.client.post('/api/app-studio/save-draft/', payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+
+    def test_submit_valid_app_solution(self):
+        payload = {
+            "slug": "test-hello-app",
+            "screens": [{"id": "s1", "elements": [{"id": "l1", "type": "label"}, {"id": "b1", "type": "button", "events": {"click": "on"}}]}],
+            "code": "onEvent('b1', 'click', () => {});"
+        }
+        response = self.client.post('/api/app-studio/submit/', payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.points, 80) # 20 + 60 = 80
 

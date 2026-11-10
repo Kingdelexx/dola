@@ -216,7 +216,7 @@ export default function Home() {
             {/* Quick platform highlights */}
             <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs font-bold text-slate-500">
               <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <CheckCircle2 size={14} className="text-emerald-500" /> 4 Coding Worlds
+                <CheckCircle2 size={14} className="text-emerald-500" /> 5 Coding Worlds
               </span>
               <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
                 <CheckCircle2 size={14} className="text-emerald-500" /> 6 Adventure Mini-Games
@@ -284,8 +284,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* 4 Core Coding Worlds */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 5 Core Coding Worlds */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {/* World 1 */}
             <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-indigo-200 hover:border-indigo-400 shadow-[0_15px_30px_-5px_rgba(99,102,241,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
               <div>
@@ -307,7 +307,7 @@ export default function Home() {
             </div>
 
             {/* World 2 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-pink-200 hover:border-pink-400 shadow-[0_15px_30px_-5px_rgba(236,72,153,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(236,72,153,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-4 flex flex-col justify-between">
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-pink-200 hover:border-pink-400 shadow-[0_15px_30px_-5px_rgba(236,72,153,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(236,72,153,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
               <div>
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-pink-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white text-white animate-pulse">
                   <Blocks size={32} />
@@ -327,27 +327,7 @@ export default function Home() {
             </div>
 
             {/* World 3 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-sky-200 hover:border-sky-400 shadow-[0_15px_30px_-5px_rgba(56,189,248,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-8 flex flex-col justify-between">
-              <div>
-                <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-sky-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white text-white">
-                  <LayoutGrid size={32} />
-                </div>
-                <div className="inline-block bg-sky-50 text-sky-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 9–14 &bull; Apps &amp; Web
-                </div>
-                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-sky-600 transition-colors">3. App Studio &amp; Web</h3>
-                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
-                  Design real apps with interactive buttons, sounds, and canvas graphics in App Studio, plus write real HTML, CSS &amp; JavaScript in Web Studio with live previews!
-                </p>
-              </div>
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-sky-600">
-                <span>UI &amp; Web Design</span>
-                <ChevronRight size={16} />
-              </div>
-            </div>
-
-            {/* World 4 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer mt-0 lg:mt-12 flex flex-col justify-between">
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
               <div>
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white text-white">
                   <Terminal size={32} />
@@ -355,13 +335,53 @@ export default function Home() {
                 <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
                   Ages 10–16 &bull; Real Python
                 </div>
-                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">4. Python Pro &amp; Quest</h3>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">3. Python Pro</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
                   Write industry-standard text-based Python code! Build programs, games, and algorithms with 24/7 personalized hints and syntax error help from Lizzy AI.
                 </p>
               </div>
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
                 <span>AI Tutor Powered</span>
+                <ChevronRight size={16} />
+              </div>
+            </div>
+
+            {/* World 4 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-amber-200 hover:border-amber-400 shadow-[0_15px_30px_-5px_rgba(245,158,11,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(245,158,11,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-amber-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white text-white">
+                  <span className="text-2xl">🌐</span>
+                </div>
+                <div className="inline-block bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  Ages 8–15 &bull; 5 Web Classes
+                </div>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-amber-600 transition-colors">4. Web Dev Studio</h3>
+                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
+                  Master HTML, CSS &amp; JavaScript! Drag headings &amp; images, style colour magic, build interactive buttons, and create your own online store with Nigerian Naira (₦)!
+                </p>
+              </div>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600">
+                <span>Web Creators</span>
+                <ChevronRight size={16} />
+              </div>
+            </div>
+
+            {/* World 5 */}
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-300 hover:border-purple-500 shadow-[0_15px_30px_-5px_rgba(168,85,247,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(168,85,247,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white text-white">
+                  <span className="text-2xl">📱</span>
+                </div>
+                <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  Ages 8–16 &bull; 5 App Classes
+                </div>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">5. App Dev Studio</h3>
+                <p className="text-slate-600 leading-relaxed font-semibold text-xs">
+                  Build mobile phone apps! Drag UI components, connect magic events, care for a smart virtual pet, build quizzes, and invent useful savings trackers in Naira (₦)!
+                </p>
+              </div>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
+                <span>Mobile Inventors</span>
                 <ChevronRight size={16} />
               </div>
             </div>
@@ -820,9 +840,9 @@ export default function Home() {
             <ul className="space-y-3 font-bold text-sm">
               <li><Link href="/stage1" className="hover:text-pink-400 hover:pl-2 transition-all block">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-pink-400 hover:pl-2 transition-all block">2. Block Coding</Link></li>
-              <li><Link href="/stage3" className="hover:text-pink-400 hover:pl-2 transition-all block">3. App Studio</Link></li>
-              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Python Pro</Link></li>
-              <li><Link href="/web-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">5. Web Studio</Link></li>
+              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Pro</Link></li>
+              <li><Link href="/web-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Web Dev Studio</Link></li>
+              <li><Link href="/app-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">5. App Dev Studio</Link></li>
               <li>
                 <Link href="/dolamoney" className="hover:text-yellow-300 hover:pl-2 transition-all block text-yellow-400 font-black">
                   🪙 DolaMoney Quest (₦)

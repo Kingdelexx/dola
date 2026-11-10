@@ -474,7 +474,7 @@ export default function DashboardPage() {
           <Gamepad2 className="text-pink-500" size={32} /> Choose Your World
         </h2>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {/* Stage 1 */}
           <div className="dash-element">
             <Link href="/stage1" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(99,102,241,0.5)] hover:border-indigo-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
@@ -574,8 +574,27 @@ export default function DashboardPage() {
                   <Lock size={10} /> Locked Adventure
                 </div>
               )}
-              <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Write HTML & CSS side-by-side to design magical websites with real-time live previews!</p>
+              <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Master HTML, CSS &amp; JavaScript across 5 magical classes: Website Builder Island, Colour Magic Kingdom, Button Power City, My Online Shop (₦), and Web Creator Challenge!</p>
               <div className="mt-4 bg-amber-500 text-slate-950 w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#b45309] group-hover:bg-amber-400 transition-colors">Play Now</div>
+            </Link>
+          </div>
+
+          {/* World 5: App Dev Studio */}
+          <div className="dash-element">
+            <Link href="/app-studio" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(168,85,247,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(168,85,247,0.5)] hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-purple-50 to-transparent"></div>
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
+                <span className="text-3xl">📱</span>
+              </div>
+              <h3 className="text-xl font-black mb-1 text-slate-800">World 5</h3>
+              <p className="text-purple-600 font-bold bg-purple-50 px-3 py-0.5 rounded-full mb-3 text-sm">App Dev Studio</p>
+              {isUnpaid && (
+                <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-purple-800 bg-purple-100 border border-purple-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                  <Lock size={10} /> Locked Adventure
+                </div>
+              )}
+              <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Build real mobile phone apps across 5 classes: App Builder Playground, Magic Button Lab, Smart Pet App, Quiz &amp; Game Factory, and App Inventor Challenge (₦)!</p>
+              <div className="mt-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#581c87] group-hover:from-purple-500 group-hover:to-indigo-500 transition-colors">Play Now</div>
             </Link>
           </div>
         </div>

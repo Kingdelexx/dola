@@ -12,7 +12,12 @@ import {
   BookOpen, 
   Rocket, 
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Code2,
+  Paintbrush,
+  Zap,
+  ShoppingCart,
+  Compass
 } from 'lucide-react';
 
 export interface MissionData {
@@ -22,25 +27,57 @@ export interface MissionData {
   instructions_markdown: string;
   starter_html: string;
   starter_css: string;
+  starter_js?: string;
   solution_criteria: {
     required_tags?: string[];
     required_classes?: string[];
     required_css_rules?: string[];
+    required_js_rules?: string[];
   };
   reward_xp: number;
 }
 
-export const ALL_MISSIONS: { slug: string; title: string; stage: string; xp: number }[] = [
-  { slug: 'secret-agent-id-badge', title: '01. Secret Agent ID Badge', stage: 'Stage 1: HTML Basics', xp: 50 },
-  { slug: 'adopt-an-alien-pet', title: '02. Adopt an Alien Pet', stage: 'Stage 1: HTML Basics', xp: 50 },
-  { slug: 'ice-cream-sundae-builder', title: '03. Ice Cream Sundae Builder', stage: 'Stage 1: HTML Basics', xp: 50 },
-  { slug: 'rocket-launch-button', title: '04. Rocket Launch Button', stage: 'Stage 1: HTML Basics', xp: 50 },
-  { slug: 'cyberpunk-neon-sign', title: '05. Cyberpunk Neon Sign', stage: 'Stage 2: CSS Magic', xp: 60 },
-  { slug: 'space-porthole-window', title: '06. Space Capsule Window', stage: 'Stage 2: CSS Magic', xp: 60 },
-  { slug: 'mood-ring-gradient', title: '07. Mood Ring Gradient Card', stage: 'Stage 2: CSS Magic', xp: 70 },
-  { slug: 'hovering-power-button', title: '08. Hovering Super Button', stage: 'Stage 3: Interactive', xp: 80 },
-  { slug: 'zero-gravity-astronaut', title: '09. Zero-Gravity Float', stage: 'Stage 3: Interactive', xp: 90 },
-  { slug: 'monster-battle-card-capstone', title: '10. Monster Battle Capstone', stage: 'Stage 3: Capstone', xp: 100 },
+export interface MissionItem {
+  slug: string;
+  title: string;
+  classNum: number;
+  className: string;
+  isProject?: boolean;
+  xp: number;
+  icon: string;
+}
+
+export const ALL_MISSIONS: MissionItem[] = [
+  // Class 1: Website Builder Island
+  { slug: 'class-1-heading-island', title: '1.1 Island Title Beacon', classNum: 1, className: 'Class 1: Website Builder Island', xp: 50, icon: '🏝️' },
+  { slug: 'class-1-story-paragraph', title: '1.2 Island Secret Story', classNum: 1, className: 'Class 1: Website Builder Island', xp: 50, icon: '📝' },
+  { slug: 'class-1-picture-gallery', title: '1.3 Island Mascot Sticker', classNum: 1, className: 'Class 1: Website Builder Island', xp: 50, icon: '🖼️' },
+  { slug: 'class-1-my-first-webpage', title: '1.4 Capstone: My First Webpage', classNum: 1, className: 'Class 1: Website Builder Island', isProject: true, xp: 100, icon: '🏆' },
+
+  // Class 2: Colour Magic Kingdom
+  { slug: 'class-2-colour-splash', title: '2.1 Castle Color Splash', classNum: 2, className: 'Class 2: Colour Magic Kingdom', xp: 60, icon: '🎨' },
+  { slug: 'class-2-magic-borders', title: '2.2 Magic Borders & Shapes', classNum: 2, className: 'Class 2: Colour Magic Kingdom', xp: 60, icon: '🔮' },
+  { slug: 'class-2-colourful-personal-website', title: '2.3 Capstone: My Colourful Personal Website', classNum: 2, className: 'Class 2: Colour Magic Kingdom', isProject: true, xp: 100, icon: '🏆' },
+
+  // Class 3: Button Power City
+  { slug: 'class-3-color-shifter', title: '3.1 Color Shifter Button', classNum: 3, className: 'Class 3: Button Power City', xp: 70, icon: '⚡' },
+  { slug: 'class-3-treasure-revealer', title: '3.2 Secret Treasure Revealer', classNum: 3, className: 'Class 3: Button Power City', xp: 70, icon: '🔑' },
+  { slug: 'class-3-interactive-birthday-website', title: '3.3 Capstone: Interactive Birthday Website', classNum: 3, className: 'Class 3: Button Power City', isProject: true, xp: 100, icon: '🎂' },
+
+  // Class 4: My Online Shop
+  { slug: 'class-4-shop-shelves', title: '4.1 Stocking The Store Shelves (₦)', classNum: 4, className: 'Class 4: My Online Shop', xp: 80, icon: '🛒' },
+  { slug: 'class-4-my-first-online-store', title: '4.2 Capstone: My First Online Store', classNum: 4, className: 'Class 4: My Online Shop', isProject: true, xp: 120, icon: '🛍️' },
+
+  // Class 5: Web Creator Challenge
+  { slug: 'class-5-web-creator-challenge', title: '5.0 Capstone: Web Creator Challenge', classNum: 5, className: 'Class 5: Web Creator Challenge', isProject: true, xp: 150, icon: '🚀' },
+];
+
+export const CLASSES_LIST = [
+  { num: 1, name: 'Website Builder Island', subtitle: 'HTML without memorising', icon: '🏝️', defaultSlug: 'class-1-heading-island', color: 'from-amber-500 to-orange-500' },
+  { num: 2, name: 'Colour Magic Kingdom', subtitle: 'CSS through design', icon: '🎨', defaultSlug: 'class-2-colour-splash', color: 'from-pink-500 to-purple-500' },
+  { num: 3, name: 'Button Power City', subtitle: 'JavaScript actions', icon: '⚡', defaultSlug: 'class-3-color-shifter', color: 'from-cyan-500 to-blue-500' },
+  { num: 4, name: 'My Online Shop', subtitle: 'HTML, CSS & JS with Naira ₦', icon: '🛒', defaultSlug: 'class-4-shop-shelves', color: 'from-emerald-500 to-teal-500' },
+  { num: 5, name: 'Web Creator Challenge', subtitle: 'Original responsive site', icon: '🚀', defaultSlug: 'class-5-web-creator-challenge', color: 'from-purple-500 to-indigo-600' },
 ];
 
 interface MissionInstructionPanelProps {
@@ -62,11 +99,11 @@ export default function MissionInstructionPanel({
   onSubmitMission,
   isSubmitting
 }: MissionInstructionPanelProps) {
-  const [isExpanded, setIsExpanded] = useState(false); // Collapsed by default on mobile for extra editor room
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
   const currentIndex = ALL_MISSIONS.findIndex(m => m.slug === currentSlug);
-  const activeMissionInfo = ALL_MISSIONS[currentIndex] || ALL_MISSIONS[0];
+  const activeMission = ALL_MISSIONS[currentIndex] || ALL_MISSIONS[0];
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -81,7 +118,32 @@ export default function MissionInstructionPanel({
   };
 
   return (
-    <div className="bg-slate-900 border-b border-slate-800/90 text-slate-100 transition-all select-none">
+    <div className="bg-slate-900 border-b border-slate-800 text-slate-100 transition-all select-none">
+      {/* Class Quick-Select Pills Bar */}
+      <div className="px-3 md:px-5 py-1.5 bg-slate-950/80 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 mr-1 flex items-center gap-1">
+          <Compass size={12} className="text-amber-400" />
+          <span>Classes:</span>
+        </span>
+        {CLASSES_LIST.map((cls) => {
+          const isActive = activeMission.classNum === cls.num;
+          return (
+            <button
+              key={cls.num}
+              onClick={() => onSelectMission(cls.defaultSlug)}
+              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                isActive
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black shadow-md shadow-amber-500/20'
+                  : 'bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/60'
+              }`}
+            >
+              <span>{cls.icon}</span>
+              <span className="truncate">Class {cls.num}: {cls.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Top Main Bar */}
       <div className="px-3 md:px-4 py-2 flex flex-wrap items-center justify-between gap-2 bg-slate-900/95">
         
@@ -90,45 +152,56 @@ export default function MissionInstructionPanel({
           <div className="relative">
             <button
               onClick={() => setIsSelectorOpen(!isSelectorOpen)}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl text-xs font-black text-amber-300 flex items-center gap-1.5 transition-all shadow-sm active:scale-95 max-w-[200px] sm:max-w-xs"
+              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl text-xs font-black text-amber-300 flex items-center gap-1.5 transition-all shadow-sm active:scale-95 max-w-[220px] sm:max-w-xs"
             >
-              <Trophy size={14} className="text-amber-400 shrink-0" />
-              <span className="truncate">{activeMissionInfo.title}</span>
+              <span className="text-sm">{activeMission.icon}</span>
+              <span className="truncate">{activeMission.title}</span>
               <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1 py-0.2 rounded font-bold shrink-0 hidden sm:inline">
-                +{activeMissionInfo.xp}XP
+                +{activeMission.xp}XP
               </span>
               <ChevronDown size={14} className={`transition-transform text-slate-400 shrink-0 ${isSelectorOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Selector Dropdown Menu */}
+            {/* Selector Dropdown Menu grouped by Class */}
             {isSelectorOpen && (
-              <div className="absolute top-full left-0 mt-2 z-50 w-[88vw] sm:w-72 bg-slate-900 border-2 border-slate-700/80 rounded-2xl shadow-2xl p-2 max-h-80 overflow-y-auto divide-y divide-slate-800">
-                {ALL_MISSIONS.map((m) => (
-                  <button
-                    key={m.slug}
-                    onClick={() => {
-                      onSelectMission(m.slug);
-                      setIsSelectorOpen(false);
-                    }}
-                    className={`w-full px-3 py-2 text-left rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-2 my-0.5 ${
-                      m.slug === currentSlug
-                        ? 'bg-amber-500 text-slate-950 font-black'
-                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                    }`}
-                  >
-                    <div className="truncate">
-                      <span className="block truncate">{m.title}</span>
-                      <span className={`text-[10px] ${m.slug === currentSlug ? 'text-slate-900 font-semibold' : 'text-slate-500'}`}>
-                        {m.stage}
-                      </span>
+              <div className="absolute top-full left-0 mt-2 z-50 w-[90vw] sm:w-80 bg-slate-900 border-2 border-slate-700/80 rounded-2xl shadow-2xl p-2 max-h-96 overflow-y-auto divide-y divide-slate-800/80">
+                {CLASSES_LIST.map((cls) => {
+                  const classMissions = ALL_MISSIONS.filter(m => m.classNum === cls.num);
+                  return (
+                    <div key={cls.num} className="py-1.5 first:pt-0 last:pb-0">
+                      <div className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                        <span>{cls.icon}</span>
+                        <span>Class {cls.num}: {cls.name}</span>
+                      </div>
+                      <div className="space-y-0.5 mt-0.5">
+                        {classMissions.map((m) => (
+                          <button
+                            key={m.slug}
+                            onClick={() => {
+                              onSelectMission(m.slug);
+                              setIsSelectorOpen(false);
+                            }}
+                            className={`w-full px-2.5 py-1.5 text-left rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-2 ${
+                              m.slug === currentSlug
+                                ? 'bg-amber-500 text-slate-950 font-black'
+                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                            }`}
+                          >
+                            <div className="truncate flex items-center gap-1.5">
+                              <span className="text-xs">{m.icon}</span>
+                              <span className="truncate">{m.title}</span>
+                            </div>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-black shrink-0 ${
+                              m.slug === currentSlug ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-amber-400'
+                            }`}>
+                              +{m.xp} XP
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-black shrink-0 ${
-                      m.slug === currentSlug ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-amber-400'
-                    }`}>
-                      +{m.xp} XP
-                    </span>
-                  </button>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -178,7 +251,7 @@ export default function MissionInstructionPanel({
             ) : (
               <>
                 <Rocket size={14} />
-                <span>{isSubmitting ? '...' : 'Submit'}</span>
+                <span>{isSubmitting ? '...' : 'Check Goal 🚀'}</span>
               </>
             )}
           </button>
@@ -187,9 +260,9 @@ export default function MissionInstructionPanel({
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-all border border-slate-700 flex items-center gap-1 text-[11px] font-bold"
-            title={isExpanded ? "Hide Goal Guidelines" : "Show Goal Guidelines"}
+            title={isExpanded ? "Hide Instructions" : "Show Instructions"}
           >
-            <span className="hidden sm:inline">Goals</span>
+            <span className="hidden sm:inline">Guide</span>
             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
         </div>
@@ -204,10 +277,10 @@ export default function MissionInstructionPanel({
           <div className="w-full md:flex-1 space-y-1.5">
             <div className="flex items-center gap-2 font-extrabold text-amber-300">
               <BookOpen size={14} />
-              <span>Mission Goal Guidelines:</span>
+              <span>Lesson Guidelines:</span>
             </div>
             <div className="text-slate-300 leading-relaxed font-medium bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 whitespace-pre-line text-[11px] sm:text-xs">
-              {challenge.instructions_markdown || 'Complete the code on the left to fulfill the mission requirements!'}
+              {challenge.instructions_markdown || 'Complete the interactive exercise to earn your badge!'}
             </div>
           </div>
 
@@ -216,9 +289,9 @@ export default function MissionInstructionPanel({
             <div className="flex items-center justify-between mb-1.5 font-black text-amber-400 text-[10px] uppercase tracking-wider">
               <div className="flex items-center gap-1.5">
                 <ListOrdered size={13} />
-                <span>Checklist</span>
+                <span>Criteria Checklist</span>
               </div>
-              <span>{criteriaResults.filter(c => c.passed).length}/{criteriaResults.length || 3} Passed</span>
+              <span>{criteriaResults.filter(c => c.passed).length}/{criteriaResults.length || 2} Passed</span>
             </div>
 
             <div className="space-y-1">
@@ -242,7 +315,7 @@ export default function MissionInstructionPanel({
                 ))
               ) : (
                 <div className="text-[10px] text-slate-400 italic py-0.5">
-                  Click &quot;Submit&quot; or type code to check goals live!
+                  Click &quot;Check Goal&quot; or update code to test requirements!
                 </div>
               )}
             </div>

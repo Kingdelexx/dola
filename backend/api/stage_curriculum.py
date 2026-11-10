@@ -24,12 +24,30 @@ STAGE_KNOWLEDGE = {
         "description": "Visual drag-and-drop programming using blocks. Teaches loops, events, motion, sprite animation, variables, and concurrent execution."
     },
     "3": {
-        "title": "World 4: App Studio",
-        "description": "Mobile application design studio. Building user interface components (buttons, text, sliders, canvas), event handlers, and JavaScript/Block logic."
-    },
-    "4": {
         "title": "World 3: Python Pro",
         "description": "Real text-based Python programming with an AI sidekick. Covers variables, data types, print statements, loops, functions, and algorithm challenges."
+    },
+    "4": {
+        "title": "World 4: Web Dev Studio",
+        "description": "Interactive kid-friendly web development studio covering HTML, CSS, and JavaScript across 5 guided classes with live preview.",
+        "classes": {
+            1: "Class 1: Website Builder Island — Learn HTML without memorising HTML. Children drag headings, pictures, buttons, and paragraphs onto a blank webpage. DolaCode reveals <h1>Hello!</h1>. Project: My First Webpage.",
+            2: "Class 2: Colour Magic Kingdom — Learn CSS through design. Change colours, fonts, borders, backgrounds, and layouts. Transform a dull website instantly. Project: My Colourful Personal Website.",
+            3: "Class 3: Button Power City — Learn basic JavaScript through actions. Make buttons change colours, display messages, count clicks, and reveal hidden treasures. Project: Interactive Birthday Website.",
+            4: "Class 4: My Online Shop — Combine HTML, CSS, and JavaScript. Create a virtual store for books, snacks, or toys. Add products, display Naira (₦) prices, and calculate shopping basket totals. Project: My First Online Store.",
+            5: "Class 5: Web Creator Challenge — Build an original responsive website choosing between school, portfolio, animal club, story, or small business. Final Project: Finished responsive website with shareable preview."
+        }
+    },
+    "5": {
+        "title": "World 5: App Dev Studio",
+        "description": "Mobile application design and development studio. Teaches UI components, event-driven actions, variables, multi-screen navigation, and app creation across 5 classes.",
+        "classes": {
+            1: "Class 1: App Builder Playground — Understand app screens and components. Children drag buttons, pictures, labels and text boxes onto a phone. Project: My First Hello App.",
+            2: "Class 2: Magic Button Lab — Understand events and actions. Connect visual blocks: WHEN button tapped → show message, play sound, change picture or update score. Project: Funny Soundboard App.",
+            3: "Class 3: Smart Pet App — Learn variables, conditions and state. Build a virtual pet whose happiness, hunger and energy change when buttons are pressed. Project: My Virtual Pet.",
+            4: "Class 4: Quiz & Game Factory — Learn screens, navigation, lists and scoring. Build a quiz with multiple questions, answers, scores and a results screen. Project: My Own Quiz App.",
+            5: "Class 5: App Inventor Challenge — Create a useful app independently: savings tracker (with Nigerian Naira ₦), study planner, homework organiser, or reading tracker. Final Project: A completed app with a preview and shareable project link."
+        }
     }
 }
 
@@ -50,6 +68,14 @@ def get_curriculum_context(stage, level, extra_context=""):
             part_num = min(8, max(1, (lvl_num - 1) // 10 + 1))
             part_desc = info["parts"].get(part_num, "")
             summary += f"\nCurriculum Area: {part_desc}"
+        except ValueError:
+            pass
+    elif stage_str in ["4", "5"] and "classes" in info:
+        try:
+            cls_num = int(level_str)
+            cls_desc = info["classes"].get(cls_num, "")
+            if cls_desc:
+                summary += f"\nClass Focus: {cls_desc}"
         except ValueError:
             pass
 

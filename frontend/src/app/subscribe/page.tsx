@@ -650,7 +650,7 @@ export default function SubscribePage() {
             </button>
             {openFaqIndex === 0 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                When you subscribe, your parent account is activated immediately. Any children you link in your Parent Portal receive instant, full access to all 4 learning worlds (DolaCode Numeracy, Block Coding, Python Quest, App Studio), 6 standalone interactive games, and our 24/7 Lizzy AI coding tutor. Subscriptions renew automatically, and you can cancel anytime.
+                When you subscribe, your parent account is activated immediately. Any children you link in your Parent Portal receive instant, full access to all 5 learning worlds (DolaCode Numeracy, Block Coding, Python Pro, Web Dev Studio, App Dev Studio), 6 standalone interactive games, and our 24/7 Lizzy AI coding tutor. Subscriptions renew automatically, and you can cancel anytime.
               </div>
             )}
           </div>
@@ -886,9 +886,10 @@ export default function SubscribePage() {
             <ul className="space-y-2.5 text-xs font-semibold text-slate-400">
               <li><Link href="/stage1" className="hover:text-white transition-colors">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-white transition-colors">2. Block Coding</Link></li>
-              <li><Link href="/stage4" className="hover:text-white transition-colors">3. Python Quest</Link></li>
-              <li><Link href="/stage3" className="hover:text-white transition-colors">4. App Studio</Link></li>
-              <li><Link href="/web-studio" className="hover:text-white transition-colors">5. Web Studio</Link></li>
+              <li><Link href="/stage4" className="hover:text-white transition-colors">3. Python Pro</Link></li>
+              <li><Link href="/web-studio" className="hover:text-white transition-colors">4. Web Dev Studio</Link></li>
+              <li><Link href="/app-studio" className="hover:text-white transition-colors">5. App Dev Studio</Link></li>
+              <li><Link href="/dolamoney" className="hover:text-yellow-300 transition-colors text-yellow-400 font-bold">🪙 DolaMoney Quest (₦)</Link></li>
             </ul>
           </div>
 
