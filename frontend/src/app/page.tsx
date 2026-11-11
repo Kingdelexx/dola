@@ -195,7 +195,7 @@ export default function Home() {
                 <CheckCircle2 size={14} className="text-emerald-500" /> 5 Coding Worlds
               </span>
               <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <CheckCircle2 size={14} className="text-emerald-500" /> 6 Adventure Mini-Games
+                <CheckCircle2 size={14} className="text-emerald-500" /> 6 Brain Developer Games
               </span>
               <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
                 <CheckCircle2 size={14} className="text-emerald-500" /> 10 Financial Literacy Worlds (₦)
@@ -411,10 +411,10 @@ export default function Home() {
           <div className="mt-16">
             <div className="text-center mb-10 space-y-3">
               <div className="inline-block bg-pink-100 text-pink-700 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider">
-                <Gamepad2 size={16} className="inline mr-1.5 -mt-0.5" /> Interactive Games Arcade
+                <Brain size={16} className="inline mr-1.5 -mt-0.5" /> Brain Developer Arcade
               </div>
               <h3 className="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">
-                Play &amp; Learn With <span className="text-pink-500">6 Adventure Games</span>
+                Play &amp; Learn With <span className="text-pink-500">Brain Developer Games</span>
               </h3>
               <p className="text-slate-600 text-sm sm:text-base font-medium max-w-2xl mx-auto">
                 Children build solid mathematical and computational intuition while playing hands-on story missions.

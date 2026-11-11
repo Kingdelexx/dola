@@ -272,8 +272,25 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Interactive Mini-Games Showcase */}
-        <div className="dash-element mb-10">
+        {/* Brain Developer Games Section */}
+        <div className="dash-element mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-black uppercase tracking-wider mb-2">
+                <Brain size={14} className="text-indigo-600" /> Numeracy &amp; Logic Games
+              </div>
+              <h2 className="text-3xl font-black text-slate-800 flex items-center gap-3">
+                <Brain className="text-indigo-600" size={32} /> Brain Developer
+              </h2>
+              <p className="text-slate-600 font-medium text-sm mt-1">
+                6 interactive adventure games designed to build logic, problem-solving, and math intuition!
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-2 border-slate-200 text-xs font-black text-slate-700 shadow-xs self-start sm:self-auto">
+              <span>🧠</span> 6 Brain Games
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* 1. Dola's Pizza Shop */}
             <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
@@ -282,7 +299,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-yellow-300" /> Stage 1 Part 9
+                  <Sparkles size={13} className="text-yellow-300" /> Brain Developer &bull; Part 9
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -314,7 +331,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-cyan-200" /> Stage 1 Part 10
+                  <Sparkles size={13} className="text-cyan-200" /> Brain Developer &bull; Part 10
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -346,7 +363,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 11
+                  <Sparkles size={13} className="text-amber-200" /> Brain Developer &bull; Part 11
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -378,7 +395,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-lime-200" /> Stage 1 Part 12
+                  <Sparkles size={13} className="text-lime-200" /> Brain Developer &bull; Part 12
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -410,7 +427,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-amber-200" /> Stage 1 Part 13
+                  <Sparkles size={13} className="text-amber-200" /> Brain Developer &bull; Part 13
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
@@ -442,7 +459,7 @@ export default function DashboardPage() {
               </div>
               <div className="relative z-10 mb-4">
                 <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-pink-200" /> Stage 1 Part 14
+                  <Sparkles size={13} className="text-pink-200" /> Brain Developer &bull; Part 14
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
