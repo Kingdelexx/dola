@@ -13,10 +13,10 @@ export default function FrogAdventurePage() {
         {/* Navigation Bar */}
         <div className="max-w-6xl w-full mx-auto flex items-center justify-between mb-4">
           <Link
-            href="/stage1"
+            href="/brain-developer"
             className="text-emerald-900 hover:text-emerald-950 font-black flex items-center gap-2 text-xs sm:text-sm bg-white/90 px-4 py-2 rounded-full border-2 border-emerald-300 shadow-xs transition-all hover:scale-105"
           >
-            <ArrowLeft size={16} /> Back to Stage 1 Numeracy
+            <ArrowLeft size={16} /> Brain Developer Arcade
           </Link>
           <Link
             href="/dashboard"

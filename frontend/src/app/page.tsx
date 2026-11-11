@@ -516,6 +516,18 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+
+            {/* Dedicated Brain Developer Arcade Link */}
+            <div className="mt-8 text-center">
+              <Link
+                href="/brain-developer"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-700 text-white font-black text-sm uppercase tracking-wider shadow-lg hover:shadow-xl hover:scale-105 active:scale-98 transition-all"
+              >
+                <Brain size={18} />
+                <span>Visit Dedicated Brain Developer Arcade</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
 
 {/* Financial Literacy Game Hero Spotlight */}

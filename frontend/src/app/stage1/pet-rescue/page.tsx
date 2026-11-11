@@ -13,10 +13,10 @@ export default function PetRescuePage() {
         {/* Navigation Bar */}
         <div className="max-w-7xl w-full mx-auto flex items-center justify-between mb-3 px-2">
           <Link
-            href="/stage1"
+            href="/brain-developer"
             className="text-pink-300 hover:text-pink-200 font-black flex items-center gap-2 text-xs sm:text-sm bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shadow transition-all hover:scale-105"
           >
-            <ArrowLeft size={16} /> Back to Stage 1 Numeracy
+            <ArrowLeft size={16} /> Brain Developer Arcade
           </Link>
           <Link
             href="/dashboard"

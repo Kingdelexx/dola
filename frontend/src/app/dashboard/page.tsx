@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, Bot, Store, ShieldCheck, UserCircle2 } from 'lucide-react';
+import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, ShieldCheck, UserCircle2 } from 'lucide-react';
 import { gsap } from 'gsap';
 
 export default function DashboardPage() {
@@ -234,217 +234,41 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Brain Developer Games Section */}
-        <div className="dash-element mb-12">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-black uppercase tracking-wider mb-2">
-                <Brain size={14} className="text-indigo-600" /> Numeracy &amp; Logic Games
-              </div>
-              <h2 className="text-3xl font-black text-slate-800 flex items-center gap-3">
-                <Brain className="text-indigo-600" size={32} /> Brain Developer
-              </h2>
-              <p className="text-slate-600 font-medium text-sm mt-1">
-                6 interactive adventure games designed to build logic, problem-solving, and math intuition!
-              </p>
+        {/* Brain Developer Hero Showcase Card */}
+        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-700 text-white rounded-[2.5rem] p-6 sm:p-8 mb-8 border-4 border-indigo-300/60 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-6 dash-element relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
+            🧠
+          </div>
+
+          <div className="flex items-center gap-5 relative z-10 text-center lg:text-left">
+            <div className="w-20 h-20 bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-500 text-slate-900 rounded-3xl flex items-center justify-center text-4xl shrink-0 shadow-xl border-4 border-white group-hover:scale-105 group-hover:rotate-6 transition-transform">
+              🧠
             </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-2 border-slate-200 text-xs font-black text-slate-700 shadow-xs self-start sm:self-auto">
-              <span>🧠</span> 6 Brain Games
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-950/60 border border-indigo-300/40 text-indigo-200 text-xs font-black uppercase tracking-wider mb-2">
+                <Sparkles size={13} className="text-yellow-300" /> Dedicated Arcade &bull; 6 Story Games
+              </div>
+              <h3 className="font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+                Brain Developer
+              </h3>
+              <p className="text-indigo-100 font-bold text-sm sm:text-base mt-1">
+                Numeracy, Spatial Logic &amp; Computational Thinking &bull; <span className="text-yellow-300">Level 1 Free Preview</span>
+              </p>
+              <p className="text-indigo-50/80 text-xs sm:text-sm mt-1 max-w-xl">
+                Master sequencing, repeat loops, fractions, coordinates, and conditional logic through hands-on adventure missions!
+              </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* 1. Dola's Pizza Shop */}
-            <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
-                🍕
-              </div>
-              <div className="relative z-10 mb-4">
-                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-yellow-300" /> Brain Developer &bull; Part 9
-                </div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
-                    🍕
-                  </div>
-                  <h3 className="text-xl font-black drop-shadow-sm">
-                    Dola&apos;s Pizza Shop
-                  </h3>
-                </div>
-                <p className="text-orange-100 text-xs sm:text-sm font-semibold leading-relaxed">
-                  Serve friendly customers, drag and count slices, share with friends, and discover computational loops through cooking!
-                </p>
-              </div>
-              <div className="relative z-10 pt-2">
-                <Link
-                  href="/stage1/pizza-shop"
-                  className="w-full py-3 rounded-2xl bg-white text-orange-600 hover:text-orange-700 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Play Pizza Shop</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* 2. Robot Maze */}
-            <div className="bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
-                🤖
-              </div>
-              <div className="relative z-10 mb-4">
-                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-cyan-200" /> Brain Developer &bull; Part 10
-                </div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
-                    <Bot className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-black drop-shadow-sm">
-                    Robot Maze
-                  </h3>
-                </div>
-                <p className="text-teal-100 text-xs sm:text-sm font-semibold leading-relaxed">
-                  Program Robo the friendly robot! Arrange visual arrows, master repeat loops, dodge obstacles, and debug code!
-                </p>
-              </div>
-              <div className="relative z-10 pt-2">
-                <Link
-                  href="/stage1/robot-maze"
-                  className="w-full py-3 rounded-2xl bg-white text-teal-700 hover:text-teal-800 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Play Robot Maze</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* 3. My Little Shop */}
-            <div className="bg-gradient-to-r from-amber-500 via-emerald-600 to-teal-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
-                🏪
-              </div>
-              <div className="relative z-10 mb-4">
-                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-amber-200" /> Brain Developer &bull; Part 11
-                </div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
-                    <Store className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-black drop-shadow-sm">
-                    My Little Shop
-                  </h3>
-                </div>
-                <p className="text-emerald-100 text-xs sm:text-sm font-semibold leading-relaxed">
-                  Run a colourful Nigerian neighbourhood shop! Count Naira, give exact change, manage stock, and use coding loops!
-                </p>
-              </div>
-              <div className="relative z-10 pt-2">
-                <Link
-                  href="/stage1/my-little-shop"
-                  className="w-full py-3 rounded-2xl bg-white text-emerald-800 hover:text-emerald-900 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Play Little Shop</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* 4. Frog Adventure */}
-            <div className="bg-gradient-to-r from-lime-500 via-emerald-600 to-teal-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
-                🐸
-              </div>
-              <div className="relative z-10 mb-4">
-                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-lime-200" /> Brain Developer &bull; Part 12
-                </div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
-                    🐸
-                  </div>
-                  <h3 className="text-xl font-black drop-shadow-sm">
-                    Frog Adventure
-                  </h3>
-                </div>
-                <p className="text-lime-100 text-xs sm:text-sm font-semibold leading-relaxed">
-                  Guide Hoppy through ponds &amp; rainforests! Count jumps, turn directions, solve patterns, and debug code!
-                </p>
-              </div>
-              <div className="relative z-10 pt-2">
-                <Link
-                  href="/stage1/frog-adventure"
-                  className="w-full py-3 rounded-2xl bg-white text-emerald-800 hover:text-emerald-900 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Play Frog Adventure</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* 5. Traffic Rescue */}
-            <div className="bg-gradient-to-r from-amber-500 via-rose-600 to-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
-                🚦
-              </div>
-              <div className="relative z-10 mb-4">
-                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-amber-200" /> Brain Developer &bull; Part 13
-                </div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
-                    🚦
-                  </div>
-                  <h3 className="text-xl font-black drop-shadow-sm">
-                    Traffic Rescue
-                  </h3>
-                </div>
-                <p className="text-amber-100 text-xs sm:text-sm font-semibold leading-relaxed">
-                  Control miniature city traffic! Coordinate traffic lights, protect zebra crossings, and automate roads with IF/THEN rules!
-                </p>
-              </div>
-              <div className="relative z-10 pt-2">
-                <Link
-                  href="/stage1/traffic-rescue"
-                  className="w-full py-3 rounded-2xl bg-white text-indigo-900 hover:text-indigo-950 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Play Traffic Rescue</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* 6. Pet Rescue */}
-            <div className="bg-gradient-to-r from-rose-500 via-pink-600 to-amber-500 rounded-[2.5rem] p-6 text-white shadow-xl border-4 border-white flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute right-0 bottom-0 translate-x-8 translate-y-6 opacity-15 pointer-events-none text-8xl">
-                🐶
-              </div>
-              <div className="relative z-10 mb-4">
-                <div className="inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2">
-                  <Sparkles size={13} className="text-pink-200" /> Brain Developer &bull; Part 14
-                </div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/40 shrink-0">
-                    🐶
-                  </div>
-                  <h3 className="text-xl font-black drop-shadow-sm">
-                    Pet Rescue
-                  </h3>
-                </div>
-                <p className="text-pink-100 text-xs sm:text-sm font-semibold leading-relaxed">
-                  Help friendly rescue animals! Count food, sort treats, build care routines, recognize patterns, and use IF/THEN rules!
-                </p>
-              </div>
-              <div className="relative z-10 pt-2">
-                <Link
-                  href="/stage1/pet-rescue"
-                  className="w-full py-3 rounded-2xl bg-white text-rose-700 hover:text-rose-800 font-black text-sm shadow-md hover:shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Play Pet Rescue</span>
-                  <span>&rarr;</span>
-                </Link>
-              </div>
-            </div>
+          <div className="relative z-10 w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/brain-developer"
+              className="w-full lg:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#b45309] hover:shadow-[0_8px_0_#b45309] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>ENTER BRAIN DEVELOPER ARCADE</span>
+              <span>&rarr;</span>
+            </Link>
           </div>
         </div>
 
