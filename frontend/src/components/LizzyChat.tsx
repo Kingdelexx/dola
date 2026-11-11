@@ -16,7 +16,15 @@ interface Message {
   content: string;
 }
 
+// Feature flag: set to false when ready to re-enable Lizzy AI
+const HIDE_LIZZY_AI = true;
+
 export default function LizzyChat({ stage = 1, level = 1, initialOpen = false, contextInfo = '' }: LizzyChatProps) {
+  // Lizzy AI is temporarily hidden while improvements are being worked on
+  if (HIDE_LIZZY_AI) {
+    return null;
+  }
+
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [messages, setMessages] = useState<Message[]>([
     {
