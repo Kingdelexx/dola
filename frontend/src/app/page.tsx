@@ -561,33 +561,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          {/* Lizzy AI Coding Tutor Section */}
-          <div className="mt-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-purple-400/40 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-5">
-              <div className="w-20 h-20 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-3xl flex items-center justify-center text-4xl shadow-xl border-4 border-white/20 shrink-0">
-                <Bot className="w-10 h-10 text-white" />
-              </div>
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-800/80 text-purple-200 text-xs font-black uppercase tracking-wider">
-                  <Sparkles size={12} className="text-amber-400" /> 24/7 AI Coding Sidekick
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-white">Meet Lizzy AI: Every Child&apos;s Friendly Tutor</h3>
-                <p className="text-purple-200 text-xs sm:text-sm max-w-xl font-medium leading-relaxed">
-                  Coding can sometimes feel tricky. Lizzy AI provides gentle hints, explains syntax errors in kid-friendly language, celebrates achievements, and ensures no child ever feels stuck or discouraged.
-                </p>
-              </div>
-            </div>
-            <div className="shrink-0 flex items-center gap-3">
-              <Link
-                href="/signup"
-                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white font-black text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <span>Code With Lizzy AI</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
 
