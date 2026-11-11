@@ -269,7 +269,7 @@ export default function Home() {
                   <Brain size={32} />
                 </div>
                 <div className="inline-block bg-indigo-50 text-indigo-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 5–8 &bull; 14 Parts &bull; 6 Games
+                  14 Parts &bull; 6 Games
                 </div>
                 <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-indigo-600 transition-colors">1. DolaCode Numeracy</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
@@ -289,7 +289,7 @@ export default function Home() {
                   <Blocks size={32} />
                 </div>
                 <div className="inline-block bg-pink-50 text-pink-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 7–11 &bull; Visual Logic
+                  Visual Logic
                 </div>
                 <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-pink-600 transition-colors">2. Visual Block Coding</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
@@ -309,7 +309,7 @@ export default function Home() {
                   <Terminal size={32} />
                 </div>
                 <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 9–16 &bull; 5 Python Classes
+                  5 Python Classes
                 </div>
                 <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">3. Python Pro</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
@@ -317,7 +317,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
-                <span>AI Tutor Powered</span>
+                <span>Code Animation</span>
                 <ChevronRight size={16} />
               </div>
             </div>
@@ -329,7 +329,7 @@ export default function Home() {
                   <span className="text-2xl">🌐</span>
                 </div>
                 <div className="inline-block bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 8–15 &bull; 5 Web Classes
+                  5 Web Classes
                 </div>
                 <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-amber-600 transition-colors">4. Web Dev Studio</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
@@ -349,7 +349,7 @@ export default function Home() {
                   <span className="text-2xl">📱</span>
                 </div>
                 <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 8–16 &bull; 5 App Classes
+                  5 App Classes
                 </div>
                 <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">5. App Dev Studio</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
