@@ -8,7 +8,7 @@ import {
   Blocks, Terminal, Bot, Rocket, Star, Sparkles, ChevronRight,
   Play, MousePointerClick, Unlock, Ghost, LayoutGrid, Quote, UserCircle2,
   Plus, Minus, Mail, MapPin, Cloud, Trophy, Gamepad2, Sun, Crown, Heart,
-  Coins, Brain, ShieldCheck, Users, ArrowRight, Laptop, CheckCircle2, Store,
+  Coins, Brain, Users, ArrowRight, Laptop, Store,
   Flame, Award, Lightbulb, Zap, Code
 } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
@@ -178,21 +178,6 @@ export default function Home() {
                 <Coins size={20} className="text-slate-900" />
                 <span>Financial Literacy Game 🪙</span>
               </Link>
-            </div>
-            {/* Quick platform highlights */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs font-bold text-slate-500">
-              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <CheckCircle2 size={14} className="text-emerald-500" /> 5 Coding Worlds
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <CheckCircle2 size={14} className="text-emerald-500" /> 6 Brain Developer Games
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <CheckCircle2 size={14} className="text-emerald-500" /> 10 Financial Literacy Worlds (₦)
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <ShieldCheck size={14} className="text-purple-500" /> 100% Kid Safe &amp; Ad-Free
-              </span>
             </div>
           </div>
           <div className="relative flex justify-center items-center h-[400px] lg:h-[500px]">
