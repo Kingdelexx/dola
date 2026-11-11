@@ -363,51 +363,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Financial Literacy Game Hero Spotlight */}
-          <div className="mt-14 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-emerald-300/80 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
-              🪙
-            </div>
-
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="space-y-4 text-center lg:text-left max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-300/40 text-emerald-200 text-xs font-black uppercase tracking-wider">
-                  <Coins size={14} className="text-yellow-300" /> New Financial Literacy Adventure &bull; 10 Worlds
-                </div>
-                <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                  Financial Literacy Game: <span className="text-yellow-300">Learn. Earn. Save. Spend. Build.</span>
-                </h3>
-                <p className="text-emerald-100 text-sm sm:text-base font-medium leading-relaxed">
-                  Teach practical financial intelligence to children aged 6–12 through games, simulations, and real decisions using Nigerian Naira (₦). No boring economics theory—just pure fun, DolaCoins, and real-life habits!
-                </p>
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1 text-xs font-bold text-emerald-100">
-                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🪙 Money Match</span>
-                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🛒 Smart Shopper (Needs vs Wants)</span>
-                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🏺 Savings Jar Streaks</span>
-                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">📊 Budget Challenge</span>
-                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🍋 Little Business (Costs &amp; Profit)</span>
-                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🏦 DolaBank Adventures</span>
-                </div>
-              </div>
-
-              <div className="shrink-0 flex flex-col items-center gap-3 w-full sm:w-auto">
-                <Link
-                  href="/dolamoney"
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#92400e] hover:shadow-[0_8px_0_#92400e] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Coins size={20} />
-                  <span>Play Financial Literacy Game</span>
-                  <span>&rarr;</span>
-                </Link>
-                <span className="text-[11px] text-emerald-200 font-semibold text-center">
-                  Includes Virtual Wallet, Badges &amp; Streaks
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 6 Interactive Adventure Games Arcade */}
+{/* 6 Interactive Adventure Games Arcade */}
           <div className="mt-16">
             <div className="text-center mb-10 space-y-3">
               <div className="inline-block bg-pink-100 text-pink-700 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider">
@@ -558,6 +514,50 @@ export default function Home() {
                   <span>Play Pet Rescue</span>
                   <ArrowRight size={14} />
                 </Link>
+              </div>
+            </div>
+          </div>
+
+{/* Financial Literacy Game Hero Spotlight */}
+          <div className="mt-14 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-emerald-300/80 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
+              🪙
+            </div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="space-y-4 text-center lg:text-left max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-300/40 text-emerald-200 text-xs font-black uppercase tracking-wider">
+                  <Coins size={14} className="text-yellow-300" /> New Financial Literacy Adventure &bull; 10 Worlds
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+                  Financial Literacy Game: <span className="text-yellow-300">Learn. Earn. Save. Spend. Build.</span>
+                </h3>
+                <p className="text-emerald-100 text-sm sm:text-base font-medium leading-relaxed">
+                  Teach practical financial intelligence to children aged 6–12 through games, simulations, and real decisions using Nigerian Naira (₦). No boring economics theory—just pure fun, DolaCoins, and real-life habits!
+                </p>
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1 text-xs font-bold text-emerald-100">
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🪙 Money Match</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🛒 Smart Shopper (Needs vs Wants)</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🏺 Savings Jar Streaks</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">📊 Budget Challenge</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🍋 Little Business (Costs &amp; Profit)</span>
+                  <span className="bg-white/15 px-3 py-1 rounded-full border border-white/20">🏦 DolaBank Adventures</span>
+                </div>
+              </div>
+
+              <div className="shrink-0 flex flex-col items-center gap-3 w-full sm:w-auto">
+                <Link
+                  href="/dolamoney"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#92400e] hover:shadow-[0_8px_0_#92400e] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Coins size={20} />
+                  <span>Play Financial Literacy Game</span>
+                  <span>&rarr;</span>
+                </Link>
+                <span className="text-[11px] text-emerald-200 font-semibold text-center">
+                  Includes Virtual Wallet, Badges &amp; Streaks
+                </span>
               </div>
             </div>
           </div>

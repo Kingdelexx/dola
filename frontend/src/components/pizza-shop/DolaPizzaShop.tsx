@@ -6,8 +6,10 @@ import confetti from 'canvas-confetti';
 import { 
   Volume2, VolumeX, Sparkles, Star, Trophy, ArrowRight, RotateCcw, 
   HelpCircle, CheckCircle2, Heart, Award, Flame, Play, Lightbulb, Lock,
-  ChevronRight, RefreshCw, ChefHat, MessageSquare
+  ChevronRight, RefreshCw, ChefHat, MessageSquare, UserCircle2
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import { speakFemale, stopSpeech } from '@/lib/speech';
 
 // --- Sound Synthesizer via Web Audio API (Zero External Asset Dependency) ---
@@ -457,6 +459,12 @@ export interface DolaPizzaShopProps {
 export default function DolaPizzaShop({ onBackToStage1, initialLevel = 1 }: DolaPizzaShopProps) {
   const router = useRouter();
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Subscription & access checks
+  const { user } = useAuth();
+  const isSubscribed = Boolean(user?.subscription_access?.has_access);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState<boolean>(false);
+  const [showStudentGuidance, setShowStudentGuidance] = useState<boolean>(false);
 
   // Current game state
   const [selectedLevel, setSelectedLevel] = useState<number>(initialLevel);
@@ -1003,32 +1011,49 @@ export default function DolaPizzaShop({ onBackToStage1, initialLevel = 1 }: Dola
           { lvl: 5, title: 'Lvl 5: Fractions', icon: '🍰', desc: 'Half & Quarter' },
           { lvl: 6, title: 'Lvl 6: Loop Coding', icon: '🔄', desc: 'Code Recipes' }
         ].map((tab) => {
-          const isUnlocked = tab.lvl <= unlockedLevel;
+          const isUnlockedByProgress = tab.lvl <= unlockedLevel;
+          const isLockedBySubscription = !isSubscribed && tab.lvl > 1;
+          const isUnlocked = isUnlockedByProgress && !isLockedBySubscription;
           const isActive = tab.lvl === selectedLevel;
           return (
             <button
               key={tab.lvl}
               onClick={() => {
+                if (isLockedBySubscription) {
+                  if (user?.profile?.role === 'parent' || user?.role === 'parent') {
+                    setShowSubscriptionModal(true);
+                  } else {
+                    setShowStudentGuidance(true);
+                  }
+                  return;
+                }
                 if (isUnlocked) {
                   setSelectedLevel(tab.lvl);
                   setCurrentChallengeIndex(0);
                 }
               }}
-              disabled={!isUnlocked}
               className={`flex-1 min-w-[130px] p-2 sm:p-2.5 rounded-xl font-bold text-xs transition-all flex flex-col items-center gap-0.5 text-center
                 ${isActive 
                   ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md scale-102 ring-2 ring-orange-300' 
                   : isUnlocked 
                     ? 'bg-orange-50 hover:bg-orange-100 text-orange-950 border border-orange-200' 
-                    : 'bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed'}`}
+                    : isLockedBySubscription
+                      ? 'bg-amber-50/80 text-amber-900 border border-amber-300 hover:bg-amber-100 cursor-pointer shadow-xs'
+                      : 'bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed'}`}
             >
               <div className="flex items-center gap-1.5 font-black text-sm">
                 <span>{tab.icon}</span>
                 <span>{tab.title}</span>
-                {!isUnlocked && <Lock size={12} className="text-slate-400" />}
+                {isLockedBySubscription ? (
+                  <span className="text-[10px] bg-amber-200 text-amber-950 px-1.5 py-0.5 rounded-full font-black flex items-center gap-0.5">
+                    <Lock size={10} /> Sub
+                  </span>
+                ) : !isUnlocked ? (
+                  <Lock size={12} className="text-slate-400" />
+                ) : null}
               </div>
-              <span className={`text-[10px] ${isActive ? 'text-orange-100 font-medium' : 'text-slate-400'}`}>
-                {tab.desc}
+              <span className={`text-[10px] ${isActive ? 'text-orange-100 font-medium' : isLockedBySubscription ? 'text-amber-800 font-bold' : 'text-slate-400'}`}>
+                {isLockedBySubscription ? '🔒 Unlock Level' : tab.desc}
               </span>
             </button>
           );
@@ -1413,18 +1438,46 @@ export default function DolaPizzaShop({ onBackToStage1, initialLevel = 1 }: Dola
             {/* Call to Action (CTA) Buttons */}
             <div className="space-y-2.5 pt-2 relative z-10">
               {!levelCompleteModal.isGameFinale ? (
-                <button
-                  onClick={() => {
-                    const nextLvl = levelCompleteModal.completedLevel + 1;
-                    setSelectedLevel(nextLvl);
-                    setCurrentChallengeIndex(0);
-                    setLevelCompleteModal(null);
-                  }}
-                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-base shadow-lg shadow-emerald-200 ring-4 ring-emerald-200 flex items-center justify-center gap-2 transform hover:scale-102 active:scale-98 transition-all cursor-pointer"
-                >
-                  <span>Play Level {levelCompleteModal.completedLevel + 1}</span>
-                  <ArrowRight size={20} />
-                </button>
+                !isSubscribed && levelCompleteModal.completedLevel >= 1 ? (
+                  <div className="space-y-3">
+                    <div className="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl text-left">
+                      <div className="flex items-center gap-2 text-amber-900 font-black text-xs uppercase tracking-wider mb-1">
+                        <Sparkles size={14} className="text-amber-600" /> Free Preview Complete!
+                      </div>
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                        Fantastic job finishing Level 1! To continue playing Level 2 (Addition), Level 3 (Subtraction), Fractions, Loops, and all 6 Brain Developer games, ask your parent to unlock DolaCode!
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (user?.profile?.role === 'parent' || user?.role === 'parent') {
+                          setShowSubscriptionModal(true);
+                        } else {
+                          setShowStudentGuidance(true);
+                        }
+                      }}
+                      className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 hover:from-amber-500 hover:to-pink-600 text-white font-black text-base shadow-lg shadow-orange-300 ring-4 ring-orange-200 flex items-center justify-center gap-2 transform hover:scale-102 active:scale-98 transition-all cursor-pointer"
+                    >
+                      <Lock size={18} />
+                      <span>UNLOCK LEVELS 2–6</span>
+                      <ArrowRight size={18} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      const nextLvl = levelCompleteModal.completedLevel + 1;
+                      setSelectedLevel(nextLvl);
+                      setCurrentChallengeIndex(0);
+                      setLevelCompleteModal(null);
+                    }}
+                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-base shadow-lg shadow-emerald-200 ring-4 ring-emerald-200 flex items-center justify-center gap-2 transform hover:scale-102 active:scale-98 transition-all cursor-pointer"
+                  >
+                    <span>Play Level {levelCompleteModal.completedLevel + 1}</span>
+                    <ArrowRight size={20} />
+                  </button>
+                )
               ) : (
                 <button
                   onClick={() => {
@@ -1475,6 +1528,75 @@ export default function DolaPizzaShop({ onBackToStage1, initialLevel = 1 }: Dola
             </div>
           </div>
         </div>
+      )}
+
+      {/* Student Guidance Modal for Unlocking Level 2–6 */}
+      {showStudentGuidance && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-900 border-4 border-amber-400/60 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative text-left text-white">
+            <button
+              onClick={() => setShowStudentGuidance(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center mb-4 shadow-lg border-2 border-white/30 text-3xl">
+              🍕
+            </div>
+            <h3 className="text-2xl font-black text-white mb-2">
+              Ask Your Parent to Unlock Level 2–6!
+            </h3>
+            <p className="text-amber-200/90 text-xs sm:text-sm leading-relaxed mb-4 font-medium">
+              Level 1 is free for all registered chefs! Ask your parent to activate a family plan to unlock all levels &amp; games.
+            </p>
+            <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-xs text-slate-300">
+              <div className="flex items-start gap-2.5">
+                <span className="font-black text-amber-400 bg-amber-400/20 w-5 h-5 rounded-full flex items-center justify-center shrink-0">1</span>
+                <span>Share this link with your parent: <strong className="text-white block mt-0.5">dolacode.com.ng/subscribe</strong></span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <span className="font-black text-amber-400 bg-amber-400/20 w-5 h-5 rounded-full flex items-center justify-center shrink-0">2</span>
+                <span>They log into their Parent Dashboard to activate your account.</span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <span className="font-black text-amber-400 bg-amber-400/20 w-5 h-5 rounded-full flex items-center justify-center shrink-0">3</span>
+                <span>You unlock all 6 Pizza Shop levels, 6 Brain Developer games &amp; 5 Coding Worlds!</span>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    navigator.clipboard?.writeText(window.location.origin + '/subscribe');
+                    alert('Link copied to clipboard! Share it with your parent.');
+                  }
+                }}
+                className="flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider text-center cursor-pointer shadow-md transition-all"
+              >
+                Copy Link for Parent
+              </button>
+              <button
+                onClick={() => setShowStudentGuidance(false)}
+                className="py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs text-center cursor-pointer transition-colors"
+              >
+                Keep Playing Lvl 1
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Parent Direct Subscription Modal */}
+      {showSubscriptionModal && (
+        <SubscriptionModal
+          isOpen={showSubscriptionModal}
+          onClose={() => setShowSubscriptionModal(false)}
+          parentEmail={user?.email || ''}
+          onSuccess={() => {
+            setShowSubscriptionModal(false);
+            window.location.reload();
+          }}
+        />
       )}
     </div>
   );
