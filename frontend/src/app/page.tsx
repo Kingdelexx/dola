@@ -21,7 +21,6 @@ export default function Home() {
   const buttonsRef = useRef(null);
   const featuresRef = useRef(null);
   const shapesRef = useRef(null);
-  const howItWorksRef = useRef(null);
   const demoRef = useRef(null);
 
   const ctaButtonRef = useRef(null);
@@ -47,29 +46,6 @@ export default function Home() {
       gsap.from(titleRef.current, { y: 60, opacity: 0, duration: 1.2, ease: "bounce.out", delay: 0.2 });
       gsap.from(subtitleRef.current, { y: 40, opacity: 0, duration: 1, ease: "power3.out", delay: 0.4 });
       gsap.from(buttonsRef.current, { scale: 0.5, opacity: 0, duration: 1, ease: "elastic.out(1, 0.5)", delay: 0.6 });
-
-      // How It Works Timeline (bouncy steps)
-      const stepTl = gsap.timeline({ repeat: -1, repeatDelay: 1.5 });
-      const steps = [1, 2, 3, 4];
-      steps.forEach(step => {
-        stepTl.to(`.step-${step}`, {
-          y: -15,
-          scale: 1.05,
-          boxShadow: "0 20px 25px -5px rgba(236, 72, 153, 0.3)",
-          borderColor: "#ec4899",
-          duration: 0.3,
-          ease: "power2.out"
-        })
-          .to(`.step-${step} .step-icon`, { scale: 1.3, rotation: 10, duration: 0.2, yoyo: true, repeat: 1 }, "<")
-          .to(`.step-${step}`, {
-            y: 0,
-            scale: 1,
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-            borderColor: "rgba(0,0,0,0.05)",
-            duration: 0.5,
-            ease: "bounce.out"
-          }, "+=0.5");
-      });
 
       // Demo Loop (More energetic)
       const demoTl = gsap.timeline({ repeat: -1 });
@@ -611,64 +587,6 @@ export default function Home() {
                 <ArrowRight size={14} />
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section (Curriculum Roadmap theme) */}
-      <section className="relative z-10 py-32 bg-amber-50 text-slate-800 px-6 border-t-8 border-dashed border-amber-200" ref={howItWorksRef}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-block bg-amber-200/80 text-amber-900 px-4 py-1.5 rounded-full font-black text-xs uppercase tracking-wider">
-              Step-by-Step Pathway
-            </div>
-            <h2 className="text-4xl lg:text-6xl font-black text-amber-600">Your <span className="text-pink-500">Curriculum</span> Roadmap</h2>
-            <p className="text-lg sm:text-xl text-amber-800/80 max-w-2xl mx-auto font-medium">Progress through 4 structured coding stages at your own pace!</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-            {/* Wavy path background for desktop */}
-            <div className="hidden md:block absolute top-1/2 left-[10%] w-[80%] h-4 bg-amber-200 -translate-y-1/2 z-0 rounded-full"></div>
-
-            {[
-              { step: 1, title: "1. Numeracy & Logic", desc: "14 progressive parts & 6 adventure games: numbers, logic, patterns, and spatial grids.", icon: Brain, color: "indigo" },
-              { step: 2, title: "2. Visual Block Coding", desc: "Snap Blockly code cards to control robots, animate characters, and build games.", icon: Blocks, color: "pink" },
-              { step: 3, title: "3. App & Web Studio", desc: "Design interactive app interfaces and write live HTML & CSS web pages.", icon: LayoutGrid, color: "sky" },
-              { step: 4, title: "4. Python Pro + AI", desc: "Write real text-based Python code with personalized guidance from Lizzy AI.", icon: Terminal, color: "purple" }
-            ].map((item, i) => (
-              <div key={i} className={`step-${item.step} bg-white p-6 rounded-[2rem] border-4 border-slate-100 relative z-10 text-center flex flex-col items-center shadow-xl`}>
-                <div className={`step-icon w-16 h-16 bg-indigo-500 rounded-[1.5rem] rotate-3 flex items-center justify-center mb-4 border-4 border-white shadow-lg`}>
-                  <item.icon size={28} className="text-white fill-white" />
-                </div>
-                <div className="text-slate-500 font-black text-base mb-2 bg-slate-50 px-4 py-1 rounded-full border-2 border-slate-100">Stage {item.step}</div>
-                <h3 className="text-xl font-black mb-2 mt-2">{item.title}</h3>
-                <p className="text-slate-500 font-medium text-xs leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* DolaMoney Quest Curriculum Bridge */}
-          <div className="mt-12 bg-white rounded-3xl p-6 sm:p-8 border-4 border-amber-300 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="w-14 h-14 bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-md">
-                🪙
-              </div>
-              <div>
-                <span className="text-[11px] font-black uppercase text-amber-700 tracking-wider">
-                  Companion Arena &bull; All Learners
-                </span>
-                <h4 className="text-xl font-black text-slate-900">DolaMoney Quest (10 Gamified Worlds)</h4>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                  Complements every stage with real-life Nigerian Naira (₦) budgeting, needs vs wants, saving jars, and business simulations!
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/dolamoney"
-              className="shrink-0 px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider shadow-md hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <span>Explore DolaMoney</span>
-              <ArrowRight size={14} />
-            </Link>
           </div>
         </div>
       </section>
