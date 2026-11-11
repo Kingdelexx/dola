@@ -11,7 +11,7 @@ import {
   Coins, Brain, ShieldCheck, Users, ArrowRight, Laptop, CheckCircle2, Store,
   Flame, Award, Lightbulb, Zap, Code
 } from 'lucide-react';
-import { FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
@@ -133,16 +133,6 @@ export default function Home() {
           <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain group-hover:scale-105 transition-transform" />
         </Link>
         <div className="space-x-3 flex items-center">
-          <a
-            href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm hover:shadow transition-all hover:scale-105"
-            title="Join DolaCode WhatsApp Community"
-          >
-            <FaWhatsapp size={16} />
-            <span>Community</span>
-          </a>
           <Link href="/subscribe" className="px-4 py-2 rounded-full font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-100/70 transition-colors">
             Pricing
           </Link>
@@ -692,32 +682,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WhatsApp Community Section */}
-      <section className="relative z-10 py-16 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-6 text-white overflow-hidden border-t-8 border-emerald-400">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-3 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-black uppercase tracking-wider">
-              <FaWhatsapp size={16} className="text-white" /> Official Parent &amp; Educator Community
-            </div>
-            <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-              Join the DolaCode Community on WhatsApp
-            </h3>
-            <p className="text-emerald-100 text-base max-w-xl font-medium">
-              Connect with fellow parents, STEM educators, and coding mentors. Receive weekly coding activities, parenting tips, platform updates, and direct support.
-            </p>
-          </div>
-          <a
-            href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-8 py-4 bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl font-black text-base shadow-[0_6px_0_#065f46] hover:translate-y-[-2px] active:translate-y-[2px] transition-all flex items-center gap-3 cursor-pointer"
-          >
-            <FaWhatsapp size={24} className="text-emerald-600" />
-            <span>Join WhatsApp Community</span>
-          </a>
-        </div>
-      </section>
-
       {/* Playful Footer */}
       <footer className="bg-slate-900 text-slate-300 py-20 px-6 border-t-[12px] border-sky-400 relative z-10">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
@@ -730,7 +694,6 @@ export default function Home() {
               Empowering the next generation of creators through fun, interactive, and intelligent coding adventures!
             </p>
             <div className="flex items-center gap-3 pt-2">
-              <a href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" target="_blank" rel="noopener noreferrer" title="Join DolaCode WhatsApp Community" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 text-emerald-400 hover:text-white transition-all transform hover:-translate-y-2"><FaWhatsapp size={22} /></a>
               <a href="https://www.facebook.com/DevnaijaAcademykids" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Facebook" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-all transform hover:-translate-y-2"><FaFacebook size={20} /></a>
               <a href="https://www.instagram.com/devnaijaacademykids13/" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Instagram" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all transform hover:-translate-y-2"><FaInstagram size={20} /></a>
               <a href="https://www.youtube.com/@DevnaijaKids-z8p" target="_blank" rel="noopener noreferrer" title="Devnaija Kids YouTube" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white transition-all transform hover:-translate-y-2"><FaYoutube size={20} /></a>
@@ -760,16 +723,6 @@ export default function Home() {
             <ul className="space-y-4 font-bold">
               <li><Link href="/about" className="hover:text-purple-300 hover:pl-2 transition-all block">About Us</Link></li>
               <li><Link href="/subscribe" className="hover:text-purple-300 hover:pl-2 transition-all block">Pricing &amp; Plans</Link></li>
-              <li>
-                <a 
-                  href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-emerald-400 hover:text-emerald-300 hover:pl-2 transition-all flex items-center gap-1.5 font-bold"
-                >
-                  <FaWhatsapp size={15} /> WhatsApp Community
-                </a>
-              </li>
               <li><Link href="/child-safety" className="hover:text-purple-300 hover:pl-2 transition-all block">Child Safety</Link></li>
               <li><Link href="/contact" className="hover:text-purple-300 hover:pl-2 transition-all block">Contact</Link></li>
             </ul>

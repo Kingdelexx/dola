@@ -682,34 +682,36 @@ export default function ParentDashboardPage() {
           </div>
         </div>
 
-        {/* DolaCode WhatsApp Community Banner */}
-        <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-emerald-500/50">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white shadow-inner">
-              <MessageSquare className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h4 className="font-extrabold text-sm text-white">Join the DolaCode Parents Community on WhatsApp</h4>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/40 border border-emerald-300/30 text-[10px] font-black uppercase tracking-wider text-emerald-100 hidden sm:inline-block">
-                  Parents &amp; Mentors
-                </span>
+        {/* DolaCode WhatsApp Community Banner for Paid Members */}
+        {(data?.parent_subscription?.is_active || data?.parent_subscription?.has_subscription || user?.subscription_access?.has_access || user?.is_superuser) && (
+          <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-emerald-500/50">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white shadow-inner">
+                <MessageSquare className="w-6 h-6 text-white" />
               </div>
-              <p className="text-xs text-emerald-100 font-medium mt-0.5">
-                Get weekly STEM home challenges, parenting guidance, early platform updates, and live support directly from our founders.
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-extrabold text-sm text-white">DolaCode Paid Members WhatsApp Community</h4>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/40 border border-emerald-300/30 text-[10px] font-black uppercase tracking-wider text-emerald-100 hidden sm:inline-block">
+                    VIP Priority Support
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-100 font-medium mt-0.5">
+                  Have issues, complaints, or something to share? Connect directly with our mentors and founding team for priority assistance, feedback, and student project showcases.
+                </p>
+              </div>
             </div>
+            <a
+              href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-4 py-2.5 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-xs shadow-md shadow-emerald-950/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Join WhatsApp Community</span>
+              <ArrowRight size={14} />
+            </a>
           </div>
-          <a
-            href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-4 py-2.5 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-xs shadow-md shadow-emerald-950/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <span>Join WhatsApp Community</span>
-            <ArrowRight size={14} />
-          </a>
-        </div>
+        )}
 
         {/* Children Roster Cards & Metrics */}
         {children.length > 0 ? (

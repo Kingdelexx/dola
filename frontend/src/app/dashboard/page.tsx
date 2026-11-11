@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Rocket, Play, LogOut, Code, Calendar, Star, Trophy, Sparkles, Gamepad2, Quote, Crown, Target, Mail, Lock, Brain, ShieldCheck, UserCircle2 } from 'lucide-react';
 import { gsap } from 'gsap';
+import { FaWhatsapp } from 'react-icons/fa';
 
 export default function DashboardPage() {
   const { user, logout, loading } = useAuth();
@@ -29,6 +30,12 @@ export default function DashboardPage() {
   const [showStudentGuidance, setShowStudentGuidance] = useState(false);
 
   const isUnpaid = user?.subscription_access && !user.subscription_access.has_access;
+  const isPaidSubscriber = Boolean(
+    user?.subscription_access?.has_access ||
+    (user?.profile?.role && ['teacher', 'school_admin', 'super_admin'].includes(user.profile.role)) ||
+    user?.is_superuser ||
+    user?.is_staff
+  );
 
   const handleUnlockClick = () => {
     if (user?.profile?.role === 'parent') {
@@ -127,9 +134,23 @@ export default function DashboardPage() {
           <Link href="/" className="flex items-center bg-white px-5 py-2.5 rounded-full border-4 border-white shadow-[0_8px_0_rgba(0,0,0,0.05)] hover:translate-y-[-2px] transition-transform">
             <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain" />
           </Link>
-          <button onClick={logout} className="flex items-center gap-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-500 border-2 border-slate-200 hover:border-red-200 px-6 py-3 rounded-full font-bold transition-all shadow-sm">
-            <LogOut size={20} /> Save & Exit
-          </button>
+          <div className="flex items-center gap-3">
+            {isPaidSubscriber && (
+              <a
+                href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 px-4 py-2.5 rounded-full font-bold text-xs shadow-xs transition-all hover:scale-105"
+                title="VIP Paid Members Community & Support"
+              >
+                <FaWhatsapp size={16} className="text-emerald-600" />
+                <span>Community &amp; Support</span>
+              </a>
+            )}
+            <button onClick={logout} className="flex items-center gap-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-500 border-2 border-slate-200 hover:border-red-200 px-6 py-3 rounded-full font-bold transition-all shadow-sm">
+              <LogOut size={20} /> Save &amp; Exit
+            </button>
+          </div>
         </div>
 
         {/* Welcome Profile Card */}
@@ -486,6 +507,59 @@ export default function DashboardPage() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Paid Members Community & Support Card */}
+        {isPaidSubscriber && (
+          <div className="mt-12 mb-10 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-emerald-300/60 shadow-xl dash-element relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
+              💬
+            </div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+              <div className="flex items-start sm:items-center gap-5">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-inner border border-white/40 text-white group-hover:scale-105 group-hover:rotate-6 transition-transform">
+                  <FaWhatsapp className="w-9 h-9" />
+                </div>
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-300/30 text-emerald-100 text-xs font-black uppercase tracking-wider mb-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                    Paid Members VIP Community &amp; Support
+                  </div>
+                  <h3 className="font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+                    Have Issues, Complaints, or Something to Share?
+                  </h3>
+                  <p className="text-emerald-100 text-xs sm:text-sm font-medium mt-1.5 max-w-2xl leading-relaxed">
+                    As a valued subscriber, you have direct priority access to our support mentors and fellow creators! If you experience any technical issues, have a complaint, want to suggest improvements, or have an exciting coding project or milestone your child built that you&apos;d love to share &mdash; join our official WhatsApp group.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2.5 mt-3 text-xs font-bold text-emerald-100">
+                    <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/15">
+                      🛠️ Fast Bug &amp; Issue Resolution
+                    </span>
+                    <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/15">
+                      📢 Complaints &amp; Suggestions
+                    </span>
+                    <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/15">
+                      🎉 Share Student Wins &amp; Creations
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative z-10 w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-3">
+                <a
+                  href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full lg:w-auto px-8 py-4 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-800 hover:text-emerald-900 font-black text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all transform active:translate-y-1 flex items-center justify-center gap-2.5 cursor-pointer text-center"
+                >
+                  <FaWhatsapp size={20} className="text-emerald-600" />
+                  <span>Join WhatsApp Community</span>
+                </a>
+              </div>
             </div>
           </div>
         )}
