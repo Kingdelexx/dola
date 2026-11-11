@@ -149,7 +149,7 @@ export default function DolaMoneyQuestPage() {
     { name: "Goal Getter", icon: "🎯", desc: "Hit key savings milestones towards your dream goals!", world: 8 },
     { name: "Money Wise", icon: "🛡️", desc: "Spot tricky money traps and scams by consulting trusted adults!", world: 9 },
     { name: "Young Entrepreneur", icon: "🚀", desc: "Launch, price, and reinvest in your growing business venture!", world: 10 },
-    { name: "DolaMoney Champion", icon: "👑", desc: "Conquer all DolaMoney Quest worlds with financial wisdom!", world: 10 }
+    { name: "DolaMoney Champion", icon: "👑", desc: "Conquer all Financial Literacy Game worlds with financial wisdom!", world: 10 }
   ];
 
   const worlds = [
@@ -355,7 +355,7 @@ export default function DolaMoneyQuestPage() {
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight mb-2">
-              DolaMoney Quest
+              Financial Literacy Game
             </h1>
 
             <p className="text-xl sm:text-2xl font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-500 bg-clip-text text-transparent mb-3">
@@ -616,7 +616,7 @@ export default function DolaMoneyQuestPage() {
                 <div>
                   <h3 className="text-2xl font-black text-slate-900">Financial Badges</h3>
                   <p className="text-xs text-emerald-600 font-black">
-                    Earn all 10 badges by completing DolaMoney Quest missions!
+                    Earn all 10 badges by completing Financial Literacy Game missions!
                   </p>
                 </div>
               </div>

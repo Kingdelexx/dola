@@ -716,7 +716,7 @@ DEFAULT_BADGES = [
     },
     {
         "name": "DolaMoney Champion",
-        "description": "Conquer all DolaMoney Quest worlds with financial wisdom!",
+        "description": "Conquer all Financial Literacy Game worlds with financial wisdom!",
         "icon": "👑",
         "condition_type": "dolamoney_champion",
         "condition_value": 1

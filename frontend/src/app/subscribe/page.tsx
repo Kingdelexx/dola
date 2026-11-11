@@ -669,7 +669,7 @@ export default function SubscribePage() {
             </button>
             {openFaqIndex === 1 && (
               <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium border-t border-slate-100 pt-3">
-                DolaCode provides a structured 4-stage coding continuum plus practical financial literacy: Stage 1 (Math &amp; Computational Readiness), Stage 2 (Visual Block Coding with Blockly), Stage 3 (App Studio for web and mobile interfaces), Stage 4 (Python Pro text coding with Lizzy AI guidance), and our all-new DolaMoney Quest (Nigerian Naira currency recognition, budgeting, smart shopping, saving, and entrepreneurship).
+                DolaCode provides a structured 5-world coding continuum plus practical financial literacy: World 1 (Math &amp; Computational Readiness), World 2 (Visual Block Coding with Blockly), World 3 (Python Pro code animation), World 4 (Web Dev Studio), World 5 (App Dev Studio), and our all-new Financial Literacy Game (Nigerian Naira currency recognition, budgeting, smart shopping, saving, and entrepreneurship).
               </div>
             )}
           </div>
@@ -889,7 +889,7 @@ export default function SubscribePage() {
               <li><Link href="/python-studio" className="hover:text-white transition-colors">3. Python Pro</Link></li>
               <li><Link href="/web-studio" className="hover:text-white transition-colors">4. Web Dev Studio</Link></li>
               <li><Link href="/app-studio" className="hover:text-white transition-colors">5. App Dev Studio</Link></li>
-              <li><Link href="/dolamoney" className="hover:text-yellow-300 transition-colors text-yellow-400 font-bold">🪙 DolaMoney Quest (₦)</Link></li>
+              <li><Link href="/dolamoney" className="hover:text-yellow-300 transition-colors text-yellow-400 font-bold">🪙 Financial Literacy Game (₦)</Link></li>
             </ul>
           </div>
 

@@ -1797,7 +1797,7 @@ export default function ParentDashboardPage() {
                     </div>
                   </div>
 
-                  {/* Financial Literacy (DolaMoney Quest) Analytics */}
+                  {/* Financial Literacy Game Analytics */}
                   <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/70 border-2 border-emerald-500/40 text-white space-y-6 shadow-xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -1808,7 +1808,7 @@ export default function ParentDashboardPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="font-black text-lg text-white">Financial Literacy &bull; DolaMoney Quest</h4>
+                            <h4 className="font-black text-lg text-white">Financial Literacy Game</h4>
                             <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-black uppercase tracking-wider">
                               Nigerian Naira (₦)
                             </span>

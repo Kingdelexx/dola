@@ -81,11 +81,11 @@ export default function Home() {
   const faqs = [
     {
       question: "What exactly will my child learn?",
-      answer: "DolaCode provides a structured, progressive learning journey: Stage 1 (Math & Computational Thinking) develops logic, patterns, and problem solving; Stage 2 (Visual Block Coding) teaches algorithms, loops, and game logic; Stage 3 (App Studio) teaches UI design and building real interactive web apps; Stage 4 (Python Pro) introduces real text-based Python programming with Lizzy AI assistance; and DolaMoney Quest teaches practical financial literacy (currency, budgeting, saving, profit, and simple entrepreneurship in Nigerian Naira ₦)."
+      answer: "DolaCode provides a structured, progressive learning journey: Stage 1 (Math & Computational Thinking) develops logic, patterns, and problem solving; Stage 2 (Visual Block Coding) teaches algorithms, loops, and game logic; Stage 3 (App Studio) teaches UI design and building real interactive web apps; Stage 4 (Python Pro) introduces real text-based Python programming; and our Financial Literacy Game teaches practical financial literacy (currency, budgeting, saving, profit, and simple entrepreneurship in Nigerian Naira ₦)."
     },
     {
       question: "Will my child actually enjoy it?",
-      answer: "Yes! DolaCode is built like an engaging adventure game rather than a boring lecture. Children play missions, rescue pets, run virtual shops, solve interactive puzzles, earn DolaCoins, collect badges, and level up. With friendly real-time encouragement from our AI tutor Lizzy, learning feels exciting and rewarding rather than frustrating."
+      answer: "Yes! DolaCode is built like an engaging adventure game rather than a boring lecture. Children play missions, rescue pets, run virtual shops, solve interactive puzzles, earn DolaCoins, collect badges, and level up. With friendly real-time encouragement and fun rewards, learning feels exciting and rewarding rather than frustrating."
     },
     {
       question: "Can I see what my child is learning?",
@@ -93,11 +93,11 @@ export default function Home() {
     },
     {
       question: "Why should I pay when there are free videos online?",
-      answer: "Watching free videos is passive — children quickly lose focus, skip around, or copy code without understanding the underlying logic. DolaCode is 100% interactive and hands-on: children code directly in their browser, experiment, fix bugs, and build real projects. You get a curated, age-appropriate curriculum, 24/7 personalized guidance from Lizzy AI, and a safe, ad-free environment without distractions or unsafe online rabbit holes."
+      answer: "Watching free videos is passive — children quickly lose focus, skip around, or copy code without understanding the underlying logic. DolaCode is 100% interactive and hands-on: children code directly in their browser, experiment, fix bugs, and build real projects. You get a curated, age-appropriate curriculum, interactive guidance, and a safe, ad-free environment without distractions or unsafe online rabbit holes."
     },
     {
       question: "What age is this platform designed for?",
-      answer: "DolaCode is built specifically for kids and teens aged 5 to 16. Younger learners (ages 5–8) build strong numeracy and block coding foundations, while older learners (ages 9–16) advance through app building, game design, text-based Python programming, and practical money management in DolaMoney Quest."
+      answer: "DolaCode is built specifically for kids and teens aged 5 to 16. Younger learners (ages 5–8) build strong numeracy and block coding foundations, while older learners (ages 9–16) advance through app building, game design, text-based Python programming, and practical money management in our Financial Literacy Game."
     },
     {
       question: "Do I need prior coding experience?",
@@ -177,7 +177,7 @@ export default function Home() {
               Code your own <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Games</span> and <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-emerald-500">Adventures!</span>
             </h1>
             <p ref={subtitleRef} className="text-lg sm:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
-              Join the next generation of young tech creators! Master playful numeracy, visual block coding, web app creation, real Python, and our all-new <strong>DolaMoney Quest</strong>.
+              Join the next generation of young tech creators! Master playful numeracy, visual block coding, web app creation, real Python, and our all-new <strong>Financial Literacy Game</strong>.
             </p>
             <div ref={buttonsRef} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
               <Link href={user ? "/dashboard" : "/signup"} className="group relative px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full font-black text-lg text-white shadow-[0_8px_0_#c026d3] hover:translate-y-[-2px] hover:shadow-[0_10px_0_#c026d3] active:translate-y-[6px] active:shadow-[0_2px_0_#c026d3] transition-all w-full sm:w-auto text-center flex items-center justify-center gap-2.5 cursor-pointer">
@@ -186,7 +186,7 @@ export default function Home() {
               </Link>
               <Link href="/dolamoney" className="px-7 py-4 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 rounded-full font-black text-base shadow-[0_6px_0_#d97706] hover:translate-y-[-2px] active:translate-y-[4px] active:shadow-none transition-all w-full sm:w-auto text-center flex items-center justify-center gap-2 border-2 border-white cursor-pointer">
                 <Coins size={20} className="text-slate-900" />
-                <span>DolaMoney Quest 🪙</span>
+                <span>Financial Literacy Game 🪙</span>
               </Link>
             </div>
             {/* Quick platform highlights */}
@@ -198,10 +198,10 @@ export default function Home() {
                 <CheckCircle2 size={14} className="text-emerald-500" /> 6 Adventure Mini-Games
               </span>
               <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <CheckCircle2 size={14} className="text-emerald-500" /> 10 DolaMoney Worlds (₦)
+                <CheckCircle2 size={14} className="text-emerald-500" /> 10 Financial Literacy Worlds (₦)
               </span>
               <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
-                <Bot size={14} className="text-purple-500" /> Lizzy AI Tutor
+                <ShieldCheck size={14} className="text-purple-500" /> 100% Kid Safe &amp; Ad-Free
               </span>
             </div>
           </div>
@@ -363,7 +363,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* DolaMoney Quest Hero Spotlight */}
+          {/* Financial Literacy Game Hero Spotlight */}
           <div className="mt-14 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-[2.5rem] p-6 sm:p-10 border-4 border-emerald-300/80 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -right-6 -bottom-6 text-9xl opacity-15 pointer-events-none select-none">
@@ -376,7 +376,7 @@ export default function Home() {
                   <Coins size={14} className="text-yellow-300" /> New Financial Literacy Adventure &bull; 10 Worlds
                 </div>
                 <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                  DolaMoney Quest: <span className="text-yellow-300">Learn. Earn. Save. Spend. Build.</span>
+                  Financial Literacy Game: <span className="text-yellow-300">Learn. Earn. Save. Spend. Build.</span>
                 </h3>
                 <p className="text-emerald-100 text-sm sm:text-base font-medium leading-relaxed">
                   Teach practical financial intelligence to children aged 6–12 through games, simulations, and real decisions using Nigerian Naira (₦). No boring economics theory—just pure fun, DolaCoins, and real-life habits!
@@ -397,7 +397,7 @@ export default function Home() {
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-[0_6px_0_#92400e] hover:shadow-[0_8px_0_#92400e] transition-all transform active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Coins size={20} />
-                  <span>Enter DolaMoney Quest</span>
+                  <span>Play Financial Literacy Game</span>
                   <span>&rarr;</span>
                 </Link>
                 <span className="text-[11px] text-emerald-200 font-semibold text-center">
@@ -736,7 +736,7 @@ export default function Home() {
               <li><Link href="/app-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">5. App Dev Studio</Link></li>
               <li>
                 <Link href="/dolamoney" className="hover:text-yellow-300 hover:pl-2 transition-all block text-yellow-400 font-black">
-                  🪙 DolaMoney Quest (₦)
+                  🪙 Financial Literacy Game (₦)
                 </Link>
               </li>
             </ul>

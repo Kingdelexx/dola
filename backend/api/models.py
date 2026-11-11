@@ -670,7 +670,7 @@ class DolaMoneyProgress(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.username} - DolaMoney Quest ({self.dola_coins} Coins, World {self.current_world})"
+        return f"{self.user.username} - Financial Literacy Game ({self.dola_coins} Coins, World {self.current_world})"
 
 
 
