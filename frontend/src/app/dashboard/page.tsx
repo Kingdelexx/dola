@@ -531,10 +531,10 @@ export default function DashboardPage() {
           {/* World 3: Python Pro */}
           <div className="dash-element">
             {isStage3Unlocked ? (
-              <Link href="/stage4" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(139,92,246,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.5)] hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
+              <Link href="/python-studio" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(139,92,246,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.5)] hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-purple-50 to-transparent"></div>
                 <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
-                  <Code size={32} />
+                  <span className="text-3xl">🐍</span>
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-800">World 3</h3>
                 <p className="text-purple-600 font-bold bg-purple-50 px-3 py-0.5 rounded-full mb-3 text-sm">Python Pro</p>
@@ -543,7 +543,7 @@ export default function DashboardPage() {
                     <Lock size={10} /> Locked Adventure
                   </div>
                 )}
-                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Write real text-based Python code and build programs with an AI sidekick.</p>
+                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Control game animations with real Python across 5 classes: Robo Motion Island, Power Loop Realm, Variable Vault, Decision Dungeon, and Cyber Dragon Boss Battle!</p>
                 <div className="mt-4 bg-purple-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#6d28d9] group-hover:bg-purple-400 transition-colors">Play Now</div>
               </Link>
             ) : (

@@ -886,7 +886,7 @@ export default function SubscribePage() {
             <ul className="space-y-2.5 text-xs font-semibold text-slate-400">
               <li><Link href="/stage1" className="hover:text-white transition-colors">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-white transition-colors">2. Block Coding</Link></li>
-              <li><Link href="/stage4" className="hover:text-white transition-colors">3. Python Pro</Link></li>
+              <li><Link href="/python-studio" className="hover:text-white transition-colors">3. Python Pro</Link></li>
               <li><Link href="/web-studio" className="hover:text-white transition-colors">4. Web Dev Studio</Link></li>
               <li><Link href="/app-studio" className="hover:text-white transition-colors">5. App Dev Studio</Link></li>
               <li><Link href="/dolamoney" className="hover:text-yellow-300 transition-colors text-yellow-400 font-bold">🪙 DolaMoney Quest (₦)</Link></li>

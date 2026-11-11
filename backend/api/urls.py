@@ -12,6 +12,8 @@ from .views import (
     WebChallengeProjectsListView,
     AppChallengeDetailView, AppChallengeSaveDraftView, AppChallengeSubmitView,
     AppChallengeProjectsListView,
+    PythonChallengeDetailView, PythonChallengeSaveDraftView, PythonChallengeSubmitView,
+    PythonChallengeProjectsListView,
     SchoolJoinInfoView, ClassJoinInfoView, StudentJoinClassView,
     PizzaShopSaveProgressView, PizzaShopGetProgressView,
     RobotMazeSaveProgressView, RobotMazeGetProgressView,
@@ -110,6 +112,12 @@ urlpatterns = [
     path('app-studio/save-draft/', AppChallengeSaveDraftView.as_view(), name='app_challenge_save_draft'),
     path('app-studio/submit/', AppChallengeSubmitView.as_view(), name='app_challenge_submit'),
     path('app-studio/projects-list/', AppChallengeProjectsListView.as_view(), name='app_challenge_projects_list'),
+
+    # Python Studio APIs (World 3: Python Pro)
+    path('python-studio/challenges/<str:slug>/', PythonChallengeDetailView.as_view(), name='python_challenge_detail'),
+    path('python-studio/save-draft/', PythonChallengeSaveDraftView.as_view(), name='python_challenge_save_draft'),
+    path('python-studio/submit/', PythonChallengeSubmitView.as_view(), name='python_challenge_submit'),
+    path('python-studio/projects-list/', PythonChallengeProjectsListView.as_view(), name='python_challenge_projects_list'),
 
     # Premium Content Delivery
     path('curriculum/premium-content/', PremiumContentDeliveryView.as_view(), name='premium_content_delivery'),

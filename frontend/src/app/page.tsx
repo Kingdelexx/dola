@@ -333,11 +333,11 @@ export default function Home() {
                   <Terminal size={32} />
                 </div>
                 <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  Ages 10–16 &bull; Real Python
+                  Ages 9–16 &bull; 5 Python Classes
                 </div>
                 <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">3. Python Pro</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
-                  Write industry-standard text-based Python code! Build programs, games, and algorithms with 24/7 personalized hints and syntax error help from Lizzy AI.
+                  Code-control animation! Write typed Python to control robots across 5 game classes: Robo Motion Island, Power Loop Realm, Variable Vault, Decision Dungeon, and Cyber Dragon Boss Battle!
                 </p>
               </div>
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
@@ -840,7 +840,7 @@ export default function Home() {
             <ul className="space-y-3 font-bold text-sm">
               <li><Link href="/stage1" className="hover:text-pink-400 hover:pl-2 transition-all block">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-pink-400 hover:pl-2 transition-all block">2. Block Coding</Link></li>
-              <li><Link href="/stage4" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Pro</Link></li>
+              <li><Link href="/python-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Pro</Link></li>
               <li><Link href="/web-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Web Dev Studio</Link></li>
               <li><Link href="/app-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">5. App Dev Studio</Link></li>
               <li>

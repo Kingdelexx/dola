@@ -236,6 +236,36 @@ class StudentAppChallengeProgress(models.Model):
         return f"{self.student.username} - {self.challenge.title} ({'Completed' if self.is_completed else 'In Progress'})"
 
 
+class PythonChallenge(models.Model):
+    slug = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=200)
+    class_number = models.PositiveIntegerField(default=1)
+    stage_order = models.PositiveIntegerField(default=1)
+    instructions_markdown = models.TextField()
+    what_to_achieve = models.TextField(blank=True, default='')
+    starter_code = models.TextField(blank=True, default='')
+    game_config = models.JSONField(default=dict, blank=True)
+    solution_criteria = models.JSONField(default=dict, blank=True)
+    reward_xp = models.IntegerField(default=60)
+
+    def __str__(self):
+        return f"Class {self.class_number} - {self.title} ({self.slug})"
+
+
+class StudentPythonChallengeProgress(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='python_challenge_progresses')
+    challenge = models.ForeignKey(PythonChallenge, on_delete=models.CASCADE, related_name='student_python_progresses')
+    saved_code = models.TextField(blank=True, null=True)
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('student', 'challenge')
+
+    def __str__(self):
+        return f"{self.student.username} - {self.challenge.title} ({'Completed' if self.is_completed else 'In Progress'})"
+
+
 class PizzaShopProgress(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pizza_shop_progress')
     current_level = models.IntegerField(default=1)

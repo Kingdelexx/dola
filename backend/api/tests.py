@@ -224,3 +224,55 @@ class AppDevStudioAPITests(TestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.points, 80) # 20 + 60 = 80
 
+
+class PythonStudioAPITests(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from api.models import PythonChallenge
+
+        self.client = APIClient()
+        self.student = User.objects.create_user(username="py_kid", email="py_kid@dola.com", password="password123", is_staff=True)
+        self.profile = UserProfile.objects.create(user=self.student, role="student", points=30)
+        self.client.force_authenticate(user=self.student)
+
+        self.challenge = PythonChallenge.objects.create(
+            slug="test-robo-motion",
+            title="Class 1: Robo Motion Island",
+            class_number=1,
+            stage_order=1,
+            instructions_markdown="Navigate and collect energy crystals with Python commands.",
+            what_to_achieve="Collect 3 power crystals with hero.move_right() and hero.collect().",
+            starter_code="hero.move_right(2)\nhero.collect()",
+            game_config={"scene": "island"},
+            solution_criteria={
+                "required_methods": ["hero.move_right", "hero.collect"],
+                "required_keywords": ["hero"]
+            },
+            reward_xp=60
+        )
+
+    def test_get_python_challenge_detail(self):
+        response = self.client.get(f'/api/python-studio/challenges/{self.challenge.slug}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['challenge']['title'], "Class 1: Robo Motion Island")
+
+    def test_save_python_code_draft(self):
+        payload = {
+            "slug": self.challenge.slug,
+            "saved_code": "hero.move_right(4)\nhero.collect()\nhero.jump()"
+        }
+        response = self.client.post('/api/python-studio/save-draft/', payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+
+    def test_submit_python_solution(self):
+        payload = {
+            "slug": self.challenge.slug,
+            "code": "hero.move_right(3)\nhero.collect()\nhero.jump()"
+        }
+        response = self.client.post('/api/python-studio/submit/', payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data.get('success'))
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.points, 90)  # 30 + 60 = 90
+

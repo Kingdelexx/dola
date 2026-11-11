@@ -348,7 +348,10 @@ class FeedbackSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user', 'created_at')
 
 
-from .models import WebChallenge, StudentChallengeProgress, AppChallenge, StudentAppChallengeProgress, BlocklyProject, PythonProject, AppStudioProject
+from .models import (
+    WebChallenge, StudentChallengeProgress, AppChallenge, StudentAppChallengeProgress,
+    PythonChallenge, StudentPythonChallengeProgress, BlocklyProject, PythonProject, AppStudioProject
+)
 
 class WebChallengeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -380,6 +383,22 @@ class StudentAppChallengeProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentAppChallengeProgress
         fields = ('id', 'challenge', 'saved_screens', 'saved_code', 'saved_blockly', 'is_completed', 'completed_at')
+
+
+class PythonChallengeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PythonChallenge
+        fields = (
+            'id', 'slug', 'title', 'class_number', 'stage_order', 'instructions_markdown',
+            'what_to_achieve', 'starter_code', 'game_config', 'solution_criteria', 'reward_xp'
+        )
+
+class StudentPythonChallengeProgressSerializer(serializers.ModelSerializer):
+    challenge = PythonChallengeSerializer(read_only=True)
+
+    class Meta:
+        model = StudentPythonChallengeProgress
+        fields = ('id', 'challenge', 'saved_code', 'is_completed', 'completed_at')
 
 
 class BlocklyProjectSerializer(serializers.ModelSerializer):

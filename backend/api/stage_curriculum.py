@@ -25,7 +25,14 @@ STAGE_KNOWLEDGE = {
     },
     "3": {
         "title": "World 3: Python Pro",
-        "description": "Real text-based Python programming with an AI sidekick. Covers variables, data types, print statements, loops, functions, and algorithm challenges."
+        "description": "Code-control animated Python studio. Children write real typed Python to navigate obstacle mazes, build cosmic bridges with for loops, manage coin and health variables in vaults, dodge traps with if/else conditionals, and code modular functions to defeat the Cyber Dragon in boss battles.",
+        "classes": {
+            1: "Class 1: Robo Motion Island — Python Commands & Sequencing. Learn Python statements and function arguments (hero.move_right(3), hero.jump(), hero.collect(), hero.say()). Move through grid mazes and grab energy gems. Project: Robo Treasure Run.",
+            2: "Class 2: Power Loop Realm — For Loops & Repetition. Master 'for i in range(count):' without repeating code. Build bridges across voids and climb cosmic star stairs. Project: Cosmic Bridge Builder.",
+            3: "Class 3: Variable Vault — Variables, Math & Score Counters. Learn variables that store numbers (coins = 0, health = 100, coins = coins + 20, coins = coins - 15). Pay the Goblin Merchant for the Golden Key and unlock the vault. Project: Vault Master Heist.",
+            4: "Class 4: Decision Dungeon — Conditionals (If, Elif, Else). Teach robots to scan sensor hazards and match color-coded security gates (if gate == 'red'). Project: Smart Scanner Drone.",
+            5: "Class 5: Code Master Challenge — Functions & Boss Battle. Define modular reusable functions (def attack_combo():), combine loops and health variables, and defeat the Cyber Dragon. Final Project: Epic Cyber Dragon Defense."
+        }
     },
     "4": {
         "title": "World 4: Web Dev Studio",
@@ -70,7 +77,7 @@ def get_curriculum_context(stage, level, extra_context=""):
             summary += f"\nCurriculum Area: {part_desc}"
         except ValueError:
             pass
-    elif stage_str in ["4", "5"] and "classes" in info:
+    elif stage_str in ["3", "4", "5"] and "classes" in info:
         try:
             cls_num = int(level_str)
             cls_desc = info["classes"].get(cls_num, "")

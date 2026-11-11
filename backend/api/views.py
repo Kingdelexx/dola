@@ -3550,8 +3550,8 @@ def validate_html_solution(html_code, css_code, criteria, js_code=''):
 
 
 from django.utils import timezone
-from .models import WebChallenge, StudentChallengeProgress, AppChallenge, StudentAppChallengeProgress, ProgressLog
-from .serializers import WebChallengeSerializer, StudentChallengeProgressSerializer, AppChallengeSerializer, StudentAppChallengeProgressSerializer
+from .models import WebChallenge, StudentChallengeProgress, AppChallenge, StudentAppChallengeProgress, PythonChallenge, StudentPythonChallengeProgress, ProgressLog
+from .serializers import WebChallengeSerializer, StudentChallengeProgressSerializer, AppChallengeSerializer, StudentAppChallengeProgressSerializer, PythonChallengeSerializer, StudentPythonChallengeProgressSerializer
 
 class WebChallengeDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
@@ -4060,6 +4060,245 @@ class AppChallengeProjectsListView(APIView):
                 "is_completed": p.is_completed if p else False,
                 "completed_at": p.completed_at if p else None,
                 "has_draft": True if (p and p.saved_screens) else False
+            })
+
+        return Response({
+            "success": True,
+            "projects": projects
+        })
+
+
+def validate_python_solution(code, solution_criteria):
+    if not solution_criteria:
+        return True, []
+
+    passed_all = True
+    results = []
+
+    req_methods = solution_criteria.get('required_methods', [])
+    for method in req_methods:
+        has_method = method in code
+        results.append({
+            "criterion": f"Must call command '{method}()'",
+            "passed": has_method
+        })
+        if not has_method:
+            passed_all = False
+
+    req_keywords = solution_criteria.get('required_keywords', [])
+    for kw in req_keywords:
+        has_kw = kw in code
+        results.append({
+            "criterion": f"Must use Python keyword or variable '{kw}'",
+            "passed": has_kw
+        })
+        if not has_kw:
+            passed_all = False
+
+    return passed_all, results
+
+
+class PythonChallengeDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'stage4'
+
+    def get(self, request, slug):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to view student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        challenge = PythonChallenge.objects.filter(slug=slug).first()
+        if not challenge:
+            challenge = PythonChallenge.objects.create(
+                slug=slug,
+                title="Class 1: Robo Motion Island",
+                class_number=1,
+                stage_order=1,
+                instructions_markdown="## Class 1 — Robo Motion Island 🤖\nLearn Python statements and sequencing commands!",
+                what_to_achieve="Navigate the island maze and collect all crystals.",
+                starter_code="hero.move_right(2)\nhero.collect()\nhero.jump()",
+                game_config={"scene": "island"},
+                solution_criteria={"required_methods": ["hero.move_right"]},
+                reward_xp=60
+            )
+
+        student_progress_data = None
+        if target_user and target_user.is_authenticated:
+            progress, _ = StudentPythonChallengeProgress.objects.get_or_create(
+                student=target_user,
+                challenge=challenge
+            )
+            student_progress_data = {
+                "saved_code": progress.saved_code,
+                "is_completed": progress.is_completed,
+                "completed_at": progress.completed_at
+            }
+
+        return Response({
+            "success": True,
+            "challenge": PythonChallengeSerializer(challenge).data,
+            "student_progress": student_progress_data
+        })
+
+
+class PythonChallengeSaveDraftView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'stage4'
+
+    def post(self, request):
+        slug = request.data.get('slug')
+        saved_code = request.data.get('saved_code', '')
+
+        if not slug:
+            return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        challenge, _ = PythonChallenge.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "title": slug.replace('-', ' ').title(),
+                "class_number": 1,
+                "stage_order": 1,
+                "solution_criteria": {"required_methods": ["hero.move_right"]},
+                "reward_xp": 60
+            }
+        )
+
+        progress, _ = StudentPythonChallengeProgress.objects.get_or_create(
+            student=request.user,
+            challenge=challenge
+        )
+        progress.saved_code = saved_code
+        progress.save()
+
+        return Response({
+            "success": True,
+            "message": "Python code draft saved successfully!"
+        })
+
+
+class PythonChallengeSubmitView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'stage4'
+
+    def post(self, request):
+        slug = request.data.get('slug')
+        code = request.data.get('code', '')
+
+        if not slug:
+            return Response({"error": "Challenge slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        challenge, _ = PythonChallenge.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "title": slug.replace('-', ' ').title(),
+                "class_number": 1,
+                "stage_order": 1,
+                "solution_criteria": {"required_methods": ["hero.move_right"]},
+                "reward_xp": 60
+            }
+        )
+
+        progress, _ = StudentPythonChallengeProgress.objects.get_or_create(
+            student=request.user,
+            challenge=challenge
+        )
+
+        passed, criteria_results = validate_python_solution(
+            code,
+            challenge.solution_criteria
+        )
+
+        progress.saved_code = code
+
+        reward_xp = 0
+        if passed:
+            if not progress.is_completed:
+                progress.is_completed = True
+                progress.completed_at = timezone.now()
+                reward_xp = challenge.reward_xp
+                
+                # Award XP to user profile
+                if hasattr(request.user, 'profile'):
+                    request.user.profile.points += reward_xp
+                    if hasattr(request.user.profile, 'stage3_progress'):
+                        request.user.profile.stage3_progress = max(request.user.profile.stage3_progress, challenge.stage_order)
+                    request.user.profile.save()
+
+                # Log progress
+                ProgressLog.objects.create(
+                    user=request.user,
+                    stage=3,
+                    progress=challenge.stage_order,
+                    points_earned=reward_xp
+                )
+            else:
+                reward_xp = challenge.reward_xp
+
+        progress.save()
+
+        return Response({
+            "success": passed,
+            "is_completed": progress.is_completed,
+            "reward_xp": reward_xp,
+            "message": f"Python Challenge Cleared! You conquered {challenge.title}! 🎉" if passed else "Almost there! Make sure all required Python methods and keywords are present.",
+            "criteria_results": criteria_results
+        })
+
+
+class PythonChallengeProjectsListView(APIView):
+    permission_classes = [permissions.IsAuthenticated, RequiresActiveSubscription]
+    subscription_feature = 'stage4'
+
+    def get(self, request):
+        target_user = request.user
+        child_id = request.query_params.get('child_id')
+        if child_id:
+            from .models import ParentChild
+            if not ParentChild.objects.filter(parent=request.user, child_id=child_id).exists() and not (request.user.is_superuser or request.user.is_staff):
+                return Response({
+                    "error": "subscription_required",
+                    "code": "subscription_required",
+                    "detail": "Unauthorized to view student projects across different family accounts."
+                }, status=status.HTTP_403_FORBIDDEN)
+            try:
+                target_user = User.objects.get(id=child_id)
+            except User.DoesNotExist:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        challenges = PythonChallenge.objects.all().order_by('stage_order')
+        projects = []
+
+        progress_map = {}
+        if target_user and target_user.is_authenticated:
+            all_progress = StudentPythonChallengeProgress.objects.filter(student=target_user)
+            for p in all_progress:
+                progress_map[p.challenge_id] = p
+
+        for c in challenges:
+            p = progress_map.get(c.id)
+            projects.append({
+                "id": c.id,
+                "slug": c.slug,
+                "title": c.title,
+                "class_number": c.class_number,
+                "stage_order": c.stage_order,
+                "reward_xp": c.reward_xp,
+                "what_to_achieve": c.what_to_achieve,
+                "saved_code": p.saved_code if p and p.saved_code else c.starter_code,
+                "is_completed": p.is_completed if p else False,
+                "completed_at": p.completed_at if p else None,
+                "has_draft": True if (p and p.saved_code) else False
             })
 
         return Response({
