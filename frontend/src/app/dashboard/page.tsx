@@ -442,7 +442,7 @@ export default function DashboardPage() {
 
         {/* Badges Gallery Section */}
         {allBadges.length > 0 && (
-          <div className="bg-white border-4 border-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] mb-10 dash-element">
+          <div className="mt-12 md:mt-16 bg-white border-4 border-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] mb-10 dash-element">
             <h2 className="text-3xl font-black mb-8 text-slate-800 flex items-center gap-3">
               <Trophy className="text-yellow-500" size={32} /> Badge Achievements
             </h2>
