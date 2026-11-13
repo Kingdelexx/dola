@@ -315,18 +315,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.CharField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        email = data.get('email')
+        identifier = (data.get('email') or data.get('username') or '').strip()
         password = data.get('password')
 
-        if email and password:
-            # Check if user exists with this email
-            try:
-                user_obj = User.objects.get(email=email)
-            except User.DoesNotExist:
+        if identifier and password:
+            from django.db.models import Q
+            user_obj = User.objects.filter(Q(email__iexact=identifier) | Q(username__iexact=identifier)).first()
+            if not user_obj:
                 raise serializers.ValidationError("Invalid email or password.")
             
             user = authenticate(username=user_obj.username, password=password)
@@ -337,7 +337,7 @@ class LoginSerializer(serializers.Serializer):
             else:
                 raise serializers.ValidationError("Invalid email or password.")
         else:
-            raise serializers.ValidationError("Must include 'email' and 'password'.")
+            raise serializers.ValidationError("Must include email or username and password.")
         
         return data
 
