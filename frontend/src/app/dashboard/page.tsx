@@ -390,23 +390,34 @@ export default function DashboardPage() {
             )}
           </div>
           
-          {/* World 3: Python Pro */}
+          {/* World 3: Banana Tales (Python Coding Adventure) */}
           <div className="dash-element">
             {isStage3Unlocked ? (
-              <Link href="/python-studio" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(139,92,246,0.3)] hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.5)] hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-purple-50 to-transparent"></div>
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
-                  <span className="text-3xl">🐍</span>
+              <Link href="/python-studio" className="block h-full group bg-white border-4 border-white p-6 rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(255,152,0,0.25)] hover:shadow-[0_20px_50px_-10px_rgba(255,152,0,0.4)] hover:border-amber-200 transition-all duration-300 transform hover:-translate-y-4 flex flex-col items-center text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-50 to-transparent"></div>
+                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center mb-4 shadow-lg shadow-amber-200 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 border-4 border-white relative z-10 text-white">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 17C4 17 8 20 14 18C20 16 21 9 21 9C21 9 18 11 14 11C10 11 6 8 4 17Z"
+                      fill="#FFF59D"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.8"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="20" cy="9" r="1.5" fill="#5D4037" />
+                  </svg>
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-800">World 3</h3>
-                <p className="text-purple-600 font-bold bg-purple-50 px-3 py-0.5 rounded-full mb-3 text-sm">Python Pro</p>
+                <p className="text-amber-700 font-bold bg-amber-50 px-3 py-0.5 rounded-full mb-3 text-sm">Banana Tales Python</p>
                 {isUnpaid && (
-                  <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-purple-700 bg-purple-100 border border-purple-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                  <div className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 border border-amber-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
                     <Lock size={10} /> Locked Adventure
                   </div>
                 )}
-                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Control game animations with real Python across 5 classes: Robo Motion Island, Power Loop Realm, Variable Vault, Decision Dungeon, and Cyber Dragon Boss Battle!</p>
-                <div className="mt-4 bg-purple-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#6d28d9] group-hover:bg-purple-400 transition-colors">Play Now</div>
+                <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">
+                  Storybook Python coding adventure inspired by Banana Tales! Code your monkey friend through 5 jungle levels, wooden bridges, and loops to collect golden bananas!
+                </p>
+                <div className="mt-4 bg-[#FF9800] text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#E65100] group-hover:bg-[#FFA726] transition-colors">Play Banana Tales</div>
               </Link>
             ) : (
               <div className="h-full bg-slate-100/70 border-4 border-dashed border-slate-200 p-6 rounded-[2rem] flex flex-col items-center text-center relative overflow-hidden opacity-75">
@@ -415,8 +426,8 @@ export default function DashboardPage() {
                   <Code size={36} />
                 </div>
                 <h3 className="text-xl font-black mb-1 text-slate-600">World 3</h3>
-                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">Python Pro</p>
-                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 2: Block Coding to collaborate with a Python AI helper.</p>
+                <p className="text-slate-500 font-bold bg-slate-200 px-3 py-0.5 rounded-full mb-3 text-xs">Banana Tales Python</p>
+                <p className="text-slate-400 font-semibold leading-relaxed text-xs flex-1">Complete World 2: Block Coding to unlock Banana Tales Python jungle adventure.</p>
                 <div className="mt-4 bg-slate-200 text-slate-400 w-full py-2.5 rounded-xl font-black text-base">Locked</div>
               </div>
             )}

@@ -278,21 +278,30 @@ export default function Home() {
             </div>
 
             {/* World 3 */}
-            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-purple-200 hover:border-purple-400 shadow-[0_15px_30px_-5px_rgba(139,92,246,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(139,92,246,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
+            <div className="feature-card bg-white rounded-[2rem] p-6 border-4 border-amber-200 hover:border-amber-400 shadow-[0_15px_30px_-5px_rgba(255,152,0,0.15)] hover:shadow-[0_20px_40px_-5px_rgba(255,152,0,0.3)] transition-all duration-300 transform hover:-translate-y-4 group cursor-pointer flex flex-col justify-between">
               <div>
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-purple-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white text-white">
-                  <Terminal size={32} />
+                <div className="w-16 h-16 bg-[#FF9800] rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-amber-200 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 border-4 border-white text-white">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 17C4 17 8 20 14 18C20 16 21 9 21 9C21 9 18 11 14 11C10 11 6 8 4 17Z"
+                      fill="#FFF59D"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.8"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="20" cy="9" r="1.5" fill="#5D4037" />
+                  </svg>
                 </div>
-                <div className="inline-block bg-purple-50 text-purple-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
-                  5 Python Classes
+                <div className="inline-block bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2">
+                  5 Jungle Levels
                 </div>
-                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-purple-600 transition-colors">3. Python Pro</h3>
+                <h3 className="text-xl font-black mb-2 text-slate-800 group-hover:text-amber-600 transition-colors">3. Banana Tales Python</h3>
                 <p className="text-slate-600 leading-relaxed font-semibold text-xs">
-                  Code-control animation! Write typed Python to control robots across 5 game classes: Robo Motion Island, Power Loop Realm, Variable Vault, Decision Dungeon, and Cyber Dragon Boss Battle!
+                  Storybook Python adventure! Write typed Python to control a cute monkey character across 5 jungle levels: First Steps, Forest Bend, River Crossing, Loop Island, and Grand Archipelago!
                 </p>
               </div>
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-600">
-                <span>Code Animation</span>
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600">
+                <span>Play Banana Tales</span>
                 <ChevronRight size={16} />
               </div>
             </div>
@@ -691,7 +700,7 @@ export default function Home() {
             <ul className="space-y-3 font-bold text-sm">
               <li><Link href="/stage1" className="hover:text-pink-400 hover:pl-2 transition-all block">1. DolaCode Numeracy</Link></li>
               <li><Link href="/stage2" className="hover:text-pink-400 hover:pl-2 transition-all block">2. Block Coding</Link></li>
-              <li><Link href="/python-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Python Pro</Link></li>
+              <li><Link href="/python-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">3. Banana Tales Python</Link></li>
               <li><Link href="/web-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">4. Web Dev Studio</Link></li>
               <li><Link href="/app-studio" className="hover:text-pink-400 hover:pl-2 transition-all block">5. App Dev Studio</Link></li>
               <li>

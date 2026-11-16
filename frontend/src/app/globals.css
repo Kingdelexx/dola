@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=JetBrains+Mono:wght@500&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-fredoka: 'Fredoka', cursive, sans-serif;
+  --font-jetbrains: 'JetBrains Mono', monospace;
 }
 
 @theme inline {
@@ -97,3 +100,109 @@ img, svg, video, canvas {
   color: #ffffff !important;
   font-weight: 900 !important;
 }
+
+/* ====================================================================
+   Banana Tales Storybook Jungle Game: Typography & Arcade Buttons
+   ==================================================================== */
+.font-fredoka {
+  font-family: var(--font-fredoka), 'Fredoka', cursive, sans-serif;
+}
+
+.font-jetbrains {
+  font-family: var(--font-jetbrains), 'JetBrains Mono', monospace;
+}
+
+/* Chunky Arcade / Toy Buttons */
+.btn-arcade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-fredoka), 'Fredoka', cursive, sans-serif;
+  font-weight: 700;
+  border-bottom-width: 4px;
+  border-style: solid;
+  transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.1s ease, border-bottom-width 0.1s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.btn-arcade:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.btn-arcade:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.btn-arcade:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Primary Juicy Mango Button */
+.btn-arcade-mango {
+  background-color: #FF9800;
+  border-color: #E65100;
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(230, 81, 0, 0.25);
+}
+.btn-arcade-mango:hover:not(:disabled) {
+  background-color: #FFA726;
+  box-shadow: 0 6px 14px rgba(230, 81, 0, 0.35);
+}
+
+/* Meadow Green Button */
+.btn-arcade-green {
+  background-color: #7CB342;
+  border-color: #558B2F;
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(85, 139, 47, 0.25);
+}
+.btn-arcade-green:hover:not(:disabled) {
+  background-color: #8BC34A;
+}
+
+/* Warm Parchment / Cream Secondary Button */
+.btn-arcade-parchment {
+  background-color: #FAF6EE;
+  border-color: #BCAAA4;
+  color: #263238;
+  border-top-width: 2px;
+  border-left-width: 2px;
+  border-right-width: 2px;
+  border-bottom-width: 4px;
+  border-style: solid;
+  border-color: #D7CCC8 #D7CCC8 #BCAAA4 #D7CCC8;
+}
+.btn-arcade-parchment:hover:not(:disabled) {
+  background-color: #FFFDF9;
+}
+
+/* Tactile Reference Chip */
+.chip-command {
+  font-family: var(--font-jetbrains), 'JetBrains Mono', monospace;
+  font-size: 0.8125rem;
+  background-color: #FAF6EE;
+  color: #263238;
+  border-width: 1.5px 1.5px 3.5px 1.5px;
+  border-style: solid;
+  border-color: #D7CCC8 #D7CCC8 #BCAAA4 #D7CCC8;
+  border-radius: 9999px;
+  padding: 0.35rem 0.8rem;
+  transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.chip-command:hover {
+  transform: translateY(-2px);
+  background-color: #FFFFFF;
+  border-color: #FFB74D #FFB74D #F57C00 #FFB74D;
+  color: #E65100;
+}
+.chip-command:active {
+  transform: translateY(1px);
+  border-bottom-width: 1.5px;
+}
+

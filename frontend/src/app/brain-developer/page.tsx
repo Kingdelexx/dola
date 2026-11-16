@@ -416,7 +416,7 @@ export default function BrainDeveloperPage() {
                 Ready for the Next Coding Stages?
               </h4>
               <p className="text-indigo-200 text-xs sm:text-sm font-medium mt-0.5">
-                Explore Stage 2 Visual Block Coding, Stage 3 Python Pro, and the Financial Literacy Game!
+                Explore Stage 2 Visual Block Coding, Stage 3 Banana Tales Python, and the Financial Literacy Game!
               </p>
             </div>
           </div>
