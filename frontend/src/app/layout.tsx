@@ -61,6 +61,14 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.js" 
           strategy="lazyOnload"
         />
+        <Script 
+          src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js" 
+          strategy="lazyOnload"
+        />
+        <Script 
+          src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js" 
+          strategy="lazyOnload"
+        />
         <AuthProvider>
           {children}
           <RocketCursor />

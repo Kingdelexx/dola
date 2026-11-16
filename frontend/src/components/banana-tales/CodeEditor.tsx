@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 
 export interface CodeEditorHandle {
   insertSnippet: (snippet: string) => void;
@@ -11,15 +11,17 @@ interface CodeEditorProps {
   value: string;
   onChange: (val: string) => void;
   errorLine?: number | null;
+  activeLine?: number | null;
   readOnly?: boolean;
 }
 
 export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function CodeEditor(
-  { value, onChange, errorLine, readOnly = false },
+  { value, onChange, errorLine, activeLine, readOnly = false },
   ref
 ) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLPreElement>(null);
+  const activeLineBgRef = useRef<HTMLDivElement>(null);
 
   // Expose snippet insertion at cursor
   useImperativeHandle(ref, () => ({
@@ -32,7 +34,6 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
       const before = value.substring(0, start);
       const after = value.substring(end);
 
-      // If snippet is a block or statement, ensure proper line break if mid-code
       let toInsert = snippet;
       if (before.length > 0 && !before.endsWith('\n') && !before.endsWith(' ') && !snippet.startsWith('\n')) {
         toInsert = '\n' + snippet;
@@ -41,7 +42,6 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
       const updated = before + toInsert + after;
       onChange(updated);
 
-      // Restore cursor position after inserted snippet
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -79,26 +79,31 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
 
   // Sync scroll between textarea and syntax highlight display
   const handleScroll = () => {
-    if (textareaRef.current && highlightRef.current) {
-      highlightRef.current.scrollTop = textareaRef.current.scrollTop;
-      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    if (textareaRef.current) {
+      const top = textareaRef.current.scrollTop;
+      const left = textareaRef.current.scrollLeft;
+      if (highlightRef.current) {
+        highlightRef.current.scrollTop = top;
+        highlightRef.current.scrollLeft = left;
+      }
+      if (activeLineBgRef.current) {
+        activeLineBgRef.current.scrollTop = top;
+      }
     }
   };
 
   const lines = value.split('\n');
 
-  // Simple token-based Python syntax highlighter
+  // Token-based Python syntax highlighter
   const highlightPythonLine = (line: string) => {
     if (line.trim().startsWith('#')) {
       return `<span class="text-amber-700/80 italic font-medium">${escapeHtml(line)}</span>`;
     }
 
-    // Split preserving comments at end of line
     const commentIdx = line.indexOf('#');
     let codePart = commentIdx !== -1 ? line.slice(0, commentIdx) : line;
     const commentPart = commentIdx !== -1 ? line.slice(commentIdx) : '';
 
-    // Regex replacements for Python tokens
     let highlighted = escapeHtml(codePart);
 
     // Keywords
@@ -107,15 +112,19 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
       '<span class="text-purple-600 font-bold">$1</span>'
     );
 
-    // Monkey identifier
+    // Identifiers: monkey & bridge
     highlighted = highlighted.replace(
       /\b(monkey)\b/g,
       '<span class="text-amber-800 font-bold">$1</span>'
     );
+    highlighted = highlighted.replace(
+      /\b(bridge)\b/g,
+      '<span class="text-emerald-800 font-bold">$1</span>'
+    );
 
     // Methods
     highlighted = highlighted.replace(
-      /\.(step|turn|turn_left|turn_right|jump|say|print)\b/g,
+      /\.(step|turn|jump|say|extend|print)\b/g,
       '.<span class="text-teal-700 font-semibold">$1</span>'
     );
 
@@ -142,20 +151,25 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
     <div className="relative flex-1 flex h-full bg-[#FFFDF9] rounded-2xl border-2 border-[#D7CCC8] shadow-inner overflow-hidden font-jetbrains">
       {/* Line Numbers Gutter */}
       <div 
-        className="w-11 py-3 bg-[#FAF6EE] border-r-2 border-[#E0D7C6] select-none text-right pr-2 text-xs font-bold text-[#8D6E63] shrink-0"
+        className="w-12 py-3 bg-[#FAF6EE] border-r-2 border-[#E0D7C6] select-none text-right pr-2 text-xs font-bold text-[#8D6E63] shrink-0"
         aria-hidden="true"
       >
         {lines.map((_, idx) => {
           const lineNum = idx + 1;
           const isErr = errorLine === lineNum;
+          const isActive = activeLine === lineNum;
+
+          let lineClass = 'h-6 leading-6 transition-all duration-150 flex items-center justify-end gap-1';
+          if (isErr) {
+            lineClass += ' bg-red-200 text-red-800 font-black rounded-l px-1';
+          } else if (isActive) {
+            lineClass += ' bg-[#FFD54F] text-[#E65100] font-black rounded-l px-1 shadow-xs border-r-2 border-[#E65100] scale-105';
+          }
+
           return (
-            <div 
-              key={idx} 
-              className={`h-6 leading-6 transition-colors ${
-                isErr ? 'bg-red-200 text-red-800 font-black rounded-l px-1' : ''
-              }`}
-            >
-              {lineNum}
+            <div key={idx} className={lineClass}>
+              {isActive && <span className="text-[9px] text-[#E65100] animate-pulse">▶</span>}
+              <span>{lineNum}</span>
             </div>
           );
         })}
@@ -163,11 +177,42 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
 
       {/* Editor Body: Overlay Highlighter behind transparent Textarea */}
       <div className="relative flex-1 h-full overflow-hidden">
+        {/* Active Line Glow Row Layer */}
+        <div 
+          ref={activeLineBgRef}
+          aria-hidden="true"
+          className="absolute inset-0 p-3 m-0 pointer-events-none overflow-hidden"
+        >
+          {lines.map((_, idx) => {
+            const lineNum = idx + 1;
+            const isActive = activeLine === lineNum;
+            const isErr = errorLine === lineNum;
+
+            if (isActive) {
+              return (
+                <div 
+                  key={idx} 
+                  className="h-6 w-full bg-[#FFF9C4]/80 border-l-4 border-[#FF9800] rounded-r transition-all duration-150" 
+                />
+              );
+            }
+            if (isErr) {
+              return (
+                <div 
+                  key={idx} 
+                  className="h-6 w-full bg-red-100/70 border-l-4 border-red-500 rounded-r" 
+                />
+              );
+            }
+            return <div key={idx} className="h-6 w-full" />;
+          })}
+        </div>
+
         {/* Syntax Highlight Mirror */}
         <pre
           ref={highlightRef}
           aria-hidden="true"
-          className="absolute inset-0 p-3 m-0 font-jetbrains text-sm leading-6 whitespace-pre overflow-hidden pointer-events-none text-[#263238]"
+          className="absolute inset-0 p-3 m-0 font-jetbrains text-sm leading-6 whitespace-pre overflow-hidden pointer-events-none text-[#263238] z-10"
           dangerouslySetInnerHTML={{
             __html: lines.map(line => highlightPythonLine(line) || '&nbsp;').join('\n')
           }}
@@ -185,7 +230,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect="off"
-          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-transparent caret-[#263238] focus:outline-none selection:bg-amber-200 selection:text-amber-950"
+          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-transparent caret-[#263238] focus:outline-none selection:bg-amber-200 selection:text-amber-950 z-20"
           placeholder="# Type your Python code here..."
         />
       </div>

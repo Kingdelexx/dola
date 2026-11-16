@@ -9,9 +9,13 @@ export type TileType =
   | 'bridge_v' 
   | 'bush';
 
+export type ActionType = 'STEP' | 'TURN' | 'JUMP' | 'BUILD_BRIDGE' | 'SAY';
+
 export interface GameAction {
-  type: 'step' | 'turn' | 'jump' | 'say';
-  param?: number | string;
+  type: ActionType;
+  count?: number;
+  direction?: Direction | 'around';
+  message?: string;
   line?: number;
 }
 
@@ -32,7 +36,7 @@ export interface Particle {
   alpha: number;
   rotation: number;
   rotSpeed: number;
-  type: 'sparkle' | 'leaf';
+  type: 'sparkle' | 'leaf' | 'wood';
   lifetime: number;
   maxLife: number;
 }
@@ -58,4 +62,5 @@ export interface ParseResult {
   stdout: string[];
   error: string | null;
   errorLine: number | null;
+  errorAdvice: string | null;
 }

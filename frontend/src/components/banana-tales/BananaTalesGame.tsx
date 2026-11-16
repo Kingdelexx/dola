@@ -2,10 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, RotateCcw, Lightbulb, CheckCircle2, Award, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Play, RotateCcw, Lightbulb, Sparkles, AlertCircle } from 'lucide-react';
 import { BANANA_LEVELS } from './levels';
 import { BananaLevel, GameAction } from './types';
-import { interpretMonkeyPython, countCodeLines } from './interpreter';
+import { executePythonWithSkulpt } from './skulptRunner';
+import { countCodeLines } from './interpreter';
 import { BananaTalesCanvas } from './BananaTalesCanvas';
 import { CodeEditor, CodeEditorHandle } from './CodeEditor';
 import { VictoryModal } from './VictoryModal';
@@ -19,9 +20,12 @@ export default function BananaTalesGame() {
   const [code, setCode] = useState(currentLevel.starterCode);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [errorLine, setErrorLine] = useState<number | null>(null);
+  const [jungleGuideAdvice, setJungleGuideAdvice] = useState<string | null>(null);
+  const [activeLine, setActiveLine] = useState<number | null>(null);
 
   // Execution & Engine state
   const [isRunning, setIsRunning] = useState(false);
+  const [isExecutingPython, setIsExecutingPython] = useState(false);
   const [actionQueue, setActionQueue] = useState<GameAction[]>([]);
   const [bananasCollected, setBananasCollected] = useState(0);
 
@@ -38,7 +42,10 @@ export default function BananaTalesGame() {
     setCode(currentLevel.starterCode);
     setErrorMsg(null);
     setErrorLine(null);
+    setJungleGuideAdvice(null);
+    setActiveLine(null);
     setIsRunning(false);
+    setIsExecutingPython(false);
     setActionQueue([]);
     setBananasCollected(0);
     setIsVictoryModalOpen(false);
@@ -48,13 +55,12 @@ export default function BananaTalesGame() {
   // Command reference chips to insert at cursor
   const commandChips = [
     { label: 'monkey.step(1)', snippet: 'monkey.step(1)' },
-    { label: 'monkey.step(2)', snippet: 'monkey.step(2)' },
     { label: 'monkey.turn("left")', snippet: 'monkey.turn("left")' },
     { label: 'monkey.turn("right")', snippet: 'monkey.turn("right")' },
-    { label: 'monkey.turn("down")', snippet: 'monkey.turn("down")' },
-    { label: 'monkey.turn("up")', snippet: 'monkey.turn("up")' },
-    { label: 'for i in range(3):', snippet: 'for i in range(3):\n    monkey.step(1)' },
+    { label: 'monkey.turn("around")', snippet: 'monkey.turn("around")' },
     { label: 'monkey.jump()', snippet: 'monkey.jump()' },
+    { label: 'bridge.extend(1)', snippet: 'bridge.extend(1)' },
+    { label: 'for i in range(3):', snippet: 'for i in range(3):\n    monkey.step(1)' },
   ];
 
   const handleInsertSnippet = (snippet: string) => {
@@ -64,42 +70,64 @@ export default function BananaTalesGame() {
     editorRef.current?.insertSnippet(snippet);
   };
 
-  // Run Button Handler
-  const handleRunCode = () => {
-    if (isRunning) return;
+  // Run Button Handler: Executes Python instantly via Skulpt, then plays back animationQueue at 60fps
+  const handleRunCode = async () => {
+    if (isRunning || isExecutingPython) return;
     setErrorMsg(null);
     setErrorLine(null);
+    setJungleGuideAdvice(null);
+    setActiveLine(null);
+    setIsExecutingPython(true);
 
-    const parseResult = interpretMonkeyPython(code);
-    if (parseResult.error) {
-      setErrorMsg(parseResult.error);
-      setErrorLine(parseResult.errorLine);
+    try {
+      // Execute Python code in Skulpt (non-blocking)
+      const parseResult = await executePythonWithSkulpt(code);
+      setIsExecutingPython(false);
+
+      if (parseResult.error) {
+        setErrorMsg(parseResult.error);
+        setErrorLine(parseResult.errorLine);
+        setJungleGuideAdvice(parseResult.errorAdvice || parseResult.error);
+        try {
+          playAppSound('boing');
+        } catch {}
+        return;
+      }
+
+      if (parseResult.actions.length === 0) {
+        setErrorMsg('No monkey actions');
+        setJungleGuideAdvice('Oops! Your Python code ran, but the monkey has no actions to perform! Try typing monkey.step(1) or bridge.extend(1).');
+        return;
+      }
+
+      try {
+        playAppSound('click');
+      } catch {}
+
+      // Queue actions for 60fps playback
+      setActionQueue(parseResult.actions);
+      setIsRunning(true);
+    } catch (err: any) {
+      setIsExecutingPython(false);
+      const msg = err.message || 'Python execution error';
+      setErrorMsg(msg);
+      setJungleGuideAdvice(`Oops! Could not run your Python code: ${msg}`);
       try {
         playAppSound('boing');
       } catch {}
-      return;
     }
-
-    if (parseResult.actions.length === 0) {
-      setErrorMsg('No monkey actions to run! Try typing monkey.step(1)');
-      return;
-    }
-
-    try {
-      playAppSound('click');
-    } catch {}
-
-    setActionQueue(parseResult.actions);
-    setIsRunning(true);
   };
 
   // Reset Button Handler
   const handleReset = () => {
     setIsRunning(false);
+    setIsExecutingPython(false);
     setActionQueue([]);
     setBananasCollected(0);
     setErrorMsg(null);
     setErrorLine(null);
+    setJungleGuideAdvice(null);
+    setActiveLine(null);
     setIsVictoryModalOpen(false);
     try {
       playAppSound('click');
@@ -109,6 +137,7 @@ export default function BananaTalesGame() {
   // Handle Level Completion from Canvas
   const handleExecutionComplete = (success: boolean, collectedCount: number) => {
     setIsRunning(false);
+    setActiveLine(null);
     setBananasCollected(collectedCount);
 
     if (success && collectedCount >= currentLevel.bananas.length) {
@@ -126,7 +155,7 @@ export default function BananaTalesGame() {
         [currentLevel.id]: Math.max(prev[currentLevel.id] || 0, stars)
       }));
 
-      // Open victory modal
+      // Open celebratory victory modal
       setTimeout(() => {
         setIsVictoryModalOpen(true);
       }, 500);
@@ -187,7 +216,7 @@ export default function BananaTalesGame() {
                   Banana Tales
                 </h1>
                 <span className="bg-[#7CB342] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider hidden md:inline-block">
-                  Python Jungle
+                  Python Engine (Skulpt)
                 </span>
               </div>
               <p className="text-[11px] font-medium text-[#8D6E63] hidden sm:block">
@@ -206,9 +235,9 @@ export default function BananaTalesGame() {
               <button
                 key={lvl.id}
                 onClick={() => {
-                  if (!isRunning) setCurrentLevelIndex(idx);
+                  if (!isRunning && !isExecutingPython) setCurrentLevelIndex(idx);
                 }}
-                disabled={isRunning}
+                disabled={isRunning || isExecutingPython}
                 className={`relative px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
                   isActive
                     ? 'btn-arcade btn-arcade-mango shadow-sm scale-105'
@@ -313,13 +342,14 @@ export default function BananaTalesGame() {
             </div>
           </div>
 
-          {/* Canvas Area */}
+          {/* Canvas Area with 60fps Animation & Real-Time Action Playback */}
           <div className="flex-1 overflow-hidden relative flex items-center justify-center bg-[#EFE8DC]/50">
             <BananaTalesCanvas
               level={currentLevel}
               actionQueue={actionQueue}
               isRunning={isRunning}
               onExecutionComplete={handleExecutionComplete}
+              onActiveLineChange={setActiveLine}
               onReset={handleReset}
             />
           </div>
@@ -340,6 +370,11 @@ export default function BananaTalesGame() {
               <span className="bg-[#E0D7C6] text-[#5D4037] text-[10px] font-bold px-2 py-0.5 rounded-full">
                 Target: ≤ {currentLevel.optimalLines} lines
               </span>
+              {activeLine && (
+                <span className="bg-[#FF9800] text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
+                  Line {activeLine}
+                </span>
+              )}
             </div>
 
             {errorMsg && (
@@ -349,7 +384,7 @@ export default function BananaTalesGame() {
             )}
           </div>
 
-          {/* Line-Numbered Editor Area */}
+          {/* Line-Numbered Editor Area with Real-Time Active Line Highlight */}
           <div className="flex-1 p-3 overflow-hidden flex flex-col min-h-0">
             <CodeEditor
               ref={editorRef}
@@ -359,18 +394,68 @@ export default function BananaTalesGame() {
                 if (errorMsg) {
                   setErrorMsg(null);
                   setErrorLine(null);
+                  setJungleGuideAdvice(null);
                 }
               }}
               errorLine={errorLine}
-              readOnly={isRunning}
+              activeLine={activeLine}
+              readOnly={isRunning || isExecutingPython}
             />
           </div>
+
+          {/* ==========================================================
+              KID-FRIENDLY "JUNGLE GUIDE" SPEECH BUBBLE BENEATH EDITOR
+              ========================================================== */}
+          {jungleGuideAdvice && (
+            <div className="mx-3 mb-2 p-3 bg-[#FFFDF9] rounded-2xl border-2 border-[#FFB74D] shadow-sm flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2">
+              {/* Cute Vector Monkey Guide Avatar */}
+              <div className="w-10 h-10 rounded-2xl bg-[#FFE0B2] border-2 border-[#FF9800] flex items-center justify-center shrink-0 shadow-xs">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  {/* Monkey Ears */}
+                  <circle cx="5" cy="9" r="3" fill="#6D4C41" />
+                  <circle cx="5" cy="9" r="1.5" fill="#FFAB91" />
+                  <circle cx="19" cy="9" r="3" fill="#6D4C41" />
+                  <circle cx="19" cy="9" r="1.5" fill="#FFAB91" />
+                  {/* Head */}
+                  <circle cx="12" cy="11" r="7" fill="#8D6E63" stroke="#5D4037" strokeWidth="1.2" />
+                  {/* Face Mask */}
+                  <ellipse cx="12" cy="12" rx="4.5" ry="3.8" fill="#FFE0B2" />
+                  {/* Eyes */}
+                  <circle cx="10" cy="11" r="1" fill="#263238" />
+                  <circle cx="14" cy="11" r="1" fill="#263238" />
+                  {/* Smile */}
+                  <path d="M10.5 13.5Q12 15 13.5 13.5" stroke="#5D4037" strokeWidth="1" strokeLinecap="round" />
+                </svg>
+              </div>
+
+              {/* Speech Bubble Content */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-[#E65100]">Jungle Guide</span>
+                    <span className="bg-[#FF9800]/15 text-[#E65100] text-[9px] font-bold px-1.5 py-0.5 rounded">
+                      Hint
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setJungleGuideAdvice(null)}
+                    className="text-[#8D6E63] hover:text-[#263238] text-xs font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <p className="text-xs font-semibold text-[#263238] mt-1 leading-relaxed">
+                  {jungleGuideAdvice}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* "Command Reference" Helper Bar at Bottom */}
           <div className="p-3 bg-[#F5EFEB] border-t-2 border-[#E0D7C6] shrink-0">
             <div className="text-[11px] font-bold text-[#8D6E63] uppercase tracking-wider mb-2 flex items-center justify-between">
               <span>Command Reference (Click to insert at cursor)</span>
-              <span className="text-[10px] text-[#7CB342] font-semibold">Ready to Code</span>
+              <span className="text-[10px] text-[#7CB342] font-semibold">Skulpt Python 3</span>
             </div>
 
             {/* Clickable Command Reference Chips */}
@@ -379,7 +464,7 @@ export default function BananaTalesGame() {
                 <button
                   key={idx}
                   onClick={() => handleInsertSnippet(chip.snippet)}
-                  disabled={isRunning}
+                  disabled={isRunning || isExecutingPython}
                   className="chip-command"
                   title={`Insert ${chip.snippet}`}
                 >
@@ -393,11 +478,13 @@ export default function BananaTalesGame() {
               {/* RUN BUTTON: Juicy Mango-Orange */}
               <button
                 onClick={handleRunCode}
-                disabled={isRunning}
+                disabled={isRunning || isExecutingPython}
                 className="flex-1 py-3 px-6 rounded-2xl btn-arcade btn-arcade-mango text-sm md:text-base font-bold flex items-center justify-center gap-2"
               >
-                <Play size={18} className={isRunning ? 'animate-spin' : 'fill-white'} />
-                <span>{isRunning ? 'RUNNING...' : 'RUN CODE'}</span>
+                <Play size={18} className={(isRunning || isExecutingPython) ? 'animate-spin' : 'fill-white'} />
+                <span>
+                  {isExecutingPython ? 'COMPILING PYTHON...' : isRunning ? 'RUNNING...' : 'RUN CODE'}
+                </span>
               </button>
 
               {/* RESET BUTTON: Tactile Warm Cream / Slate */}

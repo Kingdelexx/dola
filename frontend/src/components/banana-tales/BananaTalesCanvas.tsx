@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { BananaLevel, Direction, GameAction, Particle, BananaItem } from './types';
+import { BananaLevel, Direction, GameAction, Particle, BananaItem, TileType } from './types';
 import { SpriteRenderer } from './SpriteRenderer';
 import { playAppSound } from '../app-studio/audioSynth';
 
@@ -10,6 +10,7 @@ interface BananaTalesCanvasProps {
   actionQueue: GameAction[];
   isRunning: boolean;
   onExecutionComplete: (success: boolean, bananasCollected: number) => void;
+  onActiveLineChange?: (line: number | null) => void;
   onReset: () => void;
 }
 
@@ -18,6 +19,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
   actionQueue,
   isRunning,
   onExecutionComplete,
+  onActiveLineChange,
   onReset
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,6 +37,11 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
   const [bananas, setBananas] = useState<BananaItem[]>([]);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
 
+  // Dynamic grid state (allows bridge.extend() to construct wooden planks in real time)
+  const [dynamicGrid, setDynamicGrid] = useState<TileType[][]>(() => 
+    level.grid.map(row => [...row])
+  );
+
   // Animation interpolation state
   const animStateRef = useRef({
     visualX: level.monkeyStart.x * CELL_SIZE,
@@ -45,7 +52,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     targetY: level.monkeyStart.y * CELL_SIZE,
     isMoving: false,
     moveProgress: 1,
-    moveDuration: 350, // ms per tile
+    moveDuration: 360, // ms per tile
     moveStartTime: 0,
     isJumping: false,
     particles: [] as Particle[],
@@ -55,12 +62,13 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     animTime: 0
   });
 
-  // Keep bananas in sync with level
+  // Keep state in sync when level changes or resets
   useEffect(() => {
     setBananas(level.bananas.map(b => ({ ...b, collected: false })));
     setMonkeyGridPos({ x: level.monkeyStart.x, y: level.monkeyStart.y });
     setMonkeyDir(level.monkeyStart.dir);
     setSpeechBubble(null);
+    setDynamicGrid(level.grid.map(row => [...row]));
 
     const st = animStateRef.current;
     st.visualX = level.monkeyStart.x * CELL_SIZE;
@@ -70,10 +78,13 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     st.targetX = st.visualX;
     st.targetY = st.visualY;
     st.isMoving = false;
+    st.isJumping = false;
     st.moveProgress = 1;
     st.particles = [];
     st.cameraShakeTimer = 0;
     st.redFlashAlpha = 0;
+
+    onActiveLineChange?.(null);
   }, [level]);
 
   // Spawn Particle Burst when banana is collected
@@ -124,12 +135,39 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
 
     animStateRef.current.particles.push(...newParticles);
 
-    // Play chime sound
     try {
       playAppSound('reward');
-    } catch {
-      // Audio synth
+    } catch {}
+  }, [CELL_SIZE]);
+
+  // Spawn Sawdust wood particles when extending bridge
+  const spawnWoodParticles = useCallback((gx: number, gy: number) => {
+    const cx = (gx + 0.5) * CELL_SIZE;
+    const cy = (gy + 0.5) * CELL_SIZE;
+    const newParticles: Particle[] = [];
+
+    for (let i = 0; i < 16; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.5 + Math.random() * 3;
+      newParticles.push({
+        x: cx,
+        y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1.8,
+        size: 3 + Math.random() * 3,
+        color: Math.random() > 0.5 ? '#8D6E63' : '#BCAAA4',
+        alpha: 1,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.25,
+        type: 'wood',
+        lifetime: 0,
+        maxLife: 30 + Math.random() * 15
+      });
     }
+    animStateRef.current.particles.push(...newParticles);
+    try {
+      playAppSound('cowbell');
+    } catch {}
   }, [CELL_SIZE]);
 
   // Trigger Hazard Hit (Water or Bush collision)
@@ -147,12 +185,37 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
 
     try {
       playAppSound('boing');
-    } catch {
-      // Audio fallback
-    }
+    } catch {}
   }, []);
 
-  // Execution runner for action queue with smooth sequential step interpolation
+  // Helper to compute directional turn
+  const computeTurnDirection = (current: Direction, dirCommand: string): Direction => {
+    const cmd = dirCommand.toLowerCase();
+    if (cmd === 'around') {
+      if (current === 'right') return 'left';
+      if (current === 'left') return 'right';
+      if (current === 'up') return 'down';
+      return 'up';
+    }
+    if (cmd === 'left') {
+      if (current === 'right') return 'up';
+      if (current === 'up') return 'left';
+      if (current === 'left') return 'down';
+      return 'right';
+    }
+    if (cmd === 'right') {
+      if (current === 'right') return 'down';
+      if (current === 'down') return 'left';
+      if (current === 'left') return 'up';
+      return 'right';
+    }
+    if (['up', 'down', 'left', 'right'].includes(cmd)) {
+      return cmd as Direction;
+    }
+    return current;
+  };
+
+  // Execution runner for action queue with smooth sequential step interpolation & real-time line highlighting
   useEffect(() => {
     if (!isRunning || actionQueue.length === 0) return;
 
@@ -166,7 +229,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     const executeNextAction = async () => {
       if (isCancelled || actionIndex >= actionQueue.length) {
         if (!isCancelled) {
-          // Check if all bananas collected
+          onActiveLineChange?.(null);
           const allCollected = bananas.every(b => b.collected) || collectedCount >= level.bananas.length;
           onExecutionComplete(allCollected, collectedCount);
         }
@@ -176,16 +239,26 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
       const action = actionQueue[actionIndex];
       actionIndex++;
 
-      if (action.type === 'say') {
-        setSpeechBubble(String(action.param || 'Yum!'));
+      // Highlight active executing line in code editor!
+      if (action.line) {
+        onActiveLineChange?.(action.line);
+      }
+
+      const actType = String(action.type).toUpperCase();
+
+      // 1. SAY ACTION
+      if (actType === 'SAY') {
+        setSpeechBubble(action.message || 'Yum!');
         await new Promise(r => setTimeout(r, 600));
         setSpeechBubble(null);
         if (!isCancelled) executeNextAction();
         return;
       }
 
-      if (action.type === 'turn') {
-        const newDir = action.param as Direction;
+      // 2. TURN ACTION
+      if (actType === 'TURN') {
+        const targetDirCmd = String(action.direction || 'right');
+        const newDir = computeTurnDirection(currentDir, targetDirCmd);
         currentDir = newDir;
         setMonkeyDir(newDir);
         await new Promise(r => setTimeout(r, 220));
@@ -193,11 +266,50 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         return;
       }
 
-      if (action.type === 'step' || action.type === 'jump') {
-        const steps = typeof action.param === 'number' ? action.param : 1;
-        const isJump = action.type === 'jump';
+      // 3. BUILD_BRIDGE ACTION: bridge.extend(tiles=1)
+      if (actType === 'BUILD_BRIDGE') {
+        const count = typeof action.count === 'number' ? action.count : 1;
+        let dx = 0;
+        let dy = 0;
+        if (currentDir === 'right') dx = 1;
+        else if (currentDir === 'left') dx = -1;
+        else if (currentDir === 'down') dy = 1;
+        else if (currentDir === 'up') dy = -1;
 
-        // Step cell by cell for smooth interpolation
+        // Build planks in front of monkey across water tiles
+        let builtAny = false;
+        let bx = currentX;
+        let by = currentY;
+
+        for (let b = 0; b < count; b++) {
+          bx += dx;
+          by += dy;
+          if (bx >= 0 && bx < COLS && by >= 0 && by < ROWS) {
+            if (dynamicGrid[by][bx] === 'water') {
+              const bridgeType: TileType = (dx !== 0) ? 'bridge_h' : 'bridge_v';
+              setDynamicGrid(prev => {
+                const next = prev.map(r => [...r]);
+                next[by][bx] = bridgeType;
+                return next;
+              });
+              spawnWoodParticles(bx, by);
+              builtAny = true;
+            }
+          }
+        }
+
+        setSpeechBubble(builtAny ? 'Bridge extended!' : 'Planks ready!');
+        await new Promise(r => setTimeout(r, 450));
+        setSpeechBubble(null);
+        if (!isCancelled) executeNextAction();
+        return;
+      }
+
+      // 4. STEP & JUMP ACTIONS
+      if (actType === 'STEP' || actType === 'JUMP') {
+        const isJump = actType === 'JUMP';
+        const steps = isJump ? 1 : (typeof action.count === 'number' ? action.count : 1);
+
         const stepDir = steps >= 0 ? 1 : -1;
         const totalSteps = Math.abs(steps);
 
@@ -217,36 +329,41 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           // Bounds check
           if (nextX < 0 || nextX >= COLS || nextY < 0 || nextY >= ROWS) {
             triggerHazardCollision('bush');
+            onActiveLineChange?.(null);
             onExecutionComplete(false, collectedCount);
             return;
           }
 
-          // Check hazard tile in level
-          const targetTile = level.grid[nextY][nextX];
+          // Check target tile in dynamic grid
+          const targetTile = dynamicGrid[nextY][nextX];
+
+          // Water hazard (if water and monkey did NOT jump onto a stone)
           if (targetTile === 'water') {
-            // Smoothly move into water then splash
             await animateMove(currentX, currentY, nextX, nextY, isJump);
             currentX = nextX;
             currentY = nextY;
             setMonkeyGridPos({ x: nextX, y: nextY });
             triggerHazardCollision('water');
+            onActiveLineChange?.(null);
             onExecutionComplete(false, collectedCount);
             return;
           }
 
+          // Bush obstacle
           if (targetTile === 'bush') {
             triggerHazardCollision('bush');
+            onActiveLineChange?.(null);
             onExecutionComplete(false, collectedCount);
             return;
           }
 
-          // Valid move: interpolate smoothly
+          // Valid move: interpolate smoothly at 60fps
           await animateMove(currentX, currentY, nextX, nextY, isJump);
           currentX = nextX;
           currentY = nextY;
           setMonkeyGridPos({ x: nextX, y: nextY });
 
-          // Check if stepped onto a banana
+          // Banana collection check
           const foundBanana = level.bananas.find(b => b.x === nextX && b.y === nextY);
           if (foundBanana) {
             setBananas(prev =>
@@ -280,8 +397,6 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         st.moveProgress = 0;
         st.moveStartTime = performance.now();
 
-        const duration = st.moveDuration;
-
         const checkProgress = () => {
           if (isCancelled) {
             resolve();
@@ -305,8 +420,9 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
 
     return () => {
       isCancelled = true;
+      onActiveLineChange?.(null);
     };
-  }, [isRunning, actionQueue]);
+  }, [isRunning, actionQueue, dynamicGrid]);
 
   // 60fps HTML5 Canvas Render Loop
   useEffect(() => {
@@ -329,7 +445,6 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
       if (st.isMoving) {
         const elapsed = now - st.moveStartTime;
         st.moveProgress = Math.min(elapsed / st.moveDuration, 1);
-        // Smooth quadratic ease-out
         const t = st.moveProgress;
         const ease = t * (2 - t);
         st.visualX = st.fromX + (st.targetX - st.fromX) * ease;
@@ -360,7 +475,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         p.lifetime++;
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.12; // gentle gravity
+        p.vy += 0.12; // gravity
         p.rotation += p.rotSpeed;
         p.alpha = 1 - p.lifetime / p.maxLife;
         if (p.lifetime >= p.maxLife) {
@@ -368,7 +483,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         }
       }
 
-      // Setup High-DPI canvas resolution
+      // High-DPI Resolution handling
       const dpr = window.devicePixelRatio || 1;
       if (canvas.width !== CANVAS_WIDTH * dpr || canvas.height !== CANVAS_HEIGHT * dpr) {
         canvas.width = CANVAS_WIDTH * dpr;
@@ -383,10 +498,10 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
       ctx.fillStyle = '#FAF6EE';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // 1. Draw Terrain Base Grid (Grass, Dirt Paths, River, Bridges)
+      // 1. Draw Terrain Base Grid
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
-          const tile = level.grid[r][c];
+          const tile = dynamicGrid[r][c];
           const tx = c * CELL_SIZE;
           const ty = r * CELL_SIZE;
 
@@ -401,7 +516,6 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           } else if (tile === 'bridge_v') {
             SpriteRenderer.drawBridgeTile(ctx, tx, ty, CELL_SIZE, 'vertical', st.animTime);
           } else {
-            // Grass tile (also acts as base under bushes)
             SpriteRenderer.drawGrassTile(ctx, tx, ty, CELL_SIZE, c, r, st.animTime);
           }
         }
@@ -422,7 +536,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
       // 3. Draw Bushes
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
-          if (level.grid[r][c] === 'bush') {
+          if (dynamicGrid[r][c] === 'bush') {
             SpriteRenderer.drawBush(ctx, c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, st.animTime);
           }
         }
@@ -459,7 +573,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [level, bananas, monkeyGridPos, monkeyDir, speechBubble]);
+  }, [dynamicGrid, bananas, monkeyGridPos, monkeyDir, speechBubble]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center p-3 select-none">
@@ -470,11 +584,13 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           className="cursor-default"
         />
 
-        {/* Storybook Grid Overlay Coordinates Indicator (Subtle bottom-left badge) */}
+        {/* Coordinates & Status Badge */}
         <div className="absolute bottom-2 left-2 px-2.5 py-1 bg-[#FAF6EE]/90 backdrop-blur-xs rounded-xl border border-[#D7CCC8] text-[11px] font-bold text-[#5D4037] flex items-center gap-1.5 shadow-sm font-fredoka">
           <span>Grid: 10×8</span>
           <span className="text-[#8D6E63]">•</span>
           <span>Monkey: ({monkeyGridPos.x}, {monkeyGridPos.y})</span>
+          <span className="text-[#8D6E63]">•</span>
+          <span className="text-[#7CB342] uppercase font-black">{monkeyDir}</span>
         </div>
       </div>
     </div>

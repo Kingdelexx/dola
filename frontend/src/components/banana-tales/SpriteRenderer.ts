@@ -769,6 +769,13 @@ export class SpriteRenderer {
         ctx.beginPath();
         ctx.arc(0, 0, r * 0.25, 0, Math.PI * 2);
         ctx.fill();
+      } else if (p.type === 'wood') {
+        // Wooden construction sawdust chip
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size, -p.size * 0.4, p.size * 2, p.size * 0.8);
+        ctx.strokeStyle = '#3E2723';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-p.size, -p.size * 0.4, p.size * 2, p.size * 0.8);
       } else {
         // Fluttering Green Jungle Leaf
         ctx.fillStyle = p.color;
