@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, RotateCcw, Lightbulb, Sparkles, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Play, RotateCcw, Lightbulb, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { BANANA_LEVELS } from './levels';
 import { BananaLevel, GameAction } from './types';
 import { executePythonWithSkulpt } from './skulptRunner';
@@ -10,7 +10,7 @@ import { countCodeLines } from './interpreter';
 import { BananaTalesCanvas } from './BananaTalesCanvas';
 import { CodeEditor, CodeEditorHandle } from './CodeEditor';
 import { VictoryModal } from './VictoryModal';
-import { playAppSound } from '../app-studio/audioSynth';
+import { SoundFX } from './SoundFX';
 
 export default function BananaTalesGame() {
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
@@ -22,6 +22,9 @@ export default function BananaTalesGame() {
   const [errorLine, setErrorLine] = useState<number | null>(null);
   const [jungleGuideAdvice, setJungleGuideAdvice] = useState<string | null>(null);
   const [activeLine, setActiveLine] = useState<number | null>(null);
+
+  // Audio mute state (procedural Web Audio API)
+  const [isMuted, setIsMuted] = useState(SoundFX.isMuted);
 
   // Execution & Engine state
   const [isRunning, setIsRunning] = useState(false);
@@ -55,19 +58,25 @@ export default function BananaTalesGame() {
   // Command reference chips to insert at cursor
   const commandChips = [
     { label: 'monkey.step(1)', snippet: 'monkey.step(1)' },
-    { label: 'monkey.turn("left")', snippet: 'monkey.turn("left")' },
+    { label: 'monkey.step(4)', snippet: 'monkey.step(4)' },
     { label: 'monkey.turn("right")', snippet: 'monkey.turn("right")' },
-    { label: 'monkey.turn("around")', snippet: 'monkey.turn("around")' },
+    { label: 'monkey.turn("left")', snippet: 'monkey.turn("left")' },
+    { label: 'bridge.extend(2)', snippet: 'bridge.extend(2)' },
     { label: 'monkey.jump()', snippet: 'monkey.jump()' },
-    { label: 'bridge.extend(1)', snippet: 'bridge.extend(1)' },
-    { label: 'for i in range(3):', snippet: 'for i in range(3):\n    monkey.step(1)' },
+    { label: 'for i in range(4):', snippet: 'for i in range(4):\n    monkey.step(1)\n    monkey.turn("right")\n    monkey.step(1)\n    monkey.turn("left")' },
   ];
 
   const handleInsertSnippet = (snippet: string) => {
-    try {
-      playAppSound('click');
-    } catch {}
+    SoundFX.playFootstep();
     editorRef.current?.insertSnippet(snippet);
+  };
+
+  const handleToggleMute = () => {
+    const nextMuted = SoundFX.toggleMute();
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      SoundFX.playFootstep();
+    }
   };
 
   // Run Button Handler: Executes Python instantly via Skulpt, then plays back animationQueue at 60fps
@@ -88,21 +97,18 @@ export default function BananaTalesGame() {
         setErrorMsg(parseResult.error);
         setErrorLine(parseResult.errorLine);
         setJungleGuideAdvice(parseResult.errorAdvice || parseResult.error);
-        try {
-          playAppSound('boing');
-        } catch {}
+        SoundFX.playCollisionBonk();
         return;
       }
 
       if (parseResult.actions.length === 0) {
         setErrorMsg('No monkey actions');
         setJungleGuideAdvice('Oops! Your Python code ran, but the monkey has no actions to perform! Try typing monkey.step(1) or bridge.extend(1).');
+        SoundFX.playCollisionBonk();
         return;
       }
 
-      try {
-        playAppSound('click');
-      } catch {}
+      SoundFX.playFootstep();
 
       // Queue actions for 60fps playback
       setActionQueue(parseResult.actions);
@@ -112,9 +118,7 @@ export default function BananaTalesGame() {
       const msg = err.message || 'Python execution error';
       setErrorMsg(msg);
       setJungleGuideAdvice(`Oops! Could not run your Python code: ${msg}`);
-      try {
-        playAppSound('boing');
-      } catch {}
+      SoundFX.playCollisionBonk();
     }
   };
 
@@ -129,9 +133,7 @@ export default function BananaTalesGame() {
     setJungleGuideAdvice(null);
     setActiveLine(null);
     setIsVictoryModalOpen(false);
-    try {
-      playAppSound('click');
-    } catch {}
+    SoundFX.playFootstep();
   };
 
   // Handle Level Completion from Canvas
@@ -179,7 +181,7 @@ export default function BananaTalesGame() {
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#F5EFEB] text-[#263238] font-fredoka select-none">
       
       {/* ==============================================================
-          TOP BAR: Game Title, Level Selector Pills, 3-Star Score Indicator
+          TOP BAR: Game Title, Level Selector Pills, 3-Star Score Indicator, Sound Mute
           ============================================================== */}
       <header className="h-16 px-4 md:px-6 bg-[#FAF6EE] border-b-2 border-[#D7CCC8] shadow-sm flex items-center justify-between shrink-0 z-20">
         
@@ -220,7 +222,7 @@ export default function BananaTalesGame() {
                 </span>
               </div>
               <p className="text-[11px] font-medium text-[#8D6E63] hidden sm:block">
-                World 3 • Code the Monkey Adventure
+                World 3 • 5-Level Python Curriculum
               </p>
             </div>
           </div>
@@ -255,8 +257,8 @@ export default function BananaTalesGame() {
           })}
         </div>
 
-        {/* Right: 3-Star Score Indicator & Hint Button */}
-        <div className="flex items-center gap-3">
+        {/* Right: 3-Star Score Indicator, Web Audio Mute Toggle & Hint Button */}
+        <div className="flex items-center gap-2 md:gap-3">
           {/* 3-Star Score Indicator */}
           <div className="flex items-center gap-1 bg-[#F5EFEB] px-2.5 py-1.5 rounded-2xl border-2 border-[#E0D7C6]">
             {[1, 2, 3].map((starIdx) => {
@@ -282,6 +284,24 @@ export default function BananaTalesGame() {
               );
             })}
           </div>
+
+          {/* Procedural Web Audio Mute / Unmute Toggle Button */}
+          <button
+            onClick={handleToggleMute}
+            className={`btn-arcade px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+              isMuted
+                ? 'bg-red-50 text-red-600 border border-red-200 border-b-4 border-b-red-400'
+                : 'btn-arcade-parchment text-[#5D4037]'
+            }`}
+            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          >
+            {isMuted ? (
+              <VolumeX size={16} className="text-red-500" />
+            ) : (
+              <Volume2 size={16} className="text-[#7CB342]" />
+            )}
+            <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Sound'}</span>
+          </button>
 
           {/* Hint Toggle Button */}
           <button
@@ -411,19 +431,14 @@ export default function BananaTalesGame() {
               {/* Cute Vector Monkey Guide Avatar */}
               <div className="w-10 h-10 rounded-2xl bg-[#FFE0B2] border-2 border-[#FF9800] flex items-center justify-center shrink-0 shadow-xs">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  {/* Monkey Ears */}
                   <circle cx="5" cy="9" r="3" fill="#6D4C41" />
                   <circle cx="5" cy="9" r="1.5" fill="#FFAB91" />
                   <circle cx="19" cy="9" r="3" fill="#6D4C41" />
                   <circle cx="19" cy="9" r="1.5" fill="#FFAB91" />
-                  {/* Head */}
                   <circle cx="12" cy="11" r="7" fill="#8D6E63" stroke="#5D4037" strokeWidth="1.2" />
-                  {/* Face Mask */}
                   <ellipse cx="12" cy="12" rx="4.5" ry="3.8" fill="#FFE0B2" />
-                  {/* Eyes */}
                   <circle cx="10" cy="11" r="1" fill="#263238" />
                   <circle cx="14" cy="11" r="1" fill="#263238" />
-                  {/* Smile */}
                   <path d="M10.5 13.5Q12 15 13.5 13.5" stroke="#5D4037" strokeWidth="1" strokeLinecap="round" />
                 </svg>
               </div>

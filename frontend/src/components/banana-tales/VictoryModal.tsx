@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { playAppSound } from '../app-studio/audioSynth';
+import { SoundFX } from './SoundFX';
 
 interface VictoryModalProps {
   isOpen: boolean;
@@ -41,11 +41,8 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
 
   // Trigger celebration audio and confetti on modal open
   useEffect(() => {
-    try {
-      playAppSound('reward');
-    } catch {
-      // Audio synth fallback
-    }
+    // Play cheerful fanfare on level completion
+    SoundFX.playFanfare();
 
     // Storybook jungle confetti
     confetti({

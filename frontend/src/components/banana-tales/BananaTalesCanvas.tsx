@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { BananaLevel, Direction, GameAction, Particle, BananaItem, TileType } from './types';
 import { SpriteRenderer } from './SpriteRenderer';
-import { playAppSound } from '../app-studio/audioSynth';
+import { SoundFX } from './SoundFX';
 
 interface BananaTalesCanvasProps {
   level: BananaLevel;
@@ -135,9 +135,8 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
 
     animStateRef.current.particles.push(...newParticles);
 
-    try {
-      playAppSound('reward');
-    } catch {}
+    // Synthesize bright ascending chime when grabbing banana
+    SoundFX.playBananaChime();
   }, [CELL_SIZE]);
 
   // Spawn Sawdust wood particles when extending bridge
@@ -165,13 +164,13 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
       });
     }
     animStateRef.current.particles.push(...newParticles);
-    try {
-      playAppSound('cowbell');
-    } catch {}
+
+    // Synthesize wooden thud when extending bridge
+    SoundFX.playBridgeThud();
   }, [CELL_SIZE]);
 
-  // Trigger Hazard Hit (Water or Bush collision)
-  const triggerHazardCollision = useCallback((reason: 'water' | 'bush') => {
+  // Trigger Hazard Hit (Water, Rock, or Bush collision)
+  const triggerHazardCollision = useCallback((reason: 'water' | 'bush' | 'rock') => {
     const st = animStateRef.current;
     st.cameraShakeTimer = 30; // frames
     st.cameraShakeIntensity = 7;
@@ -179,13 +178,14 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
 
     if (reason === 'water') {
       setSpeechBubble("Splash! Monkeys can't swim!");
+    } else if (reason === 'rock') {
+      setSpeechBubble("Ouch! It's a rock! Try monkey.jump()!");
     } else {
       setSpeechBubble("Ouch! A prickly bush!");
     }
 
-    try {
-      playAppSound('boing');
-    } catch {}
+    // Synthesize soft bonk on collision
+    SoundFX.playCollisionBonk();
   }, []);
 
   // Helper to compute directional turn
@@ -231,6 +231,9 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         if (!isCancelled) {
           onActiveLineChange?.(null);
           const allCollected = bananas.every(b => b.collected) || collectedCount >= level.bananas.length;
+          if (allCollected) {
+            SoundFX.playFanfare();
+          }
           onExecutionComplete(allCollected, collectedCount);
         }
         return;
@@ -276,7 +279,6 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         else if (currentDir === 'down') dy = 1;
         else if (currentDir === 'up') dy = -1;
 
-        // Build planks in front of monkey across water tiles
         let builtAny = false;
         let bx = currentX;
         let by = currentY;
@@ -305,11 +307,83 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         return;
       }
 
-      // 4. STEP & JUMP ACTIONS
-      if (actType === 'STEP' || actType === 'JUMP') {
-        const isJump = actType === 'JUMP';
-        const steps = isJump ? 1 : (typeof action.count === 'number' ? action.count : 1);
+      // 4. JUMP ACTION: monkey.jump() clears 1-tile rock obstacles!
+      if (actType === 'JUMP') {
+        let dx = 0;
+        let dy = 0;
+        if (currentDir === 'right') dx = 1;
+        else if (currentDir === 'left') dx = -1;
+        else if (currentDir === 'down') dy = 1;
+        else if (currentDir === 'up') dy = -1;
 
+        const immediateX = currentX + dx;
+        const immediateY = currentY + dy;
+
+        // If immediate tile ahead is a rock/stone obstacle, jump OVER it (2 tiles)!
+        let targetX = immediateX;
+        let targetY = immediateY;
+
+        if (
+          immediateX >= 0 && immediateX < COLS &&
+          immediateY >= 0 && immediateY < ROWS &&
+          dynamicGrid[immediateY][immediateX] === 'stone'
+        ) {
+          targetX = currentX + dx * 2;
+          targetY = currentY + dy * 2;
+        }
+
+        // Bounds check
+        if (targetX < 0 || targetX >= COLS || targetY < 0 || targetY >= ROWS) {
+          triggerHazardCollision('bush');
+          onActiveLineChange?.(null);
+          onExecutionComplete(false, collectedCount);
+          return;
+        }
+
+        // Check landing tile
+        const landingTile = dynamicGrid[targetY][targetX];
+        if (landingTile === 'water') {
+          await animateMove(currentX, currentY, targetX, targetY, true);
+          currentX = targetX;
+          currentY = targetY;
+          setMonkeyGridPos({ x: targetX, y: targetY });
+          triggerHazardCollision('water');
+          onActiveLineChange?.(null);
+          onExecutionComplete(false, collectedCount);
+          return;
+        }
+
+        if (landingTile === 'bush' || landingTile === 'stone') {
+          triggerHazardCollision(landingTile === 'stone' ? 'rock' : 'bush');
+          onActiveLineChange?.(null);
+          onExecutionComplete(false, collectedCount);
+          return;
+        }
+
+        // Valid jump: play warm marimba footstep and animate high arc jump
+        SoundFX.playFootstep();
+        await animateMove(currentX, currentY, targetX, targetY, true);
+        currentX = targetX;
+        currentY = targetY;
+        setMonkeyGridPos({ x: targetX, y: targetY });
+
+        // Banana collection check
+        const foundBanana = level.bananas.find(b => b.x === targetX && b.y === targetY);
+        if (foundBanana) {
+          setBananas(prev =>
+            prev.map(b => (b.id === foundBanana.id ? { ...b, collected: true } : b))
+          );
+          spawnBananaParticles(targetX, targetY);
+          collectedCount++;
+        }
+
+        if (!isCancelled) executeNextAction();
+        return;
+      }
+
+      // 5. STEP ACTION: monkey.step(steps=1)
+      if (actType === 'STEP') {
+        const steps = typeof action.count === 'number' ? action.count : 1;
         const stepDir = steps >= 0 ? 1 : -1;
         const totalSteps = Math.abs(steps);
 
@@ -337,9 +411,9 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           // Check target tile in dynamic grid
           const targetTile = dynamicGrid[nextY][nextX];
 
-          // Water hazard (if water and monkey did NOT jump onto a stone)
+          // Water hazard
           if (targetTile === 'water') {
-            await animateMove(currentX, currentY, nextX, nextY, isJump);
+            await animateMove(currentX, currentY, nextX, nextY, false);
             currentX = nextX;
             currentY = nextY;
             setMonkeyGridPos({ x: nextX, y: nextY });
@@ -349,7 +423,15 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
             return;
           }
 
-          // Bush obstacle
+          // Rock obstacle collision (must use jump instead of step!)
+          if (targetTile === 'stone') {
+            triggerHazardCollision('rock');
+            onActiveLineChange?.(null);
+            onExecutionComplete(false, collectedCount);
+            return;
+          }
+
+          // Bush collision
           if (targetTile === 'bush') {
             triggerHazardCollision('bush');
             onActiveLineChange?.(null);
@@ -357,8 +439,9 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
             return;
           }
 
-          // Valid move: interpolate smoothly at 60fps
-          await animateMove(currentX, currentY, nextX, nextY, isJump);
+          // Valid step: play warm marimba footstep and animate
+          SoundFX.playFootstep();
+          await animateMove(currentX, currentY, nextX, nextY, false);
           currentX = nextX;
           currentY = nextY;
           setMonkeyGridPos({ x: nextX, y: nextY });
