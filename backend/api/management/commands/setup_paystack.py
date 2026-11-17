@@ -50,15 +50,18 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"✗ Could not reach Paystack API: {e}"))
 
-        # Setup or synchronize plans
-        should_create = options.get('create_plans') or is_live
-
         monthly = SubscriptionPlan.objects.filter(billing_interval='monthly').first()
         annual = SubscriptionPlan.objects.filter(billing_interval='annually').first()
 
         self.stdout.write("\nCurrent Database Plans:")
         self.stdout.write(f"- Monthly: {monthly.plan_name if monthly else 'None'} | ₦{monthly.amount if monthly else 0} | Code: {monthly.paystack_plan_code if monthly else 'None'}")
         self.stdout.write(f"- Annual:  {annual.plan_name if annual else 'None'} | ₦{annual.amount if annual else 0} | Code: {annual.paystack_plan_code if annual else 'None'}")
+
+        # Only create if explicitly requested or if current codes are missing or default test codes
+        is_monthly_test_or_empty = not monthly or not monthly.paystack_plan_code or monthly.paystack_plan_code == 'PLN_dmt3enn7u1045sx'
+        is_annual_test_or_empty = not annual or not annual.paystack_plan_code or annual.paystack_plan_code == 'PLN_27x0pbe5znqyzte'
+
+        should_create = options.get('create_plans') or (is_live and (is_monthly_test_or_empty or is_annual_test_or_empty))
 
         if should_create:
             self.stdout.write("\nCreating/Synchronizing plans on Paystack account...")
