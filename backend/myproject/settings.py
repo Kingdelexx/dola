@@ -166,12 +166,12 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 
 # Paystack Configuration
-PAYSTACK_SECRET_KEY = (os.environ.get("PAYSTACK_SECRET_KEY") or "sk_test_b25287325f36bacd82ed2e69ff3eb9df4f6acd54").strip()
-PAYSTACK_PUBLIC_KEY = (os.environ.get("PAYSTACK_PUBLIC_KEY") or "pk_test_55ce37cbca78414b4ab56ed6a070aadfba2b3f98").strip()
+PAYSTACK_SECRET_KEY = (os.environ.get("PAYSTACK_SECRET_KEY") or "").strip()
+PAYSTACK_PUBLIC_KEY = (os.environ.get("PAYSTACK_PUBLIC_KEY") or "").strip()
 PAYSTACK_BASE_URL = (os.environ.get("PAYSTACK_BASE_URL") or "https://api.paystack.co").strip()
 PAYSTACK_WEBHOOK_SECRET = (os.environ.get("PAYSTACK_WEBHOOK_SECRET") or PAYSTACK_SECRET_KEY).strip()
-PAYSTACK_MONTHLY_PLAN_CODE = (os.environ.get("PAYSTACK_MONTHLY_PLAN_CODE") or "").strip()
-PAYSTACK_ANNUAL_PLAN_CODE = (os.environ.get("PAYSTACK_ANNUAL_PLAN_CODE") or "").strip()
+PAYSTACK_MONTHLY_PLAN_CODE = (os.environ.get("PAYSTACK_MONTHLY_PLAN_CODE") or "PLN_lo04aqjyr3g9o11").strip()
+PAYSTACK_ANNUAL_PLAN_CODE = (os.environ.get("PAYSTACK_ANNUAL_PLAN_CODE") or "PLN_tgridhst5qn2ltc").strip()
 
 # Email Configuration
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')

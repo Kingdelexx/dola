@@ -32,7 +32,7 @@ const DEFAULT_PLANS: Plan[] = [
     currency: "NGN",
     billing_interval: "monthly",
     billing_interval_display: "Monthly",
-    paystack_plan_code: "PLN_dmt3enn7u1045sx"
+    paystack_plan_code: "PLN_lo04aqjyr3g9o11"
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const DEFAULT_PLANS: Plan[] = [
     currency: "NGN",
     billing_interval: "annually",
     billing_interval_display: "Annually (1 Year)",
-    paystack_plan_code: "PLN_27x0pbe5znqyzte"
+    paystack_plan_code: "PLN_tgridhst5qn2ltc"
   }
 ];
 

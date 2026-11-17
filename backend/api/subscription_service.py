@@ -20,8 +20,8 @@ def seed_default_plans():
     env_monthly = getattr(settings, 'PAYSTACK_MONTHLY_PLAN_CODE', '') or os.environ.get('PAYSTACK_MONTHLY_PLAN_CODE', '')
     env_annual = getattr(settings, 'PAYSTACK_ANNUAL_PLAN_CODE', '') or os.environ.get('PAYSTACK_ANNUAL_PLAN_CODE', '')
 
-    default_monthly_code = env_monthly or 'PLN_dmt3enn7u1045sx'
-    default_annual_code = env_annual or 'PLN_27x0pbe5znqyzte'
+    default_monthly_code = env_monthly or 'PLN_lo04aqjyr3g9o11'
+    default_annual_code = env_annual or 'PLN_tgridhst5qn2ltc'
 
     # 1. Monthly Plan -> 10,000 NGN
     monthly = SubscriptionPlan.objects.filter(billing_interval='monthly').first()
