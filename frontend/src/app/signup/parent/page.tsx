@@ -39,11 +39,24 @@ export default function ParentSignUpPage() {
     setIsLoading(true);
 
     try {
+      const trimmedName = name.trim();
+      const parts = trimmedName.split(/\s+/);
+      const firstName = parts[0] || '';
+      const lastName = parts.slice(1).join(' ') || '';
+      const cleanUsername = trimmedName
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        .slice(0, 30);
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/register/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: name.trim(),
+          full_name: trimmedName,
+          first_name: firstName,
+          last_name: lastName,
+          username: cleanUsername || email.trim().toLowerCase().split('@')[0],
           email: email.trim().toLowerCase(),
           password: password,
           role: 'parent',
@@ -59,8 +72,8 @@ export default function ParentSignUpPage() {
       } else {
         const errorMsg =
           data.error ||
-          data.username?.[0] ||
           data.email?.[0] ||
+          data.username?.[0] ||
           (typeof data === 'object' ? Object.values(data).flat().join(', ') : 'Registration failed.');
         setError(errorMsg);
         setIsLoading(false);

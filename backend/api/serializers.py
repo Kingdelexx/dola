@@ -148,11 +148,55 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies', 'pizza_shop_progress', 'robot_maze_progress', 'my_little_shop_progress', 'frog_adventure_progress', 'traffic_rescue_progress', 'pet_rescue_progress', 'dolamoney_progress')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'is_superuser', 'profile', 'earned_badges', 'competencies', 'pizza_shop_progress', 'robot_maze_progress', 'my_little_shop_progress', 'frog_adventure_progress', 'traffic_rescue_progress', 'pet_rescue_progress', 'dolamoney_progress')
         extra_kwargs = {
             'password': {'write_only': True},
-            'is_superuser': {'read_only': True}
+            'is_superuser': {'read_only': True},
+            'first_name': {'required': False, 'allow_blank': True},
+            'last_name': {'required': False, 'allow_blank': True},
+            'username': {'required': False, 'allow_blank': True},
         }
+
+    def to_internal_value(self, data):
+        data = data.copy() if hasattr(data, 'copy') else dict(data)
+        import re, random
+
+        raw_name = str(data.get('full_name') or data.get('name') or '').strip()
+        raw_username = str(data.get('username') or '').strip()
+        email = str(data.get('email') or '').strip().lower()
+
+        # If username has space, it was likely passed as a full name
+        if ' ' in raw_username and not raw_name:
+            raw_name = raw_username
+
+        # Populate first_name and last_name if available
+        if raw_name:
+            parts = raw_name.split(None, 1)
+            if not data.get('first_name'):
+                data['first_name'] = parts[0]
+            if len(parts) > 1 and not data.get('last_name'):
+                data['last_name'] = parts[1]
+
+        # Ensure a clean, valid username without spaces
+        username_candidate = raw_username
+        if not username_candidate or ' ' in username_candidate or not re.match(r'^[\w.@+-]+$', username_candidate):
+            base = re.sub(r'[^a-zA-Z0-9_]', '', (raw_name or email.split('@')[0] or 'user').lower().replace(' ', '_')).strip('_')
+            if not base or len(base) < 2:
+                base = re.sub(r'[^a-zA-Z0-9_]', '', email.split('@')[0].lower()).strip('_') or 'user'
+            base = base[:130]
+
+            candidate = base
+            counter = 1
+            while User.objects.filter(username__iexact=candidate).exists():
+                candidate = f"{base}_{random.randint(100, 9999)}"
+                counter += 1
+                if counter > 50:
+                    import uuid
+                    candidate = f"{base}_{uuid.uuid4().hex[:6]}"
+                    break
+            data['username'] = candidate
+
+        return super().to_internal_value(data)
 
     def get_profile(self, obj):
         try:
@@ -264,7 +308,9 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username=username,
             email=validated_data.get('email'),
-            password=validated_data.get('password')
+            password=validated_data.get('password'),
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
         )
         
         # If superuser or requested super_admin

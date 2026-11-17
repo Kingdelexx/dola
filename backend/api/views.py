@@ -234,17 +234,19 @@ class GoogleAuthView(APIView):
         user = User.objects.filter(email__iexact=email).first()
 
         if not user:
-            base_username = (name or email.split('@')[0]).strip()
-            username = base_username
+            import re, uuid
+            raw_id = (name or email.split('@')[0]).strip()
+            clean_base = re.sub(r'[^a-zA-Z0-9_]', '', raw_id.lower().replace(' ', '_')).strip('_') or "user"
+            username = clean_base
             counter = 1
             while User.objects.filter(username__iexact=username).exists():
-                username = f"{base_username}_{counter}"
+                username = f"{clean_base}_{counter}"
                 counter += 1
 
-            import uuid
             user = User.objects.create_user(
                 username=username,
                 email=email,
+                first_name=name or '',
                 password=str(uuid.uuid4())
             )
 
@@ -3145,14 +3147,15 @@ class AddSchoolStudentView(APIView):
         if not name or not name.strip():
             return Response({"error": "Student name is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        base_username = name.strip()
-        username = base_username
+        import re
+        clean_base = re.sub(r'[^a-zA-Z0-9_]', '', name.strip().lower().replace(' ', '_')).strip('_') or "student"
+        username = clean_base
         counter = 1
         while User.objects.filter(username=username).exists():
-            username = f"{base_username}_{counter}"
+            username = f"{clean_base}_{counter}"
             counter += 1
 
-        email = request.data.get('email') or f"{username.lower().replace(' ', '_')}@student.dolacode.com"
+        email = request.data.get('email') or f"{username.lower()}@student.dolacode.com"
         password = request.data.get('password', 'Student123!')
 
         classroom_obj = None
@@ -3162,7 +3165,12 @@ class AddSchoolStudentView(APIView):
             except Classroom.DoesNotExist:
                 pass
 
-        student_user = User.objects.create_user(username=username, email=email, password=password)
+        student_user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=name.strip()
+        )
         try:
             parsed_age = int(age) if age else None
         except (ValueError, TypeError):
@@ -3284,15 +3292,21 @@ class BulkUploadStudentsView(APIView):
                     defaults={'grade_level': class_name, 'teacher': user}
                 )
 
-            base_username = name.strip()
-            username = base_username
+            import re
+            clean_base = re.sub(r'[^a-zA-Z0-9_]', '', name.strip().lower().replace(' ', '_')).strip('_') or "student"
+            username = clean_base
             counter = 1
             while User.objects.filter(username=username).exists():
-                username = f"{base_username}_{counter}"
+                username = f"{clean_base}_{counter}"
                 counter += 1
 
-            email = f"{username.lower().replace(' ', '_')}@student.dolacode.com"
-            student_user = User.objects.create_user(username=username, email=email, password='Student123!')
+            email = f"{username.lower()}@student.dolacode.com"
+            student_user = User.objects.create_user(
+                username=username,
+                email=email,
+                password='Student123!',
+                first_name=name.strip()
+            )
             
             parsed_age = None
             if age:
@@ -4363,15 +4377,21 @@ class StudentJoinClassView(APIView):
         if not classroom:
             return Response({"error": f"Invalid class join code '{code}'."}, status=status.HTTP_404_NOT_FOUND)
 
-        base_username = student_name.strip()
-        username = base_username
+        import re
+        clean_base = re.sub(r'[^a-zA-Z0-9_]', '', student_name.strip().lower().replace(' ', '_')).strip('_') or "student"
+        username = clean_base
         counter = 1
         while User.objects.filter(username=username).exists():
-            username = f"{base_username}_{counter}"
+            username = f"{clean_base}_{counter}"
             counter += 1
 
-        email = f"{username.lower().replace(' ', '_')}@student.dolacode.com"
-        user = User.objects.create_user(username=username, email=email, password=password)
+        email = f"{username.lower()}@student.dolacode.com"
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=student_name.strip()
+        )
 
         parsed_age = None
         if age:
