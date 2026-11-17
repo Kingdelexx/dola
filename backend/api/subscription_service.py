@@ -13,16 +13,34 @@ logger = logging.getLogger(__name__)
 def seed_default_plans():
     """
     Ensures standard DolaCode subscription plans exist with accurate prices and active Paystack codes.
+    Respects environment variables and preserves active custom or live Paystack codes.
     """
+    import os
+    from django.conf import settings
+    env_monthly = getattr(settings, 'PAYSTACK_MONTHLY_PLAN_CODE', '') or os.environ.get('PAYSTACK_MONTHLY_PLAN_CODE', '')
+    env_annual = getattr(settings, 'PAYSTACK_ANNUAL_PLAN_CODE', '') or os.environ.get('PAYSTACK_ANNUAL_PLAN_CODE', '')
+
+    default_monthly_code = env_monthly or 'PLN_dmt3enn7u1045sx'
+    default_annual_code = env_annual or 'PLN_27x0pbe5znqyzte'
+
     # 1. Monthly Plan -> 10,000 NGN
     monthly = SubscriptionPlan.objects.filter(billing_interval='monthly').first()
     if monthly:
         needs_save = False
-        if monthly.amount != 10000.00 or monthly.paystack_plan_code != 'PLN_dmt3enn7u1045sx' or not monthly.is_active:
+        if monthly.amount != 10000.00:
             monthly.amount = 10000.00
+            needs_save = True
+        if monthly.plan_name != "Monthly Explorer":
             monthly.plan_name = "Monthly Explorer"
-            monthly.paystack_plan_code = "PLN_dmt3enn7u1045sx"
+            needs_save = True
+        if not monthly.is_active:
             monthly.is_active = True
+            needs_save = True
+        if env_monthly and monthly.paystack_plan_code != env_monthly:
+            monthly.paystack_plan_code = env_monthly
+            needs_save = True
+        elif not monthly.paystack_plan_code:
+            monthly.paystack_plan_code = default_monthly_code
             needs_save = True
         if needs_save:
             monthly.save()
@@ -33,7 +51,7 @@ def seed_default_plans():
             amount=10000.00,
             currency="NGN",
             billing_interval="monthly",
-            paystack_plan_code="PLN_dmt3enn7u1045sx",
+            paystack_plan_code=default_monthly_code,
             features=["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
             is_active=True
         )
@@ -42,11 +60,20 @@ def seed_default_plans():
     annual = SubscriptionPlan.objects.filter(billing_interval='annually').first()
     if annual:
         needs_save = False
-        if annual.amount != 100000.00 or annual.paystack_plan_code != 'PLN_27x0pbe5znqyzte' or not annual.is_active:
+        if annual.amount != 100000.00:
             annual.amount = 100000.00
+            needs_save = True
+        if annual.plan_name != "Annual Champion (1 Year)":
             annual.plan_name = "Annual Champion (1 Year)"
-            annual.paystack_plan_code = "PLN_27x0pbe5znqyzte"
+            needs_save = True
+        if not annual.is_active:
             annual.is_active = True
+            needs_save = True
+        if env_annual and annual.paystack_plan_code != env_annual:
+            annual.paystack_plan_code = env_annual
+            needs_save = True
+        elif not annual.paystack_plan_code:
+            annual.paystack_plan_code = default_annual_code
             needs_save = True
         if needs_save:
             annual.save()
@@ -57,7 +84,7 @@ def seed_default_plans():
             amount=100000.00,
             currency="NGN",
             billing_interval="annually",
-            paystack_plan_code="PLN_27x0pbe5znqyzte",
+            paystack_plan_code=default_annual_code,
             features=["numeracy", "block_coding", "python_quest", "app_studio", "web_studio", "premium_content"],
             is_active=True
         )
