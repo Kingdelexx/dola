@@ -34,7 +34,9 @@ export default function BananaTalesGame() {
 
   // Victory modal & level progress state
   const [isVictoryModalOpen, setIsVictoryModalOpen] = useState(false);
-  const [levelStars, setLevelStars] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
+  const [levelStars, setLevelStars] = useState<Record<number, number>>(() =>
+    Object.fromEntries(BANANA_LEVELS.map((lvl) => [lvl.id, 0]))
+  );
   const [showHint, setShowHint] = useState(false);
 
   // Reference to code editor for inserting chips at cursor
@@ -58,12 +60,15 @@ export default function BananaTalesGame() {
   // Command reference chips to insert at cursor
   const commandChips = [
     { label: 'monkey.step(1)', snippet: 'monkey.step(1)' },
+    { label: 'monkey.step(2)', snippet: 'monkey.step(2)' },
     { label: 'monkey.step(4)', snippet: 'monkey.step(4)' },
     { label: 'monkey.turn("right")', snippet: 'monkey.turn("right")' },
     { label: 'monkey.turn("left")', snippet: 'monkey.turn("left")' },
-    { label: 'bridge.extend(2)', snippet: 'bridge.extend(2)' },
     { label: 'monkey.jump()', snippet: 'monkey.jump()' },
-    { label: 'for i in range(4):', snippet: 'for i in range(4):\n    monkey.step(1)\n    monkey.turn("right")\n    monkey.step(1)\n    monkey.turn("left")' },
+    { label: 'bridge.extend(1)', snippet: 'bridge.extend(1)' },
+    { label: 'bridge.extend(2)', snippet: 'bridge.extend(2)' },
+    { label: 'bridge.extend(3)', snippet: 'bridge.extend(3)' },
+    { label: 'for i in range(4):', snippet: 'for i in range(4):\n    monkey.step(1)\n    monkey.turn("right")' },
   ];
 
   const handleInsertSnippet = (snippet: string) => {
@@ -222,17 +227,18 @@ export default function BananaTalesGame() {
                 </span>
               </div>
               <p className="text-[11px] font-medium text-[#8D6E63] hidden sm:block">
-                World 3 • 5-Level Python Curriculum
+                World 3 • 12-Level Python Curriculum (Stages 1–7 Guided, 8+ Pro Coder)
               </p>
             </div>
           </div>
         </div>
 
-        {/* Center: Level Selector Pills (Levels 1–5) */}
-        <div className="flex items-center gap-1.5 bg-[#F5EFEB] p-1.5 rounded-2xl border-2 border-[#E0D7C6]">
+        {/* Center: Level Selector Pills (Levels 1–12 with Pro Coder Stars) */}
+        <div className="flex items-center gap-1.5 bg-[#F5EFEB] p-1.5 rounded-2xl border-2 border-[#E0D7C6] max-w-[280px] sm:max-w-md md:max-w-xl overflow-x-auto scrollbar-none">
           {BANANA_LEVELS.map((lvl, idx) => {
             const isActive = idx === currentLevelIndex;
             const stars = levelStars[lvl.id] || 0;
+            const isPro = lvl.id > 7;
             return (
               <button
                 key={lvl.id}
@@ -240,13 +246,17 @@ export default function BananaTalesGame() {
                   if (!isRunning && !isExecutingPython) setCurrentLevelIndex(idx);
                 }}
                 disabled={isRunning || isExecutingPython}
-                className={`relative px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                title={isPro ? `${lvl.title} (Pro Coder: Type Your Own Code)` : lvl.title}
+                className={`relative px-2.5 sm:px-3 py-1 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1 ${
                   isActive
                     ? 'btn-arcade btn-arcade-mango shadow-sm scale-105'
+                    : isPro
+                    ? 'bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-300'
                     : 'bg-[#FAF6EE] text-[#5D4037] hover:bg-white border border-[#D7CCC8]'
                 }`}
               >
                 <span>L{lvl.id}</span>
+                {isPro && <span className="text-[9px]">⭐</span>}
                 {stars > 0 && (
                   <span className={`text-[10px] ${isActive ? 'text-white' : 'text-[#FF9800]'}`}>
                     {'★'.repeat(stars)}
@@ -390,6 +400,11 @@ export default function BananaTalesGame() {
               <span className="bg-[#E0D7C6] text-[#5D4037] text-[10px] font-bold px-2 py-0.5 rounded-full">
                 Target: ≤ {currentLevel.optimalLines} lines
               </span>
+              {currentLevel.id > 7 && (
+                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-xs uppercase tracking-wider flex items-center gap-1">
+                  ⭐ Type Your Own Code
+                </span>
+              )}
               {activeLine && (
                 <span className="bg-[#FF9800] text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
                   Line {activeLine}
