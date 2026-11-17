@@ -60,7 +60,7 @@ def initialize_transaction(
         "amount": amount_kobo,
         "reference": reference,
         "callback_url": callback_url,
-        "channels": channels if channels is not None else ["card", "bank", "ussd", "bank_transfer"]
+        "channels": channels if channels is not None else ["bank_transfer", "card", "bank", "ussd"]
     }
 
     if metadata:

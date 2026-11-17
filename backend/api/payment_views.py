@@ -147,13 +147,18 @@ class InitializePaymentView(APIView):
         )
 
         # 9. Initialize transaction with Paystack API
+        # NOTE: Do NOT pass Paystack's recurring 'plan' parameter here. In Paystack, attaching a 'plan'
+        # restricts the transaction strictly to automatic recurring debits and completely disables
+        # Bank Transfer, USSD, and OPay. Omitting plan_code allows Paystack to present all channels
+        # (especially Pay with Bank Transfer), while DolaCode's backend manages the subscription
+        # activation and period tracking seamlessly via rich metadata.
         res = initialize_transaction(
             email=parent_email,
             amount_kobo=plan.amount_in_kobo,
             reference=reference,
             callback_url=callback_url,
             metadata=metadata,
-            plan_code=plan.paystack_plan_code if plan.paystack_plan_code else None
+            plan_code=None
         )
 
         if not res.get("status"):
