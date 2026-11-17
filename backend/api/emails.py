@@ -320,6 +320,7 @@ def send_school_approval_email(school, recipient_email=None):
 
     subject = f"🎉 Welcome to DolaCode! {school.name} is Approved!"
 
+    login_url = "https://dolacode.com.ng/login"
     dashboard_url = "https://dolacode.com.ng/school-dashboard"
     teacher_invite_url = f"https://dolacode.com.ng/join/{school.code}"
 
@@ -327,10 +328,10 @@ def send_school_approval_email(school, recipient_email=None):
         f"Congratulations!\n\n"
         f"Your school application for {school.name} has been officially APPROVED by the Devnaija DolaCode Team!\n\n"
         f"School Code: {school.code}\n"
-        f"Principal Dashboard: {dashboard_url}\n"
+        f"Login: {login_url}\n"
         f"Teacher Invite Link: {teacher_invite_url}\n\n"
         f"Next Steps:\n"
-        f"1. Log into your Principal Dashboard: {dashboard_url}\n"
+        f"1. Log into your account: {login_url}\n"
         f"2. Create your classrooms (e.g. Primary 5 Alpha)\n"
         f"3. Share your Teacher Invite Link with faculty members\n"
         f"4. Add or import students via Excel upload\n\n"
@@ -396,7 +397,7 @@ def send_school_approval_email(school, recipient_email=None):
         </div>
 
         <div style="text-align: center; margin-top: 28px;">
-          <a href="{dashboard_url}" class="btn">Open Principal Dashboard →</a>
+          <a href="{login_url}" class="btn">Login →</a>
         </div>
 
         <div class="footer">
@@ -618,8 +619,8 @@ When it's time to code, your child simply visits {login_url}, enters your parent
 3. TRACK PROGRESS ANYTIME
 From your Parent Dashboard, you can monitor your children's completed coding stages, numeracy exercises, weekly progress reports, and earned certificates.
 
-Access your Parent Dashboard now:
-{portal_url}
+Log in to your account now:
+{login_url}
 
 If you have any questions or need guidance getting started, simply reply directly to this email or reach us at hello@devnaija.com.
 
@@ -682,7 +683,7 @@ https://dolacode.com.ng
         </div>
 
         <div class="btn-container">
-          <a href="{portal_url}" class="btn">Open Parent Dashboard →</a>
+          <a href="{login_url}" class="btn">Login →</a>
         </div>
 
         <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 16px;">
