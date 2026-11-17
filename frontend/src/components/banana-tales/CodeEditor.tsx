@@ -94,57 +94,50 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
 
   const lines = value.split('\n');
 
-  // Token-based Python syntax highlighter
-  const highlightPythonLine = (line: string) => {
-    if (line.trim().startsWith('#')) {
-      return `<span class="text-amber-700/80 italic font-medium">${escapeHtml(line)}</span>`;
+  // Single-pass token-based Python syntax highlighter
+  // Avoids regex cascading collisions on injected HTML tags
+  const highlightPythonLine = (line: string): string => {
+    const tokenRegex = /(#[^\n]*)|("(?:\\.|[^"\\])*")|('(?:\\.|[^'\\])*')|\b(for|in|range|if|else|elif|while|def|return|True|False|and|or|not)\b|\b(monkey|bridge)\b|\b(step|turn|jump|say|extend|print)\b|\b(\d+)\b/g;
+
+    let result = '';
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = tokenRegex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        result += escapeHtml(line.slice(lastIndex, match.index));
+      }
+
+      const [fullMatch, comment, dblStr, sglStr, keyword, obj, method, num] = match;
+
+      if (comment !== undefined) {
+        result += `<span class="text-amber-700/80 italic font-medium">${escapeHtml(comment)}</span>`;
+      } else if (dblStr !== undefined || sglStr !== undefined) {
+        result += `<span class="text-emerald-700 font-medium">${escapeHtml(fullMatch)}</span>`;
+      } else if (keyword !== undefined) {
+        result += `<span class="text-purple-600 font-bold">${escapeHtml(keyword)}</span>`;
+      } else if (obj !== undefined) {
+        if (obj === 'monkey') {
+          result += `<span class="text-amber-800 font-bold">${escapeHtml(obj)}</span>`;
+        } else {
+          result += `<span class="text-emerald-800 font-bold">${escapeHtml(obj)}</span>`;
+        }
+      } else if (method !== undefined) {
+        result += `<span class="text-teal-700 font-semibold">${escapeHtml(method)}</span>`;
+      } else if (num !== undefined) {
+        result += `<span class="text-orange-600 font-bold">${escapeHtml(num)}</span>`;
+      } else {
+        result += escapeHtml(fullMatch);
+      }
+
+      lastIndex = tokenRegex.lastIndex;
     }
 
-    const commentIdx = line.indexOf('#');
-    let codePart = commentIdx !== -1 ? line.slice(0, commentIdx) : line;
-    const commentPart = commentIdx !== -1 ? line.slice(commentIdx) : '';
-
-    let highlighted = escapeHtml(codePart);
-
-    // Keywords
-    highlighted = highlighted.replace(
-      /\b(for|in|range|if|else|elif|while|def|return|True|False|and|or|not)\b/g,
-      '<span class="text-purple-600 font-bold">$1</span>'
-    );
-
-    // Identifiers: monkey & bridge
-    highlighted = highlighted.replace(
-      /\b(monkey)\b/g,
-      '<span class="text-amber-800 font-bold">$1</span>'
-    );
-    highlighted = highlighted.replace(
-      /\b(bridge)\b/g,
-      '<span class="text-emerald-800 font-bold">$1</span>'
-    );
-
-    // Methods
-    highlighted = highlighted.replace(
-      /\.(step|turn|jump|say|extend|print)\b/g,
-      '.<span class="text-teal-700 font-semibold">$1</span>'
-    );
-
-    // String literals
-    highlighted = highlighted.replace(
-      /(&quot;.*?&quot;|&#39;.*?&#39;|".*?"|'.*?')/g,
-      '<span class="text-emerald-700 font-medium">$1</span>'
-    );
-
-    // Numbers
-    highlighted = highlighted.replace(
-      /\b(\d+)\b/g,
-      '<span class="text-orange-600 font-bold">$1</span>'
-    );
-
-    if (commentPart) {
-      highlighted += `<span class="text-amber-700/80 italic font-medium">${escapeHtml(commentPart)}</span>`;
+    if (lastIndex < line.length) {
+      result += escapeHtml(line.slice(lastIndex));
     }
 
-    return highlighted;
+    return result;
   };
 
   return (
@@ -230,7 +223,8 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect="off"
-          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-transparent caret-[#263238] focus:outline-none selection:bg-amber-200 selection:text-amber-950 z-20"
+          wrap="off"
+          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-transparent caret-[#263238] focus:outline-none selection:bg-amber-200 selection:text-amber-950 z-20 whitespace-pre overflow-auto"
           placeholder="# Type your Python code here..."
         />
       </div>
