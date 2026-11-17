@@ -39,11 +39,13 @@ def initialize_transaction(
     reference: str,
     callback_url: str,
     metadata: dict = None,
-    plan_code: str = None
+    plan_code: str = None,
+    channels: list = None
 ) -> dict:
     """
     Initializes a transaction with Paystack.
     Amount is strictly in Kobo (NGN 1 = 100 Kobo).
+    Explicitly enables card, bank transfer, and ussd channels by default.
     """
     secret_key = get_secret_key()
     if not secret_key:
@@ -58,6 +60,7 @@ def initialize_transaction(
         "amount": amount_kobo,
         "reference": reference,
         "callback_url": callback_url,
+        "channels": channels if channels is not None else ["card", "bank", "ussd", "bank_transfer"]
     }
 
     if metadata:
