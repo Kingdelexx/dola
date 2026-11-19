@@ -9,10 +9,112 @@ import {
   Play, MousePointerClick, Unlock, Ghost, LayoutGrid, Quote, UserCircle2,
   Plus, Minus, Mail, MapPin, Cloud, Trophy, Gamepad2, Sun, Crown, Heart,
   Coins, Brain, Users, ArrowRight, Laptop, Store,
-  Flame, Award, Lightbulb, Zap, Code
+  Flame, Award, Lightbulb, Zap, Code, CheckCircle2
 } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
+
+interface Testimonial {
+  id: number;
+  category: 'parent' | 'kid' | 'school';
+  name: string;
+  role: string;
+  avatarText: string;
+  avatarBg: string;
+  badge: string;
+  badgeColor: string;
+  stars: number;
+  quote: string;
+  highlight: string;
+  extraMeta?: string;
+}
+
+const testimonials: Testimonial[] = [
+  {
+    id: 1,
+    category: 'parent',
+    name: "Mrs. Folake Adeleke",
+    role: "Mum of 2 (Ages 7 & 10) • Lagos, Nigeria",
+    avatarText: "FA",
+    avatarBg: "from-pink-500 to-rose-500",
+    badge: "Verified Parent 👨‍👩‍👧",
+    badgeColor: "bg-pink-100 text-pink-700 border-pink-200",
+    stars: 5,
+    highlight: "From mindless YouTube to building real Python code!",
+    quote: "Before DolaCode, my 8-year-old was glued to random YouTube videos. Within just three weeks of playing the numeracy games and Banana Tales Python, he started explaining 'loops' and 'variables' to me! The weekly Lizzy AI progress reports sent to my email give me total peace of mind.",
+    extraMeta: "Son built a Python jungle maze game"
+  },
+  {
+    id: 2,
+    category: 'kid',
+    name: "David O.",
+    role: "Age 9 • Grade 4 Learner, Abuja",
+    avatarText: "DO",
+    avatarBg: "from-sky-500 to-indigo-500",
+    badge: "Kid Coder 🎮",
+    badgeColor: "bg-sky-100 text-sky-700 border-sky-200",
+    stars: 5,
+    highlight: "Banana Tales and Pizza Shop are so much fun!",
+    quote: "I used to think coding was boring, but DolaCode makes it feel like playing a video game! Guiding the monkey with monkey.step() and monkey.jump() in Python is my favorite thing after school. I've already earned 180 Stars and 4 trophies!",
+    extraMeta: "Level 9 Python Explorer"
+  },
+  {
+    id: 3,
+    category: 'school',
+    name: "Mr. Emmanuel Nnamdi",
+    role: "ICT & STEM Lead, Crown Heights Academy • Port Harcourt",
+    avatarText: "EN",
+    avatarBg: "from-emerald-500 to-teal-600",
+    badge: "School Partner 🏫",
+    badgeColor: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    stars: 5,
+    highlight: "Easiest coding platform to deploy across 120+ students.",
+    quote: "Setting up computer science labs used to be a nightmare of installations and broken configs. DolaCode runs straight in Chrome on our school PCs without downloading anything. The teacher join codes and class analytics make tracking assignments effortless.",
+    extraMeta: "120+ Active Students in Lab"
+  },
+  {
+    id: 4,
+    category: 'parent',
+    name: "Dr. Chidinma Eze",
+    role: "Parent of 9-Year-Old Kamsi • London / Diaspora",
+    avatarText: "CE",
+    avatarBg: "from-purple-500 to-indigo-600",
+    badge: "Verified Parent 👨‍👩‍👧",
+    badgeColor: "bg-purple-100 text-purple-700 border-purple-200",
+    stars: 5,
+    highlight: "Financial literacy game taught her real math logic.",
+    quote: "The DolaMoney financial literacy game and Pizza Shop numeracy puzzles are genius. Kamsi now calculates grocery change in her head without a calculator. Plus, the 4-digit PIN system means she logs in safely on her tablet without needing my passwords.",
+    extraMeta: "Completed Stage 1 Numeracy"
+  },
+  {
+    id: 5,
+    category: 'kid',
+    name: "Zainab B.",
+    role: "Age 11 • Young Web Creator, Ibadan",
+    avatarText: "ZB",
+    avatarBg: "from-amber-500 to-orange-500",
+    badge: "Kid Creator 🚀",
+    badgeColor: "bg-amber-100 text-amber-800 border-amber-200",
+    stars: 5,
+    highlight: "I created my first live website and showed my school!",
+    quote: "I started in Stage 2 with drag-and-drop blocks, and now I'm building real websites in the Web Studio with HTML and CSS. Lizzy AI helps me find bugs whenever I get stuck so I don't feel frustrated. My teacher said my project was the best in class!",
+    extraMeta: "Published School Book Club App"
+  },
+  {
+    id: 6,
+    category: 'school',
+    name: "Mrs. Victoria Alabi",
+    role: "Head of School, Meadow Hall Prep • Lagos",
+    avatarText: "VA",
+    avatarBg: "from-rose-500 to-pink-600",
+    badge: "School Principal 🏫",
+    badgeColor: "bg-rose-100 text-rose-700 border-rose-200",
+    stars: 5,
+    highlight: "Parents love the STEM progress they see at home.",
+    quote: "DolaCode has elevated our STEM curriculum significantly. Parents constantly praise how enthusiastic their children are about Friday computing periods. It is affordable, culturally relatable, and globally competitive.",
+    extraMeta: "250+ Students Enrolled"
+  }
+];
 
 export default function Home() {
   const heroRef = useRef(null);
@@ -26,6 +128,7 @@ export default function Home() {
   const ctaButtonRef = useRef(null);
 
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [testimonialFilter, setTestimonialFilter] = useState<'all' | 'parent' | 'kid' | 'school'>('all');
   const { user, logout, loading } = useAuth();
 
   useEffect(() => {
@@ -609,7 +712,148 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials Section - Loved by Kids, Parents & Teachers */}
+      <section className="relative z-10 py-24 sm:py-32 bg-gradient-to-b from-sky-50 via-white to-purple-50 px-4 sm:px-6 border-t-8 border-sky-300 overflow-hidden">
+        {/* Floating Decorative Background Elements */}
+        <div className="absolute top-12 left-6 text-yellow-300/30 -rotate-12 pointer-events-none hidden lg:block">
+          <Star size={96} className="fill-yellow-300" />
+        </div>
+        <div className="absolute bottom-16 right-8 text-pink-300/30 rotate-12 pointer-events-none hidden lg:block">
+          <Heart size={88} className="fill-pink-300" />
+        </div>
+        <div className="absolute top-1/2 right-6 text-purple-300/30 pointer-events-none hidden lg:block">
+          <Sparkles size={72} />
+        </div>
 
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-4">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-100 border-2 border-amber-300 text-amber-900 font-black text-xs sm:text-sm uppercase tracking-wider shadow-sm">
+              <Star size={16} className="fill-amber-500 text-amber-500" />
+              <span>Real Stories From Real Creators</span>
+              <Sparkles size={16} className="text-amber-500" />
+            </div>
+
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight">
+              Loved by <span className="text-pink-500">Kids</span>, Trusted by <span className="text-purple-600">Parents</span> &amp; <span className="text-emerald-600">Teachers</span>
+            </h2>
+
+            <p className="text-lg sm:text-xl text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+              Discover how over 5,000+ young learners across Nigeria and worldwide are transforming screen time into creative superpowers.
+            </p>
+
+            {/* Interactive Category Filter Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+              {[
+                { key: 'all', label: 'All Reviews (6)', icon: '🌟' },
+                { key: 'parent', label: 'Parents', icon: '👨‍👩‍👧' },
+                { key: 'kid', label: 'Young Coders', icon: '🎮' },
+                { key: 'school', label: 'Schools & Teachers', icon: '🏫' },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setTestimonialFilter(tab.key as any)}
+                  className={`px-4 sm:px-5 py-2.5 rounded-full font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-1.5 border-2 shadow-xs ${
+                    testimonialFilter === tab.key
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Testimonial Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {testimonials
+              .filter(t => testimonialFilter === 'all' || t.category === testimonialFilter)
+              .map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-white rounded-[2rem] border-4 border-slate-100 hover:border-pink-300 p-6 sm:p-7 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative group overflow-hidden"
+                >
+                  {/* Decorative background quote mark */}
+                  <Quote className="absolute top-4 right-4 w-12 h-12 text-slate-100 group-hover:text-pink-100 transition-colors pointer-events-none" />
+
+                  <div className="relative z-10 space-y-4">
+                    {/* Badge and Star rating */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${item.badgeColor}`}>
+                        {item.badge}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {[...Array(item.stars)].map((_, i) => (
+                          <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Highlight Lead Quote */}
+                    <h3 className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
+                      &ldquo;{item.highlight}&rdquo;
+                    </h3>
+
+                    {/* Main Quote Text */}
+                    <p className="text-slate-600 text-sm leading-relaxed font-medium">
+                      {item.quote}
+                    </p>
+                  </div>
+
+                  {/* Author Meta Footer */}
+                  <div className="pt-6 mt-6 border-t-2 border-slate-100 relative z-10 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${item.avatarBg} text-white font-black text-sm flex items-center justify-center shadow-md shadow-slate-200 shrink-0`}>
+                        {item.avatarText}
+                      </div>
+                      <div>
+                        <h4 className="font-black text-sm text-slate-900 leading-tight flex items-center gap-1">
+                          {item.name}
+                          <CheckCircle2 size={14} className="text-emerald-500 fill-emerald-100 shrink-0" />
+                        </h4>
+                        <p className="text-xs text-slate-500 font-medium">
+                          {item.role}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Extra Meta Pill */}
+                    {item.extraMeta && (
+                      <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5 pt-1">
+                        <Award size={13} className="text-pink-500 shrink-0" />
+                        <span>{item.extraMeta}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          {/* Trust Banner Bar */}
+          <div className="mt-14 sm:mt-16 bg-white border-4 border-purple-200 rounded-[2.5rem] p-6 sm:p-8 shadow-xl shadow-purple-500/5 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="space-y-1">
+              <p className="text-3xl sm:text-4xl font-black text-purple-900 flex items-center justify-center gap-1">
+                4.9 <Star size={24} className="fill-yellow-400 text-yellow-400" />
+              </p>
+              <p className="text-xs sm:text-sm font-bold text-slate-500">Average Parent Rating</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-3xl sm:text-4xl font-black text-pink-600">5,000+</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-500">Young Coders Enrolled</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-3xl sm:text-4xl font-black text-emerald-600">45+</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-500">Partner Schools</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-3xl sm:text-4xl font-black text-sky-600">100%</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-500">Ad-Free &amp; Kid Safe</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* FAQ Section - Friendly accordion */}
       <section className="relative z-10 py-32 bg-purple-50 px-6 border-t-8 border-purple-100">
