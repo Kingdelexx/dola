@@ -1,6 +1,8 @@
 import os
 import logging
+from datetime import datetime, timedelta
 from django.conf import settings
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -502,86 +504,214 @@ hello@devnaija.com
     return _dispatch_email(subject, recipients, text_content, html_content)
 
 
-def send_subscription_renewal_success_email(parent, subscription, amount_paid, next_billing_date):
+def send_payment_success_email(parent, subscription, payment=None, amount_paid=None, next_billing_date=None, tx_data=None):
     """
-    Sends an automated receipt and confirmation email to a parent when an automated Paystack
-    recurring subscription renewal succeeds.
+    Sends an automated, official payment confirmation and receipt email to a parent
+    whenever a payment succeeds (via Bank Transfer, Card, USSD, or Paystack Webhook).
     """
-    if not parent or not parent.email:
+    if not parent or not getattr(parent, 'email', None):
         return False
 
-    recipients = [parent.email]
-    subject = "Confirmation: Your DolaCode Subscription Has Been Renewed"
-    plan_name = subscription.plan.plan_name if (subscription and subscription.plan) else "Family Membership"
-    parent_name = parent.first_name or parent.username
-    dashboard_url = "https://dolacode.com.ng/parent/subscription"
-    formatted_date = next_billing_date.strftime("%B %d, %Y") if hasattr(next_billing_date, 'strftime') else str(next_billing_date)
+    recipients = _normalize_recipients([parent.email])
+    if not recipients:
+        return False
+
+    parent_name = parent.first_name or parent.username or "Parent"
+    plan = getattr(subscription, 'plan', None) if subscription else None
+    plan_name = plan.plan_name if plan else "Family Membership"
+    
+    # Extract amount
+    amt = 10000.0
+    if amount_paid is not None:
+        try:
+            amt = float(amount_paid)
+        except (ValueError, TypeError):
+            amt = 10000.0
+    elif payment and getattr(payment, 'amount', None):
+        try:
+            amt = float(payment.amount)
+        except (ValueError, TypeError):
+            pass
+    elif subscription and getattr(subscription, 'subscribed_amount', None):
+        try:
+            amt = float(subscription.subscribed_amount)
+        except (ValueError, TypeError):
+            pass
+    elif plan and getattr(plan, 'amount', None):
+        try:
+            amt = float(plan.amount)
+        except (ValueError, TypeError):
+            pass
+    elif tx_data and tx_data.get('amount'):
+        try:
+            amt = float(tx_data['amount']) / 100.0
+        except (ValueError, TypeError):
+            pass
+
+    # Extract reference
+    reference = getattr(payment, 'payment_reference', None) or (tx_data.get('reference') if isinstance(tx_data, dict) else None) or "N/A"
+
+    # Extract payment channel
+    raw_channel = getattr(payment, 'payment_channel', None) or (tx_data.get('channel') if isinstance(tx_data, dict) else None) or "card"
+    channel_map = {
+        'card': 'Debit / Credit Card',
+        'bank_transfer': 'Bank Transfer (Virtual Account)',
+        'transfer': 'Bank Transfer (Virtual Account)',
+        'bank': 'Pay with Bank (Direct Debit)',
+        'ussd': 'USSD Dialing',
+        'qr': 'QR Code / Zap',
+        'mobile_money': 'Mobile Money'
+    }
+    channel_display = channel_map.get(str(raw_channel).lower(), str(raw_channel).replace('_', ' ').title())
+
+    # Format period end / next renewal date
+    now = timezone.now() if hasattr(timezone, 'now') else datetime.now()
+    period_end = next_billing_date or getattr(subscription, 'current_period_end', None) or getattr(subscription, 'next_payment_date', None) or (now + timedelta(days=30))
+    if hasattr(period_end, 'strftime'):
+        formatted_date = period_end.strftime("%B %d, %Y")
+    else:
+        formatted_date = str(period_end)[:10]
+
+    # Format payment date
+    payment_date = getattr(payment, 'payment_date', None) or getattr(payment, 'created_at', None) or now
+    if hasattr(payment_date, 'strftime'):
+        formatted_payment_date = payment_date.strftime("%B %d, %Y, %I:%M %p")
+    else:
+        formatted_payment_date = str(payment_date)[:16]
+
+    dashboard_url = "https://dolacode.com.ng/parent-dashboard"
+    login_url = "https://dolacode.com.ng/login"
+
+    subject = f"Receipt: Payment Confirmed for {plan_name} 🎉"
 
     text_content = f"""
 Hello {parent_name},
 
-Thank you! Your DolaCode family subscription for {plan_name} has been successfully renewed.
+Thank you! Your payment on DolaCode has been confirmed and your family subscription is active.
 
-Amount Paid: ₦{amount_paid:,.2f}
-Next Renewal Date: {formatted_date}
+OFFICIAL PAYMENT RECEIPT
+------------------------------------------------
+Plan: {plan_name}
+Amount Paid: ₦{amt:,.2f} NGN
+Payment Reference: {reference}
+Payment Method: {channel_display}
+Payment Date: {formatted_payment_date}
+Access Valid Until: {formatted_date}
+Status: Confirmed & Active
+------------------------------------------------
 
-All coding stages, numeracy games, and personalized AI tutoring continue to be fully unlocked for all your linked children.
+All coding worlds (Numeracy, Visual Blocks, Banana Tales Python, Web Dev, App Dev Studio), 6 numeracy games, DolaMoney financial literacy, and the 24/7 Lizzy AI tutor are now fully unlocked for all your linked children.
 
-Manage your subscription and view your payment receipts anytime:
+Manage your family account or view receipts:
 {dashboard_url}
+
+Your children can sign in directly on any computer or tablet:
+{login_url}
 
 Warm regards,
 The DolaCode Team
+https://dolacode.com.ng
 hello@devnaija.com
 """
 
     html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 20px; }}
-        .container {{ max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 32px; color: #e2e8f0; }}
-        .badge {{ display: inline-block; background-color: #10b981; color: #ffffff; padding: 6px 12px; border-radius: 9999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }}
-        h1 {{ color: #ffffff; font-size: 22px; font-weight: 800; margin: 0 0 16px; }}
-        p {{ font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 16px; }}
-        .success-box {{ background: linear-gradient(135deg, #064e3b, #047857); border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: left; }}
-        .btn {{ display: inline-block; background: #6366f1; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 14px; text-transform: uppercase; margin-top: 12px; }}
-        .footer {{ border-top: 1px solid #334155; margin-top: 32px; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center; }}
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <span class="badge">Renewal Confirmed</span>
-        <h1>Subscription Renewed Successfully</h1>
-        <p>Hello <strong>{parent_name}</strong>,</p>
-        
-        <div class="success-box">
-          <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 800;">
-            {plan_name}
-          </p>
-          <p style="margin: 0; color: #d1fae5; font-size: 14px;">
-            Amount Paid: <strong>₦{amount_paid:,.2f}</strong> • Next Renewal: <strong>{formatted_date}</strong>
-          </p>
-        </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 24px 16px; color: #f8fafc; }}
+    .container {{ max-width: 620px; margin: 0 auto; background-color: #1e293b; border-radius: 24px; border: 1px solid #334155; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }}
+    .badge {{ display: inline-block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2)); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 16px; border-radius: 9999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; }}
+    h1 {{ color: #ffffff; font-size: 24px; font-weight: 900; margin: 0 0 12px; line-height: 1.3; }}
+    p {{ font-size: 15px; line-height: 1.6; color: #cbd5e1; margin: 0 0 16px; }}
+    .receipt-card {{ background-color: #0f172a; border-radius: 18px; border: 2px solid #334155; padding: 24px; margin: 24px 0; }}
+    .receipt-table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
+    .receipt-table td {{ padding: 10px 0; border-bottom: 1px solid #1e293b; }}
+    .receipt-table tr:last-child td {{ border-bottom: none; }}
+    .receipt-label {{ color: #94a3b8; font-weight: 600; }}
+    .receipt-value {{ text-align: right; color: #f8fafc; font-weight: 700; }}
+    .amount-highlight {{ color: #34d399; font-size: 20px; font-weight: 900; }}
+    .ref-code {{ font-family: monospace; color: #fbbf24; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 6px; font-size: 12px; }}
+    .feature-list {{ background: rgba(99, 102, 241, 0.08); border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.3); padding: 18px; margin: 20px 0; }}
+    .feature-item {{ display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #c7d2fe; }}
+    .feature-item:last-child {{ margin-bottom: 0; }}
+    .feature-icon {{ color: #10b981; margin-right: 8px; font-weight: bold; }}
+    .btn {{ display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 14px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4); }}
+    .btn-container {{ text-align: center; margin: 30px 0 16px; }}
+    .footer {{ border-top: 1px solid #334155; margin-top: 32px; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center; line-height: 1.6; }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="badge">✅ Payment Confirmed • Official Receipt</span>
+    <h1>Payment Successful, {parent_name}! 🎉</h1>
+    <p>Thank you for subscribing to DolaCode. Your family membership is active and your payment has been processed successfully.</p>
+    
+    <div class="receipt-card">
+      <table class="receipt-table">
+        <tr>
+          <td class="receipt-label">Membership Plan</td>
+          <td class="receipt-value" style="color: #ffffff;">{plan_name}</td>
+        </tr>
+        <tr>
+          <td class="receipt-label">Amount Paid</td>
+          <td class="receipt-value"><span class="amount-highlight">₦{amt:,.2f}</span></td>
+        </tr>
+        <tr>
+          <td class="receipt-label">Payment Reference</td>
+          <td class="receipt-value"><span class="ref-code">{reference}</span></td>
+        </tr>
+        <tr>
+          <td class="receipt-label">Payment Method</td>
+          <td class="receipt-value">{channel_display}</td>
+        </tr>
+        <tr>
+          <td class="receipt-label">Payment Date</td>
+          <td class="receipt-value">{formatted_payment_date}</td>
+        </tr>
+        <tr>
+          <td class="receipt-label">Access Valid Until</td>
+          <td class="receipt-value" style="color: #60a5fa;">{formatted_date}</td>
+        </tr>
+        <tr>
+          <td class="receipt-label">Status</td>
+          <td class="receipt-value" style="color: #34d399;">Active &amp; Verified ✓</td>
+        </tr>
+      </table>
+    </div>
 
-        <p>Your family's membership is active and all coding stages and numeracy adventures remain 100% unlocked for your children.</p>
+    <div class="feature-list">
+      <div style="font-weight: 800; color: #e0e7ff; font-size: 13px; margin-bottom: 8px;">🚀 What's Unlocked for All Your Children:</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> All 4 Coding Stages &amp; Studios (Numeracy, Blocks, Python, Web/App Dev)</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> 6 Interactive Numeracy Puzzles &amp; DolaMoney Financial Literacy Game</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> 24/7 Lizzy AI intelligent tutor assistance &amp; debugging help</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> Real-time progress monitoring &amp; weekly learning report emails</div>
+    </div>
 
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="{dashboard_url}" class="btn">View Subscription & Receipts →</a>
-        </div>
+    <div class="btn-container">
+      <a href="{dashboard_url}" class="btn">Open Parent Dashboard →</a>
+    </div>
 
-        <div class="footer">
-          <p>© 2026 DolaCode Platform. All rights reserved.<br>
-          Questions? Reply directly to this email or reach us at <a href="mailto:hello@devnaija.com" style="color: #818cf8;">hello@devnaija.com</a>.</p>
-        </div>
-      </div>
-    </body>
-    </html>
-    """
+    <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 16px;">
+      Your children can sign in directly at <a href="{login_url}" style="color: #34d399; text-decoration: none; font-weight: 600;">{login_url}</a>.
+    </p>
+
+    <div class="footer">
+      <p>© 2026 DolaCode Platform. All rights reserved.<br>
+      Have questions about your receipt? Reply directly to this email or reach us at <a href="mailto:hello@devnaija.com" style="color: #60a5fa;">hello@devnaija.com</a>.</p>
+    </div>
+  </div>
+</body>
+</html>
+"""
 
     return _dispatch_email(subject, recipients, text_content, html_content)
+
+
+# Backwards compatibility alias for renewal callers
+send_subscription_renewal_success_email = send_payment_success_email
 
 
 def send_parent_welcome_email(parent):

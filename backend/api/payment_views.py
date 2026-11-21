@@ -225,6 +225,8 @@ class VerifyPaymentView(APIView):
         # Idempotency: If already verified and marked success, return active status immediately
         if payment and payment.payment_status == 'success':
             sub = payment.subscription or Subscription.objects.filter(parent=payment.parent).order_by('-created_at').first()
+            # Ensure receipt email has been dispatched
+            notify_parent_payment_success(payment.parent, sub, payment, None)
             return Response({
                 "success": True,
                 "already_processed": True,
@@ -322,6 +324,9 @@ class VerifyPaymentView(APIView):
 
             sub = activate_or_renew_subscription(request.user, plan, payment, tx_data)
 
+        # 7. Dispatch official receipt & payment confirmation email
+        notify_parent_payment_success(request.user, sub, payment, tx_data)
+
         return Response({
             "success": True,
             "message": "Payment verified successfully! Your family subscription is now active.",
@@ -348,20 +353,44 @@ def notify_parent_payment_failed(parent, subscription, grace_days: int = 3):
         logger.error(f"Error sending payment failure email to {parent.email}: {e}")
 
 
-def notify_parent_renewal_success(parent, subscription, amount_paid, next_billing_date):
+def notify_parent_payment_success(parent, subscription, payment=None, tx_data=None):
     """
-    Sends an automated receipt and confirmation email to a parent when an automated Paystack
-    recurring subscription renewal succeeds.
+    Sends an automated, official payment confirmation and receipt email to a parent
+    whenever a payment succeeds (via Bank Transfer, Card, USSD, or Paystack Webhook).
+    Idempotent: Uses cache locking to prevent duplicate receipt emails if both
+    the client redirect and the Paystack webhook verify the transaction.
     """
-    if not parent or not parent.email:
+    if not parent or not getattr(parent, 'email', None):
         return
 
+    reference = getattr(payment, 'payment_reference', None) or (tx_data.get('reference') if isinstance(tx_data, dict) else None)
+    if reference:
+        from django.core.cache import cache
+        cache_key = f"payment_receipt_sent_{reference}"
+        # cache.add sets the key only if it doesn't already exist. Returns True if set, False if exists.
+        if not cache.add(cache_key, True, timeout=86400 * 30):
+            logger.info(f"Payment receipt email already dispatched for reference {reference}. Skipping duplicate.")
+            return
+
     try:
-        from .emails import send_subscription_renewal_success_email
-        send_subscription_renewal_success_email(parent, subscription, amount_paid, next_billing_date)
-        logger.info(f"Renewal success notification email dispatched to parent {parent.email}")
+        from .emails import send_payment_success_email
+        send_payment_success_email(
+            parent=parent,
+            subscription=subscription,
+            payment=payment,
+            tx_data=tx_data
+        )
+        logger.info(f"Payment success confirmation email dispatched to parent {parent.email} for reference {reference}")
     except Exception as e:
-        logger.error(f"Error sending renewal success email to {parent.email}: {e}")
+        logger.error(f"Error sending payment success email to {parent.email}: {e}")
+
+
+def notify_parent_renewal_success(parent, subscription, amount_paid, next_billing_date):
+    """
+    Backwards compatibility wrapper for subscription renewal notifications.
+    Delegates to notify_parent_payment_success to send the official receipt.
+    """
+    notify_parent_payment_success(parent, subscription, payment=None, tx_data=None)
 
 
 
@@ -542,8 +571,7 @@ class PaystackWebhookView(APIView):
             # Activate/renew family subscription
             sub = activate_or_renew_subscription(parent, plan, payment, data)
             if sub and parent and parent.email:
-                amt = float(payment.amount) if payment else (float(sub.subscribed_amount) if sub.subscribed_amount else float(plan.amount))
-                notify_parent_renewal_success(parent, sub, amt, sub.next_payment_date or sub.current_period_end)
+                notify_parent_payment_success(parent, sub, payment, data)
 
     def _handle_subscription_create(self, data: dict):
         """
