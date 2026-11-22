@@ -11,7 +11,7 @@ import {
   Coins, Brain, Users, ArrowRight, Laptop, Store,
   Flame, Award, Lightbulb, Zap, Code, CheckCircle2
 } from 'lucide-react';
-import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 
 interface Testimonial {
@@ -236,6 +236,16 @@ export default function Home() {
           <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain group-hover:scale-105 transition-transform" />
         </Link>
         <div className="space-x-3 flex items-center">
+          <a
+            href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm hover:shadow transition-all hover:scale-105"
+            title="Join the DolaCode Parents’ Community"
+          >
+            <FaWhatsapp size={15} />
+            <span>Parents Community</span>
+          </a>
           <Link href="/subscribe" className="px-4 py-2 rounded-full font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-100/70 transition-colors">
             Pricing
           </Link>
@@ -855,6 +865,63 @@ export default function Home() {
         </div>
       </section>
 
+      {/* DolaCode Parents' Community Section */}
+      <section className="relative z-10 py-20 sm:py-24 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-6 text-white overflow-hidden border-t-8 border-emerald-400 shadow-xl">
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+            <div className="space-y-4 text-center lg:text-left flex-1">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-black uppercase tracking-wider border border-white/30">
+                <FaWhatsapp size={16} className="text-emerald-300" />
+                <span>Parents &amp; Educators Community</span>
+              </div>
+              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight drop-shadow-sm">
+                Join the DolaCode Parents’ Community
+              </h3>
+              <p className="text-emerald-50 text-base sm:text-lg max-w-2xl font-medium leading-relaxed">
+                Join the DolaCode Parents’ Community and discover how to turn your child’s screen time into valuable learning through fun activities in maths, coding, AI and financial literacy!
+              </p>
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2 text-xs font-bold text-emerald-100">
+                <span className="bg-black/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5">
+                  🧩 Fun Maths &amp; Logic Puzzles
+                </span>
+                <span className="bg-black/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5">
+                  💻 Coding &amp; AI Adventures
+                </span>
+                <span className="bg-black/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5">
+                  🪙 Financial Literacy in Naira (₦)
+                </span>
+                <span className="bg-black/20 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5">
+                  🛡️ Screen Time Turned to Skill Time
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row lg:flex-col items-center gap-3 shrink-0 w-full sm:w-auto">
+              <a
+                href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-5 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-lg shadow-[0_8px_0_#065f46] hover:translate-y-[-2px] active:translate-y-[2px] transition-all flex items-center justify-center gap-3 cursor-pointer border-2 border-emerald-200 text-center"
+              >
+                <FaWhatsapp size={26} className="text-emerald-600" />
+                <span>Join WhatsApp Community</span>
+              </a>
+              <a
+                href="https://wa.me/2349152690938"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-emerald-100 hover:text-white underline font-semibold flex items-center gap-1.5 transition-colors py-1 text-center"
+                title="Direct WhatsApp Support: 09152690938"
+              >
+                <span>Need immediate help? WhatsApp Support (09152690938)</span>
+                <ArrowRight size={13} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section - Friendly accordion */}
       <section className="relative z-10 py-32 bg-purple-50 px-6 border-t-8 border-purple-100">
         <div className="max-w-3xl mx-auto">
@@ -932,6 +999,7 @@ export default function Home() {
               Empowering the next generation of creators through fun, interactive, and intelligent coding adventures!
             </p>
             <div className="flex items-center gap-3 pt-2">
+              <a href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" target="_blank" rel="noopener noreferrer" title="Join DolaCode Parents Community" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 text-emerald-400 hover:text-white transition-all transform hover:-translate-y-2"><FaWhatsapp size={20} /></a>
               <a href="https://www.facebook.com/DevnaijaAcademykids" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Facebook" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-all transform hover:-translate-y-2"><FaFacebook size={20} /></a>
               <a href="https://www.instagram.com/devnaijaacademykids13/" target="_blank" rel="noopener noreferrer" title="Devnaija Kids Instagram" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all transform hover:-translate-y-2"><FaInstagram size={20} /></a>
               <a href="https://www.youtube.com/@DevnaijaKids-z8p" target="_blank" rel="noopener noreferrer" title="Devnaija Kids YouTube" className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white transition-all transform hover:-translate-y-2"><FaYoutube size={20} /></a>
@@ -961,6 +1029,16 @@ export default function Home() {
             <ul className="space-y-4 font-bold">
               <li><Link href="/about" className="hover:text-purple-300 hover:pl-2 transition-all block">About Us</Link></li>
               <li><Link href="/subscribe" className="hover:text-purple-300 hover:pl-2 transition-all block">Pricing &amp; Plans</Link></li>
+              <li>
+                <a 
+                  href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-emerald-400 hover:text-emerald-300 hover:pl-2 transition-all flex items-center gap-1.5 font-bold"
+                >
+                  <FaWhatsapp size={15} /> Parents Community
+                </a>
+              </li>
               <li><Link href="/child-safety" className="hover:text-purple-300 hover:pl-2 transition-all block">Child Safety</Link></li>
               <li><Link href="/contact" className="hover:text-purple-300 hover:pl-2 transition-all block">Contact</Link></li>
             </ul>
@@ -973,6 +1051,17 @@ export default function Home() {
               <li><Link href="/terms" className="hover:text-yellow-300 hover:pl-2 transition-all block">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-yellow-300 hover:pl-2 transition-all block">Privacy Policy</Link></li>
               <li><Link href="/child-safety" className="hover:text-yellow-300 hover:pl-2 transition-all block">Child Safety Policy</Link></li>
+              <li>
+                <a
+                  href="https://wa.me/2349152690938"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 hover:pl-2 transition-all font-bold"
+                  title="Direct WhatsApp Support: 09152690938"
+                >
+                  <FaWhatsapp size={16} /> WhatsApp: 09152690938
+                </a>
+              </li>
               <li className="flex items-center gap-3 mt-6 text-slate-400 bg-slate-800 p-3 rounded-xl border border-slate-700"><Mail size={18} className="text-sky-400" /> hello@devnaija.com</li>
             </ul>
           </div>

@@ -910,6 +910,16 @@ export default function SubscribePage() {
               </li>
               <li><Link href="/child-safety" className="hover:text-white transition-colors">Child Safety Policy</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
+              <li>
+                <a 
+                  href="https://wa.me/2349152690938" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-white transition-colors flex items-center gap-1.5 text-emerald-400 font-semibold"
+                >
+                  <FaWhatsapp size={13} /> Support: 09152690938
+                </a>
+              </li>
             </ul>
           </div>
 
