@@ -830,28 +830,6 @@ export default function Home() {
                 </div>
               ))}
           </div>
-
-          {/* Trust Banner Bar */}
-          <div className="mt-14 sm:mt-16 bg-white border-4 border-purple-200 rounded-[2.5rem] p-6 sm:p-8 shadow-xl shadow-purple-500/5 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-purple-900 flex items-center justify-center gap-1">
-                4.9 <Star size={24} className="fill-yellow-400 text-yellow-400" />
-              </p>
-              <p className="text-xs sm:text-sm font-bold text-slate-500">Average Parent Rating</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-pink-600">5,000+</p>
-              <p className="text-xs sm:text-sm font-bold text-slate-500">Young Coders Enrolled</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-emerald-600">45+</p>
-              <p className="text-xs sm:text-sm font-bold text-slate-500">Partner Schools</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-3xl sm:text-4xl font-black text-sky-600">100%</p>
-              <p className="text-xs sm:text-sm font-bold text-slate-500">Ad-Free &amp; Kid Safe</p>
-            </div>
-          </div>
         </div>
       </section>
 
