@@ -342,24 +342,24 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* WhatsApp Community Callout */}
+        {/* WhatsApp Support Callout */}
         <section className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-8 sm:p-10 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 border-2 border-emerald-400">
           <div className="space-y-2 text-center md:text-left">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-black uppercase tracking-wider">
-              Community
+              Support &amp; Inquiries
             </span>
-            <h3 className="text-2xl sm:text-3xl font-black text-white">Join the DolaCode Community on WhatsApp</h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-white">Have Questions or Need Help Getting Started?</h3>
             <p className="text-emerald-100 text-sm max-w-xl font-medium">
-              Join parents, educators, and tech innovators working together to empower children across Africa through creative coding and financial literacy.
+              Have questions about registration, curriculum, or school packages? Chat directly with our friendly support and education team on WhatsApp at 09152690938.
             </p>
           </div>
           <a
-            href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+            href="https://wa.me/2349152690938?text=Hello%20DolaCode%20Support,%20I%20have%20an%20inquiry%20about%20the%20platform."
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 px-6 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 rounded-2xl font-black text-sm shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
           >
-            <span>Join WhatsApp Community</span>
+            <span>Chat on WhatsApp (09152690938)</span>
           </a>
         </section>
 

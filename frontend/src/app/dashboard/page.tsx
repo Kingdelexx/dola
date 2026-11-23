@@ -137,14 +137,14 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             {isPaidSubscriber && (
               <a
-                href="https://wa.me/2349152690938"
+                href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 px-4 py-2.5 rounded-full font-bold text-xs shadow-xs transition-all hover:scale-105"
-                title="Direct WhatsApp Support: 09152690938"
+                title="DolaCode Parents’ Community"
               >
                 <FaWhatsapp size={16} className="text-emerald-600" />
-                <span>WhatsApp Support (09152690938)</span>
+                <span>Parents’ Community</span>
               </a>
             )}
             <button onClick={logout} className="flex items-center gap-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-500 border-2 border-slate-200 hover:border-red-200 px-6 py-3 rounded-full font-bold transition-all shadow-sm">
@@ -538,23 +538,23 @@ export default function DashboardPage() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-300/30 text-emerald-100 text-xs font-black uppercase tracking-wider mb-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-                    Direct Priority Support &amp; Community
+                    Paid Members Exclusive
                   </div>
                   <h3 className="font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight">
-                    Have Issues, Complaints, or Something to Share?
+                    DolaCode Parents’ Community
                   </h3>
-                  <p className="text-emerald-100 text-xs sm:text-sm font-medium mt-1.5 max-w-2xl leading-relaxed">
-                    As a valued subscriber, you have direct priority access to our support mentors! If you experience any technical issues, have a complaint, want to suggest improvements, or have an exciting coding project or milestone your child built that you&apos;d love to share &mdash; message our support line on WhatsApp directly at <strong>09152690938</strong> or join our official community group.
+                  <p className="text-emerald-100 text-xs sm:text-base font-medium mt-1.5 max-w-2xl leading-relaxed">
+                    Join the DolaCode Parents’ Community and discover how to turn your child’s screen time into valuable learning through fun activities in maths, coding, AI and financial literacy!
                   </p>
                   <div className="flex flex-wrap items-center gap-2.5 mt-3 text-xs font-bold text-emerald-100">
                     <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/15">
-                      🛠️ Fast Bug &amp; Issue Resolution
+                      💡 Maths, Coding &amp; AI Activities
                     </span>
                     <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/15">
-                      📢 Complaints &amp; Suggestions
+                      🪙 Financial Literacy Tips
                     </span>
                     <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/15">
-                      🎉 Share Student Wins &amp; Creations
+                      🤝 Direct Mentor Access
                     </span>
                   </div>
                 </div>
@@ -562,21 +562,13 @@ export default function DashboardPage() {
 
               <div className="relative z-10 w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-3">
                 <a
-                  href="https://wa.me/2349152690938"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-800 hover:text-emerald-900 font-black text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all transform active:translate-y-1 flex items-center justify-center gap-2.5 cursor-pointer text-center"
-                >
-                  <FaWhatsapp size={20} className="text-emerald-600" />
-                  <span>WhatsApp Support (09152690938)</span>
-                </a>
-                <a
                   href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-emerald-950/40 hover:bg-emerald-950/60 text-white font-bold text-sm border-2 border-emerald-300/40 transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                  className="w-full lg:w-auto px-8 py-4 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-800 hover:text-emerald-900 font-black text-sm uppercase tracking-wider shadow-lg hover:shadow-xl transition-all transform active:translate-y-1 flex items-center justify-center gap-2.5 cursor-pointer text-center"
                 >
-                  <span>Join Community Group</span>
+                  <FaWhatsapp size={20} className="text-emerald-600" />
+                  <span>Join WhatsApp Group</span>
                 </a>
               </div>
             </div>

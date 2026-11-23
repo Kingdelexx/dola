@@ -10,6 +10,7 @@ import {
   BookOpen, Calculator, Code, Clock, Award, FileText, CheckCircle2, CreditCard, LogOut,
   Rocket, KeyRound, X, ChevronRight, Eye, EyeOff, MessageSquare, ArrowRight
 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import confetti from 'canvas-confetti';
 
@@ -722,45 +723,35 @@ export default function ParentDashboardPage() {
           </div>
         </div>
 
-        {/* DolaCode WhatsApp Support & Community Banner for Paid Members */}
+        {/* DolaCode Parents’ Community Banner for Paid Members */}
         {(data?.parent_subscription?.is_active || data?.parent_subscription?.has_subscription || user?.subscription_access?.has_access || user?.is_superuser) && (
-          <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-emerald-500/50">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white shadow-inner">
-                <MessageSquare className="w-6 h-6 text-white" />
+          <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-5 border-2 border-emerald-400/50">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white shadow-inner border border-white/30">
+                <FaWhatsapp className="w-7 h-7" />
               </div>
-              <div>
+              <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-extrabold text-sm text-white">Direct WhatsApp Support &amp; Parents Community</h4>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/40 border border-emerald-300/30 text-[10px] font-black uppercase tracking-wider text-emerald-100 hidden sm:inline-block">
-                    09152690938
+                  <h4 className="font-black text-base sm:text-lg text-white">DolaCode Parents’ Community</h4>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/40 border border-emerald-300/40 text-[10px] font-black uppercase tracking-wider text-emerald-100">
+                    Paid Members Exclusive
                   </span>
                 </div>
-                <p className="text-xs text-emerald-100 font-medium mt-0.5">
-                  Have issues, complaints, or need immediate help? Chat directly with our support team on WhatsApp at <strong>09152690938</strong> or connect in our parents&apos; community group.
+                <p className="text-xs sm:text-sm text-emerald-50 font-medium leading-relaxed max-w-2xl">
+                  Join the DolaCode Parents’ Community and discover how to turn your child’s screen time into valuable learning through fun activities in maths, coding, AI and financial literacy!
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
-              <a
-                href="https://wa.me/2349152690938"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 px-4 py-2.5 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-xs shadow-md shadow-emerald-950/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <span>WhatsApp Support (09152690938)</span>
-                <ArrowRight size={14} />
-              </a>
-              <a
-                href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 px-3.5 py-2.5 bg-emerald-900/50 hover:bg-emerald-900 text-emerald-100 rounded-2xl font-bold text-xs border border-emerald-400/30 transition-all flex items-center gap-1.5 cursor-pointer"
-                title="Join Parents Community Group"
-              >
-                <span>Parents Community</span>
-              </a>
-            </div>
+            <a
+              href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 w-full md:w-auto px-5 py-3 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-xs sm:text-sm shadow-md shadow-emerald-950/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group"
+            >
+              <FaWhatsapp className="text-emerald-600 text-base group-hover:scale-110 transition-transform" />
+              <span>Join WhatsApp Group</span>
+              <ArrowRight size={14} />
+            </a>
           </div>
         )}
 
