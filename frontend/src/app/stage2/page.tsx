@@ -45,6 +45,7 @@ export default function Stage2Page() {
   const [animationData, setAnimationData] = useState<any>(null);
   const [activeSpriteId, setActiveSpriteId] = useState<string | null>(null);
   const [spriteWorkspaces, setSpriteWorkspaces] = useState<Record<string, {state: any, code: string}>>({});
+  const [runFeedback, setRunFeedback] = useState<{ type: 'hint' | 'success' | 'error' | null, message: string }>({ type: null, message: '' });
 
   // Unplugged Logic States
   const [unpluggedAnswers, setUnpluggedAnswers] = useState<any>(null);
@@ -84,6 +85,11 @@ export default function Stage2Page() {
   useEffect(() => {
     setUnpluggedFeedback(null);
     setUnpluggedRunning(false);
+    setRunFeedback({ type: null, message: '' });
+
+    if (level.startSprites && level.startSprites.length > 0) {
+      setActiveSpriteId(`sprite_${level.id}_0`);
+    }
     
     if (level.isUnplugged) {
       if (level.unpluggedType === 'matching') {
@@ -195,15 +201,26 @@ export default function Stage2Page() {
   const handleOutput = (out: string) => {
       console.log("Pyodide Output/Error:", out);
       setOutput(out);
-      // Let the animation play a bit, then pop up success modal
+
+      // Aggregate all code across all sprites plus current pythonCode
+      const allSpriteCodes = Object.values(spriteWorkspaces).map(w => w.code).join('\n');
+      const combinedCode = (allSpriteCodes + '\n' + pythonCode).trim();
+
+      // Let the animation play a bit, then pop up success modal or friendly hint
       setTimeout(() => {
-          const isValid = level.validate(pythonCode);
+          const isValid = level.validate(combinedCode);
           if (isValid) {
+            setRunFeedback({ type: 'success', message: 'Awesome job! Challenge completed! 🎉' });
             if (level.isCapstone) {
               setShowReflectStep(true);
             } else {
               triggerLevelComplete(currentLevelIndex + 1);
             }
+          } else {
+            setRunFeedback({
+              type: 'hint',
+              message: level.hint || `Almost there! Check the objective: ${level.objective}`
+            });
           }
       }, 1500);
   };
@@ -450,7 +467,7 @@ await main()
                     return (
                         <div 
                             key={lvm.id} 
-                            onClick={() => { if (isUnlocked) { setPythonCode(''); setSpriteWorkspaces({}); setCurrentLevelIndex(idx); } }}
+                            onClick={() => { if (isUnlocked) { setPythonCode(''); setSpriteWorkspaces({}); setRunFeedback({ type: null, message: '' }); setCurrentLevelIndex(idx); } }}
                             className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all ${isUnlocked ? 'cursor-pointer hover:scale-110 shadow-sm' : 'cursor-not-allowed opacity-50'} ${idx === currentLevelIndex ? 'bg-green-500 text-white ring-4 ring-green-200' : isUnlocked ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-slate-200 text-slate-400'}`}
                             title={isUnlocked ? `Go to ${lvm.title}` : "Locked"}
                         >
@@ -464,6 +481,12 @@ await main()
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white mb-8 shadow-lg">
           <h1 className="text-3xl font-extrabold mb-2">Stage 2: Logic & Blocks <span className="opacity-70 text-lg font-medium ml-2">| {level.theme} - {level.title}</span></h1>
           <p className="text-lg"><strong>Objective:</strong> {level.objective}</p>
+          {level.hint && (
+            <div className="mt-3 text-sm bg-white/20 backdrop-blur-sm px-3.5 py-1.5 rounded-xl w-fit text-blue-50 font-semibold flex items-center gap-2 border border-white/20">
+              <span className="text-base">💡</span>
+              <span><strong>Tip:</strong> {level.hint}</span>
+            </div>
+          )}
         </div>
         
         <div className="grid lg:grid-cols-2 gap-8">
@@ -807,6 +830,24 @@ await main()
                     onWorkspaceChange={handleWorkspaceChange}
                 />
                 <PyodideRunner ref={runnerRef} code={superScript} onOutput={handleOutput} />
+                {runFeedback.message && (
+                  <div className={`mt-3 p-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 transition-all shadow-sm ${
+                    runFeedback.type === 'success' 
+                      ? 'bg-emerald-50 text-emerald-800 border-2 border-emerald-300' 
+                      : 'bg-amber-50 text-amber-800 border-2 border-amber-300'
+                  }`}>
+                    <span className="text-lg">{runFeedback.type === 'success' ? '🎉' : '💡'}</span>
+                    <span className="flex-1">{runFeedback.message}</span>
+                    {runFeedback.type !== 'success' && (
+                      <button 
+                        onClick={() => setRunFeedback({ type: null, message: '' })}
+                        className="text-amber-600 hover:text-amber-800 text-xs font-black uppercase px-2 py-1 rounded bg-amber-100 hover:bg-amber-200 transition-colors"
+                      >
+                        Got it
+                      </button>
+                    )}
+                  </div>
+                )}
               </>
             )}
             

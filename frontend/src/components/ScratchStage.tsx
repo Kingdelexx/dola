@@ -135,6 +135,9 @@ export default function ScratchStage({
     if (startSprites && startSprites.length > 0) {
         startSprites.forEach((spriteData, index) => {
             const added = engine.addSprite(`sprite_${levelId}_${index}`, spriteData.name, spriteData.url);
+            if (index > 0) {
+                added.setPos(120 * index, 0);
+            }
             if (index === 0) {
                engine.activeSpriteId = added.id;
                setActiveSpriteId(added.id);

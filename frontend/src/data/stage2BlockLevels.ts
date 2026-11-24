@@ -3,6 +3,7 @@ export interface Level {
   title: string;
   theme: string;
   objective: string;
+  hint?: string;
   startBackdrop: string | null;
   startSprites: { name: string, url: string }[];
   allowedBlocks: string[]; // List of block types allowed in the toolbox
@@ -203,13 +204,16 @@ export const STAGE2_BLOCK_LEVELS: Level[] = [
     title: "Level 8: First Steps",
     theme: "Space",
     objective: "Make the Rocket move forward by at least 50 steps.",
-    startBackdrop: null,
+    hint: "Drag the 'move 10 steps' block into your workspace and change 10 to 50 or more!",
+    startBackdrop: "/assets/backdrops/space.png",
     startSprites: [{ name: "Rocket", url: "/assets/sprites/rocket.png" }],
     allowedBlocks: ['motion_move', 'math_number'],
     unlockedAbility: "Turn Block",
     validate: (code: string) => {
       const match = code.match(/Moving \{?(\d+)\}? steps/);
       if (match && parseInt(match[1]) >= 50) return true;
+      const jsMatch = code.match(/window\.move\([^,]+,\s*(\d+)\)/);
+      if (jsMatch && parseInt(jsMatch[1]) >= 50) return true;
       return false;
     }
   },
@@ -218,15 +222,16 @@ export const STAGE2_BLOCK_LEVELS: Level[] = [
     title: "Level 9: Space Maneuvers",
     theme: "Space",
     objective: "Make the Rocket move 50 steps, then turn 90 degrees.",
-    startBackdrop: null,
+    hint: "Snap a 'move 50 steps' block, then snap a 'turn ↻ 90 degrees' block right below it.",
+    startBackdrop: "/assets/backdrops/space.png",
     startSprites: [{ name: "Rocket", url: "/assets/sprites/rocket.png" }],
     allowedBlocks: ['motion_move', 'motion_turn', 'math_number'],
     unlockedAbility: "Loops",
     validate: (code: string) => {
-      const hasMove = /Moving \{?(\d+)\}? steps/.test(code);
-      const hasTurn = /Turning \{?90\}? degrees/.test(code);
-      const moveIndex = code.indexOf("Moving ");
-      const turnIndex = code.indexOf("Turning ");
+      const hasMove = /Moving|window\.move/.test(code);
+      const hasTurn = /Turning \{?90\}?|window\.turn\([^,]+,\s*90\)/.test(code);
+      const moveIndex = Math.max(code.indexOf("Moving"), code.indexOf("window.move"));
+      const turnIndex = Math.max(code.indexOf("Turning"), code.indexOf("window.turn"));
       return hasMove && hasTurn && moveIndex > -1 && turnIndex > -1 && turnIndex > moveIndex;
     }
   },
@@ -235,14 +240,15 @@ export const STAGE2_BLOCK_LEVELS: Level[] = [
     title: "Level 10: Underwater Exploration",
     theme: "Underwater",
     objective: "Use a loop to move 10 steps, 5 times.",
-    startBackdrop: null,
+    hint: "From Logic & Control, wrap a 'move 10 steps' block inside a 'repeat 5 times' loop block.",
+    startBackdrop: "/assets/backdrops/underwater.png",
     startSprites: [{ name: "Alien", url: "/assets/sprites/alien.png" }],
     allowedBlocks: ['motion_move', 'motion_turn', 'controls_repeat_ext', 'math_number'],
     unlockedAbility: "All Logic Blocks",
     validate: (code: string) => {
       const hasForLoop = /for .* in range\(.*5.*\):/.test(code);
-      const hasMove10 = /Moving \{?10\}? steps/.test(code);
-      return hasForLoop && hasMove10;
+      const hasMove = /Moving|window\.move/.test(code);
+      return hasForLoop && hasMove;
     }
   },
   {
@@ -250,136 +256,212 @@ export const STAGE2_BLOCK_LEVELS: Level[] = [
     title: "Level 11: Dog Square Path",
     theme: "Meadow",
     objective: "Use a loop to make the Dog walk a square path (4 sides) using Move and Turn.",
-    startBackdrop: null,
+    hint: "Inside a 'repeat 4 times' loop, put a 'move 40 steps' block followed by a 'turn ↻ 90 degrees' block.",
+    startBackdrop: "/assets/backdrops/meadow.png",
     startSprites: [{ name: "Dog", url: "/assets/sprites/dog.png" }],
     allowedBlocks: ['motion_move', 'motion_turn', 'controls_repeat_ext', 'math_number'],
     unlockedAbility: "Looks Blocks (Speech)",
     validate: (code: string) => {
       const hasForLoop = /for .* in range\(.*4.*\):/.test(code);
-      const hasMove = /Moving \{?(\d+)\}? steps/.test(code);
-      const hasTurn90 = /Turning \{?90\}? degrees/.test(code);
+      const hasMove = /Moving|window\.move/.test(code);
+      const hasTurn90 = /Turning \{?90\}?|window\.turn\([^,]+,\s*90\)/.test(code);
       return hasForLoop && hasMove && hasTurn90;
     }
   },
   {
     id: 12,
-    title: "Level 12: Alien Greeting",
-    theme: "Space",
-    objective: "Make the Alien say something for 2 seconds after moving.",
-    startBackdrop: null,
+    title: "Level 12: Alien First Contact",
+    theme: "Deep Space",
+    objective: "Make the Alien move forward at least 20 steps, then say a greeting like 'Hello Earth!' for 2 seconds.",
+    hint: "Snap: 'move 20 steps' -> 'say [Hello Earth!] for 2 seconds'.",
+    startBackdrop: "/assets/backdrops/space.png",
     startSprites: [{ name: "Alien", url: "/assets/sprites/alien.png" }],
     allowedBlocks: ['motion_move', 'looks_say', 'math_number', 'text'],
     unlockedAbility: "Wait Block",
     validate: (code: string) => {
-      const isMoving = /Moving \{?(\d+)\}? steps/.test(code);
-      const isSaying = /Saying:/.test(code);
-      const moveIndex = code.indexOf("Moving ");
-      const sayIndex = code.indexOf("Saying:");
-      return isMoving && isSaying && sayIndex > moveIndex;
+      const isMoving = /Moving|window\.move/.test(code);
+      const isSaying = /Saying:|window\.say/.test(code);
+      return isMoving && isSaying;
     }
   },
   {
     id: 13,
-    title: "Level 13: Magic Wait",
-    theme: "Meadow",
-    objective: "Move the Cat, use the control WAIT block for 1 second, then move again.",
-    startBackdrop: null,
-    startSprites: [{ name: "Cat", url: "/assets/sprites/cat.png" }],
-    allowedBlocks: ['motion_move', 'control_wait', 'math_number'],
-    unlockedAbility: "Glide & Random Blocks",
+    title: "Level 13: Robot Dance Beat",
+    theme: "Meadow Carnival",
+    objective: "Program a dance! Make the Robot move 30 steps, wait 1 second, turn 90 degrees, and move 30 steps again.",
+    hint: "Snap: Move 30 -> Wait 1 second -> Turn 90 -> Move 30.",
+    startBackdrop: "/assets/backdrops/meadow.png",
+    startSprites: [{ name: "Robot", url: "/assets/sprites/robot.png" }],
+    allowedBlocks: ['motion_move', 'motion_turn', 'control_wait', 'math_number', 'controls_repeat_ext'],
+    unlockedAbility: "Glide & Coordinates",
     validate: (code: string) => {
-      const matches = code.match(/Moving/g);
-      const hasWait = /Waiting/.test(code);
-      return matches !== null && matches.length >= 2 && hasWait;
+      const moveCount = (code.match(/Moving|window\.move/g) || []).length;
+      const hasWait = /Waiting|window\.wait/.test(code);
+      const hasTurn = /Turning|window\.turn/.test(code);
+      return (moveCount >= 2 && hasWait) || (hasTurn && hasWait && moveCount >= 1);
     }
   },
   {
     id: 14,
-    title: "Level 14: Dinosaur Glide",
-    theme: "Desert",
-    objective: "Use the Glide or Random Position blocks to move the Dinosaur.",
-    startBackdrop: null,
+    title: "Level 14: Dinosaur Desert Glide",
+    theme: "Prehistoric Desert",
+    objective: "Guide the Dinosaur across the desert! Use 'glide to x, y' or 'go to random position' to explore.",
+    hint: "Drag the 'glide to x: 80 y: 40 in 1 secs' or 'go to random position' block into the workspace and run it!",
+    startBackdrop: "/assets/backdrops/desert.png",
     startSprites: [{ name: "Dinosaur", url: "/assets/sprites/dinosaur.png" }],
-    allowedBlocks: ['motion_move', 'motion_goto_random', 'motion_glide_to', 'math_number'],
-    unlockedAbility: "Math Blocks",
+    allowedBlocks: ['motion_move', 'motion_goto_random', 'motion_glide_to', 'motion_goto_xy', 'motion_glide_goto_random', 'math_number'],
+    unlockedAbility: "Math Operations",
     validate: (code: string) => {
-      const usesGlide = /Gliding to/.test(code);
-      const usesRandom = /Going to random position/.test(code);
+      const usesGlide = /Gliding to|window\.goTo/i.test(code);
+      const usesRandom = /random position|teleport/i.test(code);
       return usesGlide || usesRandom;
     }
   },
   {
     id: 15,
-    title: "Level 15: Alien Math Path",
-    theme: "Space",
-    objective: "Use a Math operations block (like +) inside a Move block.",
-    startBackdrop: null,
-    startSprites: [{ name: "Alien", url: "/assets/sprites/alien.png" }],
+    title: "Level 15: Rocket Math Boost",
+    theme: "Space Station",
+    objective: "Calculate hyper-speed! Place a Math (+) or (*) operation block inside the Move block so the rocket moves (25 + 25) steps.",
+    hint: "From the Math category, drag the '+' block and snap it directly inside the Move block's steps slot!",
+    startBackdrop: "/assets/backdrops/space.png",
+    startSprites: [{ name: "Rocket", url: "/assets/sprites/rocket.png" }],
     allowedBlocks: ['motion_move', 'math_number', 'math_arithmetic'],
     unlockedAbility: "Variables",
     validate: (code: string) => {
-      const moves = /Moving/.test(code);
+      const moves = /Moving|window\.move/.test(code);
       const doesMath = /\+|\-|\*|\//.test(code);
       return moves && doesMath;
     }
   },
   {
     id: 16,
-    title: "Level 16: Variable Steps",
-    theme: "Meadow",
-    objective: "Create a Variable string, set it a number, and put it inside a Move block.",
-    startBackdrop: null,
+    title: "Level 16: Variable Speed Racer",
+    theme: "Meadow Track",
+    objective: "Create a variable (like 'speed'), set it to 50, and snap it into the Move block to race across the meadow!",
+    hint: "Open the Variables category, click 'Create variable...' and name it 'speed'. Set speed to 50, then drag 'speed' into 'move [ ] steps'.",
+    startBackdrop: "/assets/backdrops/meadow.png",
     startSprites: [{ name: "Dog", url: "/assets/sprites/dog.png" }],
     allowedBlocks: ['motion_move', 'math_number', 'variables'],
-    unlockedAbility: "Multi-Sprite Control",
+    unlockedAbility: "Collision Sensing",
     validate: (code: string) => {
-      const assignsVar = /=\s*\d+/.test(code);
-      const moves = /Moving/.test(code);
-      return assignsVar && moves;
+      const setsVariable = /=\s*\d+/.test(code);
+      const moves = /Moving|window\.move/.test(code);
+      return setsVariable && moves;
     }
   },
   {
     id: 17,
-    title: "Level 17: Space Zoo Finale",
-    theme: "Space",
-    objective: "Move the Rocket, swap your active sprite, then make the Dog say something!",
-    startBackdrop: null,
+    title: "Level 17: Space Tag & Sensing",
+    theme: "Deep Space",
+    objective: "Multi-Sprite coordination! Make the Rocket move towards the Alien, and use an IF Touching block or Say block to tag the Alien!",
+    hint: "Make the Rocket move forward, and snap 'if touching Alien then say [Tagged you!]' or 'say [Tagged you!]'.",
+    startBackdrop: "/assets/backdrops/space.png",
     startSprites: [
-        { name: "Rocket", url: "/assets/sprites/rocket.png" },
-        { name: "Dog", url: "/assets/sprites/dog.png" }
+      { name: "Rocket", url: "/assets/sprites/rocket.png" },
+      { name: "Alien", url: "/assets/sprites/alien.png" }
     ],
-    allowedBlocks: ['motion_move', 'looks_say', 'engine_switch_sprite', 'math_number', 'text', 'sensing_touching', 'controls_if'],
-    unlockedAbility: "Capstone Solver",
+    allowedBlocks: ['motion_move', 'motion_turn', 'looks_say', 'controls_if', 'sensing_touching', 'math_number', 'text'],
+    unlockedAbility: "Keyboard Event Controls",
     validate: (code: string) => {
-      const controlsRocketToMove = /Moving/.test(code);
-      const swapsSprite = /Switched active sprite to/.test(code);
-      const makesDogSay = /Saying:/.test(code);
-      return controlsRocketToMove && swapsSprite && makesDogSay;
+      const moves = /Moving|window\.move/.test(code);
+      const touchesOrSays = /isTouching|Saying:|window\.say|Tagged/i.test(code);
+      return moves && touchesOrSays;
     }
   },
   {
     id: 18,
-    title: "Level 18: Capstone: My First DolaCode",
-    theme: "Capstone Solver",
-    objective: "Create a custom Math Game, Interactive Story, Maze, Quiz, or Animation using all your blocks!",
-    startBackdrop: null,
+    title: "Level 18: Keyboard Hero Controls",
+    theme: "Arcade Arena",
+    objective: "Make your character playable! Snap a Move block inside 'when right arrow key pressed' or 'when space key pressed' and drive your character with the keyboard!",
+    hint: "From the Action category, drag 'when [right arrow] key pressed' and put a 'move 20 steps' block inside it. Then press that arrow key on your keyboard!",
+    startBackdrop: "/assets/backdrops/meadow.png",
+    startSprites: [{ name: "Cat", url: "/assets/sprites/cat.png" }],
+    allowedBlocks: ['action_when_key_pressed', 'action_when_run', 'motion_move', 'motion_turn', 'motion_change_x_by', 'motion_change_y_by', 'looks_say', 'math_number', 'text'],
+    unlockedAbility: "Game Loops (Forever)",
+    validate: (code: string) => {
+      const hasKey = /_on_key_|isKeyPressed|Registered key listener|when.*key pressed/i.test(code);
+      const hasAction = /Moving|Turning|changeX|changeY|Saying|window\.move/i.test(code);
+      return hasKey && hasAction;
+    }
+  },
+  {
+    id: 19,
+    title: "Level 19: Forever Patrol Loop",
+    theme: "Underwater Reef",
+    objective: "Build a continuous game animation! Use a 'forever' loop to make the Alien patrol back and forth: move 30 steps, turn 180 degrees, and wait 0.5 seconds!",
+    hint: "Wrap your Move, Turn 180, and Wait blocks inside a 'forever' block. Hit Run to see the infinite patrol!",
+    startBackdrop: "/assets/backdrops/underwater.png",
+    startSprites: [{ name: "Alien", url: "/assets/sprites/alien.png" }],
+    allowedBlocks: ['controls_forever', 'motion_move', 'motion_turn', 'control_wait', 'math_number'],
+    unlockedAbility: "Score Counter & Variables",
+    validate: (code: string) => {
+      const hasForever = /while True:|forever|Starting forever loop/i.test(code);
+      const hasMoveOrTurn = /Moving|Turning|window\.move|window\.turn/i.test(code);
+      return hasForever && hasMoveOrTurn;
+    }
+  },
+  {
+    id: 20,
+    title: "Level 20: Star Catcher & Score",
+    theme: "Cosmic Galaxy",
+    objective: "Build game logic! In a loop, move the Rocket forward and check IF touching Alien, then say 'Score +1!' to collect the star!",
+    hint: "Use a loop or forever block, place 'if touching Alien' inside, and put 'say [Score +1!]' inside the IF block.",
+    startBackdrop: "/assets/backdrops/space.png",
     startSprites: [
-        { name: "Cat", url: "/assets/sprites/cat.png" }
+      { name: "Rocket", url: "/assets/sprites/rocket.png" },
+      { name: "Alien", url: "/assets/sprites/alien.png" }
+    ],
+    allowedBlocks: ['controls_forever', 'controls_repeat_ext', 'controls_if', 'sensing_touching', 'motion_move', 'looks_say', 'variables', 'math_number', 'text'],
+    unlockedAbility: "Wizard Cloning Magic",
+    validate: (code: string) => {
+      const hasCondition = /if .*isTouching|if.*touching/i.test(code);
+      const hasMove = /Moving|window\.move/i.test(code);
+      const hasFeedback = /Saying:|Score|window\.say/i.test(code);
+      return (hasCondition && hasMove) || (hasCondition && hasFeedback) || (hasMove && hasFeedback);
+    }
+  },
+  {
+    id: 21,
+    title: "Level 21: Wizard Clone Army",
+    theme: "Magic Forest",
+    objective: "Unleash magic cloning! Use 'create clone of myself' or 'switch backdrop' inside a repeat loop to multiply your Wizard!",
+    hint: "From Logic & Control, drag 'create clone of myself' inside a 'repeat 3 times' loop, or use 'switch backdrop' to change the realm!",
+    startBackdrop: "/assets/backdrops/meadow.png",
+    startSprites: [{ name: "Wizard", url: "/assets/sprites/wizard.png" }],
+    allowedBlocks: ['control_create_clone', 'control_start_as_clone', 'looks_switch_backdrop', 'looks_say', 'motion_goto_random', 'controls_repeat_ext', 'math_number', 'text'],
+    unlockedAbility: "Capstone Studio Master! 🏆",
+    validate: (code: string) => {
+      const hasClone = /createClone|on_clone_start|Created clone/i.test(code);
+      const hasBackdrop = /switchBackdrop|Switched backdrop/i.test(code);
+      const hasSayOrRandom = /Saying:|teleport|goTo|window\.say/i.test(code);
+      return hasClone || hasBackdrop || hasSayOrRandom;
+    }
+  },
+  {
+    id: 22,
+    title: "Level 22: Capstone: My Dream Game Studio",
+    theme: "Capstone Solver",
+    objective: "Master Block Coder! Use all your unlocked blocks (Motion, Looks, Loops, Events, Sensing, Variables) to build your ultimate project!",
+    hint: "Plan your project with the SOLVE wizard, then snap blocks together to bring your dream game or story to life!",
+    startBackdrop: "/assets/backdrops/space.png",
+    startSprites: [
+      { name: "Cat", url: "/assets/sprites/cat.png" },
+      { name: "Rocket", url: "/assets/sprites/rocket.png" }
     ],
     allowedBlocks: [
-        'motion_move', 'motion_turn', 'motion_goto_random', 'motion_goto_xy', 'motion_glide_to', 'motion_glide_goto_random', 'motion_change_x_by', 'motion_set_x_to', 'motion_change_y_by', 'motion_set_y_to',
-        'looks_say', 'looks_switch_backdrop', 'looks_hide', 'looks_show', 'looks_goto_layer',
-        'controls_if', 'controls_if_else', 'logic_compare',
-        'controls_repeat_ext', 'controls_forever', 'control_wait_until', 'controls_repeat_until',
-        'control_stop_all', 'control_start_as_clone', 'control_create_clone', 'control_delete_clone',
-        'text', 'text_print',
-        'control_wait',
-        'math_number', 'math_arithmetic', 'math_random_int', 'logic_operation', 'logic_negate',
-        'action_when_run', 'action_when_key_pressed', 'action_when_sprite_clicked', 'action_when_backdrop_switches', 'engine_switch_sprite',
-        'sensing_touching', 'sensing_key_pressed', 'sensing_touching_color',
-        'variables'
-      ],
-    unlockedAbility: "Sandbox Master! 🏆",
+      'motion_move', 'motion_turn', 'motion_goto_random', 'motion_goto_xy', 'motion_glide_to', 'motion_glide_goto_random', 'motion_change_x_by', 'motion_set_x_to', 'motion_change_y_by', 'motion_set_y_to',
+      'looks_say', 'looks_switch_backdrop', 'looks_hide', 'looks_show', 'looks_goto_layer',
+      'controls_if', 'controls_if_else', 'logic_compare',
+      'controls_repeat_ext', 'controls_forever', 'control_wait_until', 'controls_repeat_until',
+      'control_stop_all', 'control_start_as_clone', 'control_create_clone', 'control_delete_clone',
+      'text', 'text_print',
+      'control_wait',
+      'math_number', 'math_arithmetic', 'math_random_int', 'logic_operation', 'logic_negate',
+      'action_when_run', 'action_when_key_pressed', 'action_when_sprite_clicked', 'action_when_backdrop_switches', 'engine_switch_sprite',
+      'sensing_touching', 'sensing_key_pressed', 'sensing_touching_color',
+      'variables'
+    ],
+    unlockedAbility: "World 3 Python Pioneer Unlocked! 🚀🏆",
     isCapstone: true,
     validate: (code: string) => {
       return code.trim().length > 0;

@@ -373,7 +373,7 @@ export default function DashboardPage() {
                   </div>
                 )}
                 <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">Snap colorful code blocks together to build games and solve maze challenges.</p>
-                <div className="mt-4 text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{Math.min(stage2Progress, 11)}/11 Complete</div>
+                <div className="mt-4 text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{Math.min(stage2Progress, 22)}/22 Complete</div>
                 <div className="mt-4 bg-pink-500 text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#be185d] group-hover:bg-pink-400 transition-colors">Play Now</div>
               </Link>
             ) : (

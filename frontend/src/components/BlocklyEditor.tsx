@@ -231,7 +231,7 @@ if (typeof Blockly !== 'undefined' && Blockly.Blocks) {
     pythonGenerator.forBlock['looks_say'] = function(block: any, generator: any) {
       const text = generator.valueToCode(block, 'TEXT', generator.ORDER_NONE) || '"Hello!"';
       const secs = generator.valueToCode(block, 'SECS', generator.ORDER_NONE) || '2';
-      return `import js\nawait js.window.say(__SPRITE_ID__, ${text}, ${secs} * 1000)\nprint(f"Saying: {${text}}")\n`;
+      return `import js\nawait js.window.say(__SPRITE_ID__, ${text}, ${secs} * 1000)\nprint('Saying: ' + str(${text}))\n`;
     };
   }
 
@@ -332,7 +332,15 @@ if (typeof Blockly !== 'undefined' && Blockly.Blocks) {
     };
     pythonGenerator.forBlock['controls_forever'] = function(block: any, generator: any) {
       const branch = generator.statementToCode(block, 'DO') || '  pass\n';
-      return `while True:\n${branch}  await asyncio.sleep(0.01)\n`;
+      return `print("Starting forever loop...")\nwhile True:\n${branch}  await asyncio.sleep(0.01)\n`;
+    };
+  }
+
+  if (!pythonGenerator.forBlock['controls_if']) {
+    pythonGenerator.forBlock['controls_if'] = function(block: any, generator: any) {
+      const condition = generator.valueToCode(block, 'IF0', generator.ORDER_NONE) || 'False';
+      const branch = generator.statementToCode(block, 'DO0') || '  pass\n';
+      return `if ${condition}:\n${branch}`;
     };
   }
 
@@ -432,7 +440,7 @@ if (typeof Blockly !== 'undefined' && Blockly.Blocks) {
       }
     };
     pythonGenerator.forBlock['control_create_clone'] = function(block: any, generator: any) {
-        return `import js\nawait js.window.createClone(__SPRITE_ID__)\n`;
+        return `import js\nawait js.window.createClone(__SPRITE_ID__)\nprint("Created clone")\n`;
     };
   }
 
@@ -462,7 +470,7 @@ if (typeof Blockly !== 'undefined' && Blockly.Blocks) {
     };
     pythonGenerator.forBlock['engine_switch_sprite'] = function(block: any, generator: any) {
       const sprite = block.getFieldValue('SPRITE');
-      return `import js\nawait js.window.activateSprite(__SPRITE_ID__, '${sprite}')\nprint(f"Switched active sprite to {${sprite}}")\n`;
+      return `import js\nawait js.window.activateSprite(__SPRITE_ID__, '${sprite}')\nprint(f"Switched active sprite to ${sprite}")\n`;
     };
   }
 
@@ -505,15 +513,17 @@ if (typeof Blockly !== 'undefined' && Blockly.Blocks) {
         const key = block.getFieldValue('KEY');
         const branch = generator.statementToCode(block, 'DO') || '  pass\n';
         const funcName = `_on_key_${key.replace(/[^a-zA-Z0-9]/g, '')}_${block.id.replace(/[^a-zA-Z0-9]/g, '')}`;
+        const indentedBranch = branch.split('\n').map((l: string) => l.trim() ? '            ' + l.trimStart() : '').join('\n');
         return `
 async def ${funcName}():
     while True:
         if js.window.isKeyPressed('${key}'):
-${branch.split('\\n').map((l: string) => l.trim() ? '            ' + l.trimStart() : '').join('\\n')}
-            await asyncio.sleep(0.2)
-        await asyncio.sleep(0.01)
+${indentedBranch}
+            await asyncio.sleep(0.15)
+        await asyncio.sleep(0.02)
 
 asyncio.ensure_future(${funcName}())
+print(f"Registered key listener for ${key}")
 `;
     };
   }
@@ -529,11 +539,12 @@ asyncio.ensure_future(${funcName}())
     pythonGenerator.forBlock['action_when_sprite_clicked'] = function(block: any, generator: any) {
         const branch = generator.statementToCode(block, 'DO') || '  pass\n';
         const funcName = `_on_sprite_click_${block.id.replace(/[^a-zA-Z0-9]/g, '')}`;
+        const indentedBranch = branch.split('\n').map((l: string) => l.trim() ? '            ' + l.trimStart() : '').join('\n');
         return `
 async def ${funcName}():
     while True:
         if js.window.isSpriteClicked(__SPRITE_ID__):
-${branch.split('\\n').map((l: string) => l.trim() ? '            ' + l.trimStart() : '').join('\\n')}
+${indentedBranch}
             await asyncio.sleep(0.2)
         await asyncio.sleep(0.01)
 
@@ -561,13 +572,14 @@ asyncio.ensure_future(${funcName}())
         const backdrop = block.getFieldValue('BACKDROP');
         const branch = generator.statementToCode(block, 'DO') || '  pass\n';
         const funcName = `_on_backdrop_${block.id.replace(/[^a-zA-Z0-9]/g, '')}`;
+        const indentedBranch = branch.split('\n').map((l: string) => l.trim() ? '            ' + l.trimStart() : '').join('\n');
         return `
 async def ${funcName}():
     _last_backdrop = js.window.getCurrentBackdrop()
     while True:
         _current = js.window.getCurrentBackdrop()
         if _current == '${backdrop}' and _current != _last_backdrop:
-${branch.split('\\n').map((l: string) => l.trim() ? '            ' + l.trimStart() : '').join('\\n')}
+${indentedBranch}
         _last_backdrop = _current
         await asyncio.sleep(0.01)
 
@@ -753,7 +765,7 @@ export default function BlocklyEditor({
     if (hasBlock('math_number') || hasBlock('math_arithmetic') || hasBlock('math_random_int') || hasBlock('logic_compare') || hasBlock('logic_operation') || hasBlock('logic_negate')) {
         xml += `<category name="Math" colour="#59C059">`;
         if (hasBlock('math_number')) xml += `<block type="math_number"><field name="NUM">1</field></block>`;
-        if (hasBlock('math_arithmetic')) xml += `<block type="math_arithmetic"></block>`;
+        if (hasBlock('math_arithmetic')) xml += `<block type="math_arithmetic"><value name="A"><shadow type="math_number"><field name="NUM">10</field></shadow></value><value name="B"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>`;
         if (hasBlock('math_random_int')) xml += `<block type="math_random_int"><value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>`;
         if (hasBlock('logic_compare')) xml += `<block type="logic_compare"></block>`;
         if (hasBlock('logic_operation')) xml += `<block type="logic_operation"></block>`;
