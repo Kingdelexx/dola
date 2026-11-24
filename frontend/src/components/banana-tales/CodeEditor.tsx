@@ -97,33 +97,38 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
     }
   };
 
-  const lines = (value || '').split('\n');
+  // Code lines and minimum 10 gutter numbers so users see open lines to write on
+  const codeLines = (value || '').split('\n');
+  const totalGutterLines = Math.max(codeLines.length, 10);
+  const gutterLines = Array.from({ length: totalGutterLines }, (_, i) => i + 1);
 
   return (
     <div 
       onClick={() => textareaRef.current?.focus()}
-      className="relative flex-1 flex h-full min-h-[220px] sm:min-h-[260px] md:min-h-0 bg-[#FFFDF9] rounded-2xl border-2 border-[#D7CCC8] shadow-inner overflow-hidden font-jetbrains cursor-text select-text"
+      className="relative flex-1 flex h-full min-h-[240px] sm:min-h-[280px] md:min-h-0 bg-[#FFFDF9] rounded-2xl border-2 border-[#D7CCC8] shadow-inner overflow-hidden font-jetbrains cursor-text select-text"
     >
-      {/* Line Numbers Gutter */}
+      {/* Line Numbers Gutter: Always shows lines 1..10+ with active & error badges */}
       <div 
         ref={gutterRef}
         className="w-10 sm:w-12 py-3 bg-[#FAF6EE] border-r-2 border-[#E0D7C6] select-none text-right pr-2 text-xs font-bold text-[#8D6E63] shrink-0 overflow-hidden"
         aria-hidden="true"
       >
-        {lines.map((_, idx) => {
-          const lineNum = idx + 1;
+        {gutterLines.map((lineNum) => {
           const isErr = errorLine === lineNum;
           const isActive = activeLine === lineNum;
+          const hasCode = lineNum <= codeLines.length;
 
           let lineClass = 'h-6 leading-6 transition-all duration-150 flex items-center justify-end gap-1';
           if (isErr) {
             lineClass += ' bg-red-200 text-red-800 font-black rounded-l px-1';
           } else if (isActive) {
             lineClass += ' bg-[#FFD54F] text-[#E65100] font-black rounded-l px-1 shadow-xs border-r-2 border-[#E65100] scale-105';
+          } else if (!hasCode) {
+            lineClass += ' text-[#BCAAA4] font-normal';
           }
 
           return (
-            <div key={idx} className={lineClass}>
+            <div key={lineNum} className={lineClass}>
               {isActive && <span className="text-[9px] text-[#E65100] animate-pulse">▶</span>}
               <span>{lineNum}</span>
             </div>
@@ -131,7 +136,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
         })}
       </div>
 
-      {/* Editor Body: 100% Guaranteed Visible, High-Contrast Textarea */}
+      {/* Editor Body: Full-Height Absolute Inset Textarea (fills entire editor card) */}
       <div className="relative flex-1 h-full overflow-hidden select-text">
         <textarea
           ref={textareaRef}
@@ -146,7 +151,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           autoCorrect="off"
           wrap="off"
           style={{ color: '#263238', WebkitTextFillColor: '#263238' }}
-          className="w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-[#263238] font-medium caret-[#E65100] focus:outline-none selection:bg-amber-200 selection:text-amber-950 whitespace-pre overflow-auto select-text touch-manipulation cursor-text"
+          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-[#263238] font-medium caret-[#E65100] focus:outline-none selection:bg-amber-200 selection:text-amber-950 whitespace-pre overflow-y-auto overflow-x-hidden no-scrollbar select-text touch-manipulation cursor-text"
           placeholder="# Type your Python code here..."
         />
       </div>

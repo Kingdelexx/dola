@@ -525,7 +525,7 @@ export const BANANA_LEVELS: BananaLevel[] = [
     subtitle: 'Straight Path Movement',
     optimalLines: 1,
     starterCode: `# Level 1: First Steps
-# Help our monkey friend step forward to reach the golden banana!
+# Help monkey reach the golden banana!
 monkey.step(4)
 `,
     grid: level1Grid,
@@ -539,7 +539,7 @@ monkey.step(4)
     subtitle: 'Turning & Steering',
     optimalLines: 3,
     starterCode: `# Level 2: Around the Pond
-# Walk to the first banana, turn right, and step to the second!
+# Turn right to reach the second banana!
 monkey.step(3)
 monkey.turn("right")
 monkey.step(3)
@@ -558,7 +558,7 @@ monkey.step(3)
     subtitle: 'Staircase Loops',
     optimalLines: 5,
     starterCode: `# Level 3: The Zig-Zag Harvest
-# Use a Python for-loop to harvest all 4 bananas in a staircase!
+# Loop to harvest all 4 bananas!
 for i in range(4):
     monkey.step(1)
     monkey.turn("right")
@@ -581,7 +581,7 @@ for i in range(4):
     subtitle: 'Two Objects: Bridge & Monkey',
     optimalLines: 2,
     starterCode: `# Level 4: Gap Across the River
-# Build 2 wooden bridge planks across the river, then step forward!
+# Build 2 bridge planks, then step forward!
 bridge.extend(2)
 monkey.step(4)
 `,
@@ -596,7 +596,7 @@ monkey.step(4)
     subtitle: 'Jumps, Bridges & Loops',
     optimalLines: 6,
     starterCode: `# Level 5: Jungle Gauntlet
-# Jump over the rock, build the bridge, and loop to collect 3 bananas!
+# Jump rock, build bridge, and harvest!
 monkey.jump()
 bridge.extend(1)
 monkey.step(1)
@@ -619,7 +619,7 @@ for i in range(3):
     subtitle: 'Multi-River Navigation',
     optimalLines: 7,
     starterCode: `# Level 6: The Twin Rivers
-# Cross River 1, turn down to the lower path, then cross River 2!
+# Cross River 1, turn, then cross River 2!
 bridge.extend(1)
 monkey.step(3)
 monkey.turn("right")
@@ -642,7 +642,7 @@ monkey.step(3)
     subtitle: 'Perimeter Loop Mastery',
     optimalLines: 3,
     starterCode: `# Level 7: The Orchard Square
-# Use a Python for-loop to patrol all 4 sides of the square orchard!
+# Loop around all 4 sides of the orchard!
 for i in range(4):
     monkey.step(4)
     monkey.turn("right")
