@@ -506,8 +506,9 @@ hello@devnaija.com
 
 def send_payment_success_email(parent, subscription, payment=None, amount_paid=None, next_billing_date=None, tx_data=None):
     """
-    Sends an automated, official payment confirmation and receipt email to a parent
+    Sends an automated, official payment confirmation email to a parent
     whenever a payment succeeds (via Bank Transfer, Card, USSD, or Paystack Webhook).
+    Uses the exact customized DolaCode welcome & receipt copy.
     """
     if not parent or not getattr(parent, 'email', None):
         return False
@@ -516,10 +517,25 @@ def send_payment_success_email(parent, subscription, payment=None, amount_paid=N
     if not recipients:
         return False
 
-    parent_name = parent.first_name or parent.username or "Parent"
+    # Extract parent's first name
+    raw_first_name = (getattr(parent, 'first_name', None) or '').strip()
+    if raw_first_name:
+        parent_first_name = raw_first_name.split()[0].capitalize()
+    elif getattr(parent, 'username', None):
+        parent_first_name = parent.username.strip().capitalize()
+    else:
+        parent_first_name = "Parent"
+
+    # Extract plan name
     plan = getattr(subscription, 'plan', None) if subscription else None
-    plan_name = plan.plan_name if plan else "Family Membership"
-    
+    plan_name = getattr(plan, 'plan_name', None) if plan else None
+    if not plan_name and subscription and hasattr(subscription, 'plan_name'):
+        plan_name = subscription.plan_name
+    if not plan_name and tx_data and isinstance(tx_data, dict):
+        plan_name = tx_data.get('plan_name') or tx_data.get('metadata', {}).get('plan_name')
+    if not plan_name:
+        plan_name = "Family Membership"
+
     # Extract amount
     amt = 10000.0
     if amount_paid is not None:
@@ -542,29 +558,18 @@ def send_payment_success_email(parent, subscription, payment=None, amount_paid=N
             amt = float(plan.amount)
         except (ValueError, TypeError):
             pass
-    elif tx_data and tx_data.get('amount'):
+    elif tx_data and isinstance(tx_data, dict) and tx_data.get('amount'):
         try:
             amt = float(tx_data['amount']) / 100.0
         except (ValueError, TypeError):
             pass
 
-    # Extract reference
-    reference = getattr(payment, 'payment_reference', None) or (tx_data.get('reference') if isinstance(tx_data, dict) else None) or "N/A"
+    if amt == int(amt):
+        formatted_amount = f"{int(amt):,}"
+    else:
+        formatted_amount = f"{amt:,.2f}"
 
-    # Extract payment channel
-    raw_channel = getattr(payment, 'payment_channel', None) or (tx_data.get('channel') if isinstance(tx_data, dict) else None) or "card"
-    channel_map = {
-        'card': 'Debit / Credit Card',
-        'bank_transfer': 'Bank Transfer (Virtual Account)',
-        'transfer': 'Bank Transfer (Virtual Account)',
-        'bank': 'Pay with Bank (Direct Debit)',
-        'ussd': 'USSD Dialing',
-        'qr': 'QR Code / Zap',
-        'mobile_money': 'Mobile Money'
-    }
-    channel_display = channel_map.get(str(raw_channel).lower(), str(raw_channel).replace('_', ' ').title())
-
-    # Format period end / next renewal date
+    # Format subscription expiry date
     now = timezone.now() if hasattr(timezone, 'now') else datetime.now()
     period_end = next_billing_date or getattr(subscription, 'current_period_end', None) or getattr(subscription, 'next_payment_date', None) or (now + timedelta(days=30))
     if hasattr(period_end, 'strftime'):
@@ -572,140 +577,317 @@ def send_payment_success_email(parent, subscription, payment=None, amount_paid=N
     else:
         formatted_date = str(period_end)[:10]
 
-    # Format payment date
-    payment_date = getattr(payment, 'payment_date', None) or getattr(payment, 'created_at', None) or now
-    if hasattr(payment_date, 'strftime'):
-        formatted_payment_date = payment_date.strftime("%B %d, %Y, %I:%M %p")
-    else:
-        formatted_payment_date = str(payment_date)[:16]
+    subject = "Welcome to the DolaCode family! 🎉 (Payment Confirmed)"
 
-    dashboard_url = "https://dolacode.com.ng/parent-dashboard"
-    login_url = "https://dolacode.com.ng/login"
+    text_content = f"""Hello {parent_first_name},
 
-    subject = f"Receipt: Payment Confirmed for {plan_name} 🎉"
+Welcome to the DolaCode family! 🎉
 
-    text_content = f"""
-Hello {parent_name},
+Thank you for subscribing to DolaCode. Your payment was successful, and your child's learning adventure can now begin!
 
-Thank you! Your payment on DolaCode has been confirmed and your family subscription is active.
+With DolaCode, your child can learn mathematics, coding and financial literacy through fun games, challenges and practical projects.
 
-OFFICIAL PAYMENT RECEIPT
-------------------------------------------------
+Your Subscription Details
+
 Plan: {plan_name}
-Amount Paid: ₦{amt:,.2f} NGN
-Payment Reference: {reference}
-Payment Method: {channel_display}
-Payment Date: {formatted_payment_date}
-Access Valid Until: {formatted_date}
-Status: Confirmed & Active
-------------------------------------------------
 
-All coding worlds (Numeracy, Visual Blocks, Banana Tales Python, Web Dev, App Dev Studio), 6 numeracy games, DolaMoney financial literacy, and the 24/7 Lizzy AI tutor are now fully unlocked for all your linked children.
+Amount Paid: ₦{formatted_amount}
 
-Manage your family account or view receipts:
-{dashboard_url}
+Subscription Expiry: {formatted_date}
 
-Your children can sign in directly on any computer or tablet:
-{login_url}
+Let's Get Started!
+
+Visit https://dolacode.com.ng
+
+Log in to your parent account.
+
+Select your child's profile and start exploring the learning games.
+
+Check the parent dashboard for your kids' progress
+
+Need assistance? Simply reply to this email, and our team will be happy to help.
+
+We're excited to be part of your child's learning journey!
 
 Warm regards,
-The DolaCode Team
-https://dolacode.com.ng
-hello@devnaija.com
-"""
 
-    html_content = f"""
-<!DOCTYPE html>
+The DolaCode Team
+Learn. Play. Create."""
+
+    html_content = f"""<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to the DolaCode family!</title>
   <style>
-    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; margin: 0; padding: 24px 16px; color: #f8fafc; }}
-    .container {{ max-width: 620px; margin: 0 auto; background-color: #1e293b; border-radius: 24px; border: 1px solid #334155; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }}
-    .badge {{ display: inline-block; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2)); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 16px; border-radius: 9999px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px; }}
-    h1 {{ color: #ffffff; font-size: 24px; font-weight: 900; margin: 0 0 12px; line-height: 1.3; }}
-    p {{ font-size: 15px; line-height: 1.6; color: #cbd5e1; margin: 0 0 16px; }}
-    .receipt-card {{ background-color: #0f172a; border-radius: 18px; border: 2px solid #334155; padding: 24px; margin: 24px 0; }}
-    .receipt-table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
-    .receipt-table td {{ padding: 10px 0; border-bottom: 1px solid #1e293b; }}
-    .receipt-table tr:last-child td {{ border-bottom: none; }}
-    .receipt-label {{ color: #94a3b8; font-weight: 600; }}
-    .receipt-value {{ text-align: right; color: #f8fafc; font-weight: 700; }}
-    .amount-highlight {{ color: #34d399; font-size: 20px; font-weight: 900; }}
-    .ref-code {{ font-family: monospace; color: #fbbf24; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 6px; font-size: 12px; }}
-    .feature-list {{ background: rgba(99, 102, 241, 0.08); border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.3); padding: 18px; margin: 20px 0; }}
-    .feature-item {{ display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #c7d2fe; }}
-    .feature-item:last-child {{ margin-bottom: 0; }}
-    .feature-icon {{ color: #10b981; margin-right: 8px; font-weight: bold; }}
-    .btn {{ display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 14px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4); }}
-    .btn-container {{ text-align: center; margin: 30px 0 16px; }}
-    .footer {{ border-top: 1px solid #334155; margin-top: 32px; padding-top: 20px; font-size: 12px; color: #64748b; text-align: center; line-height: 1.6; }}
+    body {{
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 32px 16px;
+      color: #1e293b;
+      line-height: 1.6;
+    }}
+    .email-container {{
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }}
+    .email-header {{
+      background: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899);
+      padding: 32px 32px 28px;
+      text-align: center;
+      color: #ffffff;
+    }}
+    .brand-title {{
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin: 0 0 6px 0;
+    }}
+    .brand-subtitle {{
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0.92;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 0;
+    }}
+    .email-body {{
+      padding: 32px 32px 28px;
+    }}
+    .badge {{
+      display: inline-block;
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }}
+    p {{
+      font-size: 15px;
+      color: #334155;
+      margin: 0 0 16px;
+      line-height: 1.65;
+    }}
+    .intro-strong {{
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 700;
+    }}
+    .card {{
+      background-color: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin: 24px 0;
+    }}
+    .card-title {{
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 14px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }}
+    .details-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }}
+    .details-table td {{
+      padding: 9px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }}
+    .details-table tr:last-child td {{
+      border-bottom: none;
+      padding-bottom: 0;
+    }}
+    .details-label {{
+      color: #64748b;
+      font-weight: 600;
+      width: 45%;
+    }}
+    .details-value {{
+      color: #0f172a;
+      font-weight: 800;
+      text-align: right;
+    }}
+    .amount-highlight {{
+      color: #059669;
+      font-size: 16px;
+    }}
+    .expiry-highlight {{
+      color: #4f46e5;
+    }}
+    .steps-card {{
+      background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+      border: 1px solid #ddd6fe;
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin: 24px 0;
+    }}
+    .steps-title {{
+      font-size: 16px;
+      font-weight: 800;
+      color: #5b21b6;
+      margin: 0 0 16px 0;
+    }}
+    .step-item {{
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #334155;
+      font-weight: 600;
+    }}
+    .step-item:last-child {{
+      margin-bottom: 0;
+    }}
+    .step-number {{
+      background: #7c3aed;
+      color: #ffffff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      margin-right: 12px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }}
+    .btn-container {{
+      text-align: center;
+      margin: 28px 0 20px;
+    }}
+    .btn-action {{
+      display: inline-block;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #ffffff !important;
+      text-decoration: none;
+      padding: 14px 36px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4);
+    }}
+    .sign-off-box {{
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 14px;
+      color: #334155;
+    }}
+    .team-title {{
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 4px;
+    }}
+    .team-motto {{
+      color: #6366f1;
+      font-weight: 700;
+      font-size: 13px;
+      margin-top: 2px;
+    }}
+    .footer-bar {{
+      background-color: #f8fafc;
+      padding: 18px 32px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }}
   </style>
 </head>
 <body>
-  <div class="container">
-    <span class="badge">✅ Payment Confirmed • Official Receipt</span>
-    <h1>Payment Successful, {parent_name}! 🎉</h1>
-    <p>Thank you for subscribing to DolaCode. Your family membership is active and your payment has been processed successfully.</p>
-    
-    <div class="receipt-card">
-      <table class="receipt-table">
-        <tr>
-          <td class="receipt-label">Membership Plan</td>
-          <td class="receipt-value" style="color: #ffffff;">{plan_name}</td>
-        </tr>
-        <tr>
-          <td class="receipt-label">Amount Paid</td>
-          <td class="receipt-value"><span class="amount-highlight">₦{amt:,.2f}</span></td>
-        </tr>
-        <tr>
-          <td class="receipt-label">Payment Reference</td>
-          <td class="receipt-value"><span class="ref-code">{reference}</span></td>
-        </tr>
-        <tr>
-          <td class="receipt-label">Payment Method</td>
-          <td class="receipt-value">{channel_display}</td>
-        </tr>
-        <tr>
-          <td class="receipt-label">Payment Date</td>
-          <td class="receipt-value">{formatted_payment_date}</td>
-        </tr>
-        <tr>
-          <td class="receipt-label">Access Valid Until</td>
-          <td class="receipt-value" style="color: #60a5fa;">{formatted_date}</td>
-        </tr>
-        <tr>
-          <td class="receipt-label">Status</td>
-          <td class="receipt-value" style="color: #34d399;">Active &amp; Verified ✓</td>
-        </tr>
-      </table>
+  <div class="email-container">
+    <div class="email-header">
+      <h1 class="brand-title">DolaCode 🚀</h1>
+      <p class="brand-subtitle">Learn. Play. Create.</p>
     </div>
+    <div class="email-body">
+      <span class="badge">✅ Payment Confirmed</span>
 
-    <div class="feature-list">
-      <div style="font-weight: 800; color: #e0e7ff; font-size: 13px; margin-bottom: 8px;">🚀 What's Unlocked for All Your Children:</div>
-      <div class="feature-item"><span class="feature-icon">✓</span> All 4 Coding Stages &amp; Studios (Numeracy, Blocks, Python, Web/App Dev)</div>
-      <div class="feature-item"><span class="feature-icon">✓</span> 6 Interactive Numeracy Puzzles &amp; DolaMoney Financial Literacy Game</div>
-      <div class="feature-item"><span class="feature-icon">✓</span> 24/7 Lizzy AI intelligent tutor assistance &amp; debugging help</div>
-      <div class="feature-item"><span class="feature-icon">✓</span> Real-time progress monitoring &amp; weekly learning report emails</div>
+      <p class="intro-strong">Hello {parent_first_name},</p>
+
+      <p class="intro-strong" style="color: #4f46e5;">Welcome to the DolaCode family! 🎉</p>
+
+      <p>Thank you for subscribing to DolaCode. Your payment was successful, and your child's learning adventure can now begin!</p>
+
+      <p>With DolaCode, your child can learn mathematics, coding and financial literacy through fun games, challenges and practical projects.</p>
+
+      <div class="card">
+        <div class="card-title">Your Subscription Details</div>
+        <table class="details-table">
+          <tr>
+            <td class="details-label">Plan:</td>
+            <td class="details-value">{plan_name}</td>
+          </tr>
+          <tr>
+            <td class="details-label">Amount Paid:</td>
+            <td class="details-value amount-highlight">₦{formatted_amount}</td>
+          </tr>
+          <tr>
+            <td class="details-label">Subscription Expiry:</td>
+            <td class="details-value expiry-highlight">{formatted_date}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="steps-card">
+        <div class="steps-title">Let's Get Started!</div>
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div>Visit <a href="https://dolacode.com.ng" style="color: #6d28d9; text-decoration: underline; font-weight: 700;">https://dolacode.com.ng</a></div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div>Log in to your parent account.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div>Select your child's profile and start exploring the learning games.</div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">4</div>
+          <div>Check the parent dashboard for your kids' progress</div>
+        </div>
+      </div>
+
+      <div class="btn-container">
+        <a href="https://dolacode.com.ng" class="btn-action">Start Learning Now →</a>
+      </div>
+
+      <p>Need assistance? Simply reply to this email, and our team will be happy to help.</p>
+
+      <p style="font-weight: 600; color: #1e293b;">We're excited to be part of your child's learning journey!</p>
+
+      <div class="sign-off-box">
+        Warm regards,<br><br>
+        <div class="team-title">The DolaCode Team</div>
+        <div class="team-motto">Learn. Play. Create.</div>
+      </div>
     </div>
-
-    <div class="btn-container">
-      <a href="{dashboard_url}" class="btn">Open Parent Dashboard →</a>
-    </div>
-
-    <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 16px;">
-      Your children can sign in directly at <a href="{login_url}" style="color: #34d399; text-decoration: none; font-weight: 600;">{login_url}</a>.
-    </p>
-
-    <div class="footer">
-      <p>© 2026 DolaCode Platform. All rights reserved.<br>
-      Have questions about your receipt? Reply directly to this email or reach us at <a href="mailto:hello@devnaija.com" style="color: #60a5fa;">hello@devnaija.com</a>.</p>
+    <div class="footer-bar">
+      © 2026 DolaCode Platform. All rights reserved. | <a href="https://dolacode.com.ng" style="color: #6366f1; text-decoration: none;">dolacode.com.ng</a>
     </div>
   </div>
 </body>
-</html>
-"""
+</html>"""
 
     return _dispatch_email(subject, recipients, text_content, html_content)
 
