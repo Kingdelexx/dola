@@ -696,6 +696,13 @@ DEFAULT_BADGES = [
         "condition_value": 5
     },
     {
+        "name": "Master Earner",
+        "description": "Apply practical skills and solve real problems to earn honest income!",
+        "icon": "🛠️",
+        "condition_type": "dolamoney_world",
+        "condition_value": 6
+    },
+    {
         "name": "Young Entrepreneur",
         "description": "Launch, price, and reinvest in your growing business venture!",
         "icon": "🚀",

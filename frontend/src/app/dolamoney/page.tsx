@@ -29,7 +29,9 @@ import { SmartShopperGame } from '@/components/dolamoney/SmartShopperGame';
 import { SavingsMissionGame } from '@/components/dolamoney/SavingsMissionGame';
 import { MyLittleBusinessGame } from '@/components/dolamoney/MyLittleBusinessGame';
 import { BudgetChallengeGame } from '@/components/dolamoney/BudgetChallengeGame';
+import { EarnItGame } from '@/components/dolamoney/EarnItGame';
 import { BankAdventureGame } from '@/components/dolamoney/BankAdventureGame';
+import { GoalBuilderGame } from '@/components/dolamoney/GoalBuilderGame';
 import { MoneyTrapsGame } from '@/components/dolamoney/MoneyTrapsGame';
 
 interface DolaMoneyState {
@@ -145,6 +147,7 @@ export default function DolaMoneyQuestPage() {
     { name: "Savings Star", icon: "⭐", desc: "Build a consistent savings streak and fill your savings jar!", world: 3 },
     { name: "Budget Boss", icon: "📊", desc: "Allocate a fixed budget wisely and handle unexpected changes!", world: 4 },
     { name: "Profit Pro", icon: "📈", desc: "Master cost, revenue, and profit in your little business!", world: 5 },
+    { name: "Master Earner", icon: "🛠️", desc: "Apply practical skills and solve real problems to earn honest income!", world: 6 },
     { name: "Banking Explorer", icon: "🏦", desc: "Master deposits, withdrawals, and balances in DolaBank!", world: 7 },
     { name: "Goal Getter", icon: "🎯", desc: "Hit key savings milestones towards your dream goals!", world: 8 },
     { name: "Money Wise", icon: "🛡️", desc: "Spot tricky money traps and scams by consulting trusted adults!", world: 9 },
@@ -228,8 +231,8 @@ export default function DolaMoneyQuestPage() {
       accentBg: "bg-blue-900/30",
       accentText: "text-blue-100",
       isDarkText: false,
-      playable: false,
-      badge: "Young Entrepreneur"
+      playable: true,
+      badge: "Master Earner"
     },
     {
       num: 7,
@@ -254,7 +257,7 @@ export default function DolaMoneyQuestPage() {
       accentBg: "bg-purple-900/30",
       accentText: "text-purple-100",
       isDarkText: false,
-      playable: false,
+      playable: true,
       badge: "Goal Getter"
     },
     {
@@ -527,10 +530,32 @@ export default function DolaMoneyQuestPage() {
               />
             )}
 
+            {activeGameModal === 6 && (
+              <EarnItGame
+                onComplete={(coins, xp, badge) => {
+                  handleWorldCompleted(6, coins, xp, badge);
+                  setActiveGameModal(null);
+                }}
+                onClose={() => setActiveGameModal(null)}
+              />
+            )}
+
             {activeGameModal === 7 && (
               <BankAdventureGame
                 onComplete={(coins, xp, badge) => {
                   handleWorldCompleted(7, coins, xp, badge);
+                  setActiveGameModal(null);
+                }}
+                onClose={() => setActiveGameModal(null)}
+              />
+            )}
+
+            {activeGameModal === 8 && (
+              <GoalBuilderGame
+                onComplete={(coins, xp, badge, goal) => {
+                  handleWorldCompleted(8, coins, xp, badge, {
+                    active_savings_goal: goal || null
+                  });
                   setActiveGameModal(null);
                 }}
                 onClose={() => setActiveGameModal(null)}
