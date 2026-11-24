@@ -834,11 +834,11 @@ export default function Home() {
       </section>
 
       {/* FAQ Section - Friendly accordion */}
-      <section className="relative z-10 py-32 bg-purple-50 px-6 border-t-8 border-purple-100">
+      <section className="relative z-10 py-16 sm:py-24 md:py-32 bg-purple-50 px-4 sm:px-6 border-t-8 border-purple-100">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl lg:text-6xl font-black text-purple-900">Got <span className="text-pink-500">Questions?</span></h2>
-            <p className="text-xl text-purple-700 font-medium">We've got answers!</p>
+          <div className="text-center mb-10 sm:mb-16 space-y-3 sm:space-y-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-purple-900">Got <span className="text-pink-500">Questions?</span></h2>
+            <p className="text-lg sm:text-xl text-purple-700 font-medium">We've got answers!</p>
           </div>
 
           <div className="space-y-4">
@@ -849,20 +849,20 @@ export default function Home() {
               >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full px-8 py-6 flex items-center justify-between text-left focus:outline-none"
+                  className="w-full px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between text-left focus:outline-none"
                 >
-                  <span className={`font-black text-xl ${openFaq === index ? 'text-pink-600' : 'text-purple-900'}`}>
+                  <span className={`font-black text-base sm:text-xl ${openFaq === index ? 'text-pink-600' : 'text-purple-900'}`}>
                     {faq.question}
                   </span>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors border-2 ${openFaq === index ? 'bg-pink-100 border-pink-400 text-pink-600' : 'bg-purple-100 border-purple-200 text-purple-600'}`}>
-                    {openFaq === index ? <Minus size={20} /> : <Plus size={20} />}
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors border-2 shrink-0 ml-3 ${openFaq === index ? 'bg-pink-100 border-pink-400 text-pink-600' : 'bg-purple-100 border-purple-200 text-purple-600'}`}>
+                    {openFaq === index ? <Minus size={18} /> : <Plus size={18} />}
                   </div>
                 </button>
                 <div
-                  className={`grid transition-all duration-300 ease-in-out ${openFaq === index ? 'grid-rows-[1fr] opacity-100 pb-6 px-8' : 'grid-rows-[0fr] opacity-0 px-8 pb-0'}`}
+                  className={`grid transition-all duration-300 ease-in-out ${openFaq === index ? 'grid-rows-[1fr] opacity-100 pb-5 sm:pb-6 px-5 sm:px-8' : 'grid-rows-[0fr] opacity-0 px-5 sm:px-8 pb-0'}`}
                 >
                   <div className="overflow-hidden">
-                    <p className="text-slate-600 font-medium text-lg leading-relaxed pt-4 border-t-2 border-slate-100">
+                    <p className="text-slate-600 font-medium text-sm sm:text-lg leading-relaxed pt-3 sm:pt-4 border-t-2 border-slate-100">
                       {faq.answer}
                     </p>
                   </div>
@@ -872,7 +872,7 @@ export default function Home() {
           </div>
 
           {/* Help & Support on WhatsApp (Registration & Navigating) */}
-          <div className="mt-14 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-[2.5rem] p-8 sm:p-10 text-white shadow-xl border-4 border-emerald-300 relative overflow-hidden">
+          <div className="mt-10 sm:mt-14 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 md:p-10 text-white shadow-xl border-4 border-emerald-300 relative overflow-hidden">
             <div className="absolute -right-10 -bottom-10 w-56 h-56 bg-white/10 rounded-full blur-3xl pointer-events-none" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="space-y-3 text-center md:text-left">
@@ -880,13 +880,13 @@ export default function Home() {
                   <FaWhatsapp className="text-emerald-300" size={15} />
                   <span>Instant Help &bull; Registration &amp; Navigation</span>
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight">
                   Need Help Registering or Navigating?
                 </h3>
-                <p className="text-emerald-50 text-base max-w-xl font-medium leading-relaxed">
+                <p className="text-emerald-50 text-sm sm:text-base max-w-xl font-medium leading-relaxed">
                   Having trouble signing up, adding your kids, setting up 4-digit PINs, or finding your way around? Chat directly with our friendly support team on WhatsApp at <span className="font-black text-white underline underline-offset-4">09152690938</span> &mdash; we&apos;re here to guide you step by step!
                 </p>
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs font-bold text-emerald-100 pt-1">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-4 text-xs font-bold text-emerald-100 pt-1">
                   <span className="flex items-center gap-1.5">✓ Account Setup &amp; PIN Help</span>
                   <span className="flex items-center gap-1.5">✓ Child Account Linking</span>
                   <span className="flex items-center gap-1.5">✓ Instant Guidance</span>
@@ -896,12 +896,12 @@ export default function Home() {
                 href="https://wa.me/2349152690938?text=Hello%20DolaCode%20Support,%20I%20need%20help%20with%20registering%20or%20navigating%20the%20platform."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="shrink-0 px-8 py-4 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-sm sm:text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 cursor-pointer group"
+                className="w-full md:w-auto shrink-0 px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-emerald-800 hover:bg-emerald-50 rounded-2xl font-black text-sm sm:text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer group"
               >
-                <FaWhatsapp size={26} className="text-emerald-600 group-hover:scale-110 transition-transform" />
+                <FaWhatsapp size={24} className="text-emerald-600 group-hover:scale-110 transition-transform" />
                 <div className="text-left">
                   <div className="text-[10px] uppercase tracking-wider text-emerald-600 font-extrabold">Chat on WhatsApp</div>
-                  <div className="text-base font-black text-emerald-950 leading-none">09152690938</div>
+                  <div className="text-sm sm:text-base font-black text-emerald-950 leading-none">09152690938</div>
                 </div>
               </a>
             </div>

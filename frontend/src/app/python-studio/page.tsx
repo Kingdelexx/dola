@@ -45,9 +45,9 @@ export default function PythonStudioPage() {
 
   return (
     <PaywallGuard feature="stage4">
-      <div className="min-h-screen bg-[#F5EFEB] flex flex-col overflow-hidden font-fredoka">
+      <div className="min-h-screen bg-[#F5EFEB] flex flex-col overflow-y-auto md:overflow-hidden font-fredoka">
         {/* Full Banana Tales Frontend Shell & 60fps Canvas Engine */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-y-auto md:overflow-hidden">
           <BananaTalesGame />
         </div>
 

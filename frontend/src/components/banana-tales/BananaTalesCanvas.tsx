@@ -759,8 +759,8 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
   }, [dynamicGrid, bananas, monkeyGridPos, monkeyDir, speechBubble]);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center p-3 select-none">
-      <div className="relative w-full aspect-10/8 max-h-[700px] rounded-3xl overflow-hidden border-4 border-[#D7CCC8] shadow-[0_12px_36px_rgba(38,50,56,0.18)] bg-[#7CB342]">
+    <div className="relative w-full h-full flex items-center justify-center p-1.5 sm:p-3 select-none">
+      <div className="relative w-full aspect-[10/8] max-h-[700px] rounded-2xl sm:rounded-3xl overflow-hidden border-3 sm:border-4 border-[#D7CCC8] shadow-[0_12px_36px_rgba(38,50,56,0.18)] bg-[#7CB342]">
         <canvas
           ref={canvasRef}
           style={{ width: '100%', height: '100%', display: 'block' }}
@@ -768,7 +768,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         />
 
         {/* Coordinates & Status Badge */}
-        <div className="absolute bottom-2 left-2 px-2.5 py-1 bg-[#FAF6EE]/90 backdrop-blur-xs rounded-xl border border-[#D7CCC8] text-[11px] font-bold text-[#5D4037] flex items-center gap-1.5 shadow-sm font-fredoka">
+        <div className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#FAF6EE]/90 backdrop-blur-xs rounded-lg sm:rounded-xl border border-[#D7CCC8] text-[9px] sm:text-[11px] font-bold text-[#5D4037] flex items-center gap-1 sm:gap-1.5 shadow-sm font-fredoka">
           <span>Grid: 10×8</span>
           <span className="text-[#8D6E63]">•</span>
           <span>Monkey: ({monkeyGridPos.x}, {monkeyGridPos.y})</span>

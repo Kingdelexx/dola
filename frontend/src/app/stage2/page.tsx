@@ -457,18 +457,18 @@ await main()
 
   return (
     <PaywallGuard feature="stage2">
-      <div className="min-h-screen bg-slate-50 p-8">
+      <div className="min-h-screen bg-slate-50 p-3 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-4">
-            <Link href="/" className="text-blue-500 hover:text-blue-700 inline-block font-bold">&larr; Back to Dashboard</Link>
-            <div className="flex gap-2 flex-wrap max-w-lg justify-end">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <Link href="/" className="text-blue-500 hover:text-blue-700 inline-block font-bold text-sm sm:text-base shrink-0">&larr; Back to Dashboard</Link>
+            <div className="flex items-center gap-1.5 overflow-x-auto py-1 w-full sm:w-auto sm:max-w-xl scrollbar-none sm:justify-end">
                 {STAGE2_BLOCK_LEVELS.map((lvm, idx) => {
                     const isUnlocked = idx <= maxUnlockedLevel;
                     return (
                         <div 
                             key={lvm.id} 
                             onClick={() => { if (isUnlocked) { setPythonCode(''); setSpriteWorkspaces({}); setRunFeedback({ type: null, message: '' }); setCurrentLevelIndex(idx); } }}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all ${isUnlocked ? 'cursor-pointer hover:scale-110 shadow-sm' : 'cursor-not-allowed opacity-50'} ${idx === currentLevelIndex ? 'bg-green-500 text-white ring-4 ring-green-200' : isUnlocked ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-slate-200 text-slate-400'}`}
+                            className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 text-xs sm:text-sm rounded-full flex items-center justify-center font-bold transition-all ${isUnlocked ? 'cursor-pointer hover:scale-110 shadow-sm' : 'cursor-not-allowed opacity-50'} ${idx === currentLevelIndex ? 'bg-green-500 text-white ring-2 sm:ring-4 ring-green-200' : isUnlocked ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-slate-200 text-slate-400'}`}
                             title={isUnlocked ? `Go to ${lvm.title}` : "Locked"}
                         >
                             {idx + 1}
@@ -478,12 +478,12 @@ await main()
             </div>
         </div>
         
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white mb-8 shadow-lg">
-          <h1 className="text-3xl font-extrabold mb-2">Stage 2: Logic & Blocks <span className="opacity-70 text-lg font-medium ml-2">| {level.theme} - {level.title}</span></h1>
-          <p className="text-lg"><strong>Objective:</strong> {level.objective}</p>
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 sm:p-6 text-white mb-6 sm:mb-8 shadow-lg">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 sm:mb-2">Stage 2: Logic & Blocks <span className="opacity-80 text-sm sm:text-lg font-medium block sm:inline mt-1 sm:mt-0">| {level.theme} - {level.title}</span></h1>
+          <p className="text-sm sm:text-base md:text-lg"><strong>Objective:</strong> {level.objective}</p>
           {level.hint && (
-            <div className="mt-3 text-sm bg-white/20 backdrop-blur-sm px-3.5 py-1.5 rounded-xl w-fit text-blue-50 font-semibold flex items-center gap-2 border border-white/20">
-              <span className="text-base">💡</span>
+            <div className="mt-2.5 sm:mt-3 text-xs sm:text-sm bg-white/20 backdrop-blur-sm px-3 sm:px-3.5 py-1.5 rounded-xl w-fit text-blue-50 font-semibold flex items-center gap-2 border border-white/20">
+              <span className="text-sm sm:text-base">💡</span>
               <span><strong>Tip:</strong> {level.hint}</span>
             </div>
           )}
@@ -869,22 +869,22 @@ await main()
       </div>
 
       {showReflectStep && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/55 backdrop-blur-sm">
-          <div className="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl flex flex-col justify-between animate-in fade-in zoom-in duration-300 border-4 border-indigo-400">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/55 backdrop-blur-sm p-3 sm:p-4">
+          <div className="bg-white rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col justify-between animate-in fade-in zoom-in duration-300 border-4 border-indigo-400">
             <div>
               <div className="flex items-center gap-2 mb-4 bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-full text-indigo-700 font-extrabold text-xs w-fit mx-auto">
                 🌟 SOLVE Phase 4: Reflection & Improvement
               </div>
-              <h2 className="text-3xl font-black text-slate-800 text-center mb-1">Your Project is Alive!</h2>
-              <p className="text-center text-slate-500 text-sm font-semibold mb-6">Let's reflect on your first DolaCode creation.</p>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-800 text-center mb-1">Your Project is Alive!</h2>
+              <p className="text-center text-slate-500 text-xs sm:text-sm font-semibold mb-6">Let's reflect on your first DolaCode creation.</p>
               
               <div className="space-y-4 text-left">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-extrabold text-slate-600">1. Did it work as planned?</label>
+                  <label className="text-xs sm:text-sm font-extrabold text-slate-600">1. Did it work as planned?</label>
                   <select 
                     value={reflectData.didWork}
                     onChange={(e) => setReflectData(prev => ({ ...prev, didWork: e.target.value }))}
-                    className="px-4 py-2.5 border-2 border-slate-200 rounded-xl bg-white text-slate-700 font-bold focus:border-indigo-500 focus:outline-none"
+                    className="px-3.5 sm:px-4 py-2 sm:py-2.5 border-2 border-slate-200 rounded-xl bg-white text-slate-700 font-bold focus:border-indigo-500 focus:outline-none text-xs sm:text-sm"
                   >
                     <option value="">-- Choose Option --</option>
                     <option value="Yes, perfectly!">Yes, perfectly!</option>
@@ -894,24 +894,24 @@ await main()
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-extrabold text-slate-600">2. What did you end up changing during build?</label>
+                  <label className="text-xs sm:text-sm font-extrabold text-slate-600">2. What did you end up changing during build?</label>
                   <input 
                     type="text"
                     placeholder="e.g. Added a loop, changed the sprite path..."
                     value={reflectData.changes}
                     onChange={(e) => setReflectData(prev => ({ ...prev, changes: e.target.value }))}
-                    className="px-4 py-2.5 border-2 border-slate-200 rounded-xl bg-white text-slate-750 font-bold focus:border-indigo-500 focus:outline-none"
+                    className="px-3.5 sm:px-4 py-2 sm:py-2.5 border-2 border-slate-200 rounded-xl bg-white text-slate-750 font-bold focus:border-indigo-500 focus:outline-none text-xs sm:text-sm"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-extrabold text-slate-600">3. What are you most proud of in this project?</label>
+                  <label className="text-xs sm:text-sm font-extrabold text-slate-600">3. What are you most proud of in this project?</label>
                   <input 
                     type="text"
                     placeholder="e.g. Making my rocket turn, fixing my debugging blocks..."
                     value={reflectData.proudOf}
                     onChange={(e) => setReflectData(prev => ({ ...prev, proudOf: e.target.value }))}
-                    className="px-4 py-2.5 border-2 border-slate-200 rounded-xl bg-white text-slate-750 font-bold focus:border-indigo-500 focus:outline-none"
+                    className="px-3.5 sm:px-4 py-2 sm:py-2.5 border-2 border-slate-200 rounded-xl bg-white text-slate-750 font-bold focus:border-indigo-500 focus:outline-none text-xs sm:text-sm"
                   />
                 </div>
               </div>
@@ -923,7 +923,7 @@ await main()
                 setShowReflectStep(false);
                 triggerLevelComplete(currentLevelIndex + 1);
               }}
-              className="w-full mt-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-lg rounded-2xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full mt-6 py-3.5 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-base sm:text-lg rounded-2xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               🎉 Finish & Claim Rewards!
             </button>
@@ -932,27 +932,27 @@ await main()
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-indigo-200">
-                <div className="relative w-40 h-40 mb-6 flex items-center justify-center pointer-events-none">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
+            <div className="bg-white rounded-3xl p-5 sm:p-8 max-w-md w-full max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-indigo-200">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 mb-4 sm:mb-6 flex items-center justify-center pointer-events-none">
                   {/* Outer glowing pulsing circles */}
                   <div className="absolute inset-0 bg-yellow-400/20 rounded-full animate-ping" />
                   <div className="absolute inset-4 bg-yellow-400/30 rounded-full animate-pulse" />
                   <div className="absolute inset-8 bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.6)] flex items-center justify-center border-4 border-white">
-                    <Trophy size={56} className="text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)] animate-bounce duration-1000" />
+                    <Trophy size={48} className="text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)] animate-bounce duration-1000" />
                   </div>
                 </div>
                 
                 <span className="text-indigo-600 text-xs font-black tracking-widest uppercase mb-1">Quest Completed!</span>
-                <h2 className="text-3xl font-black text-slate-800 mb-2">Level Complete!</h2>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-800 mb-2">Level Complete!</h2>
                 
                 {pointsEarned > 0 && (
-                  <div className="flex gap-4 mb-4">
-                    <span className="flex items-center gap-1.5 bg-yellow-50 border-2 border-yellow-200 px-3 py-1 rounded-full text-yellow-700 font-black text-sm shadow-sm">
+                  <div className="flex gap-3 sm:gap-4 mb-4">
+                    <span className="flex items-center gap-1.5 bg-yellow-50 border-2 border-yellow-200 px-3 py-1 rounded-full text-yellow-700 font-black text-xs sm:text-sm shadow-sm">
                       ⭐ +{pointsEarned} Stars
                     </span>
                     {streakCount > 0 && (
-                      <span className="flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 px-3 py-1 rounded-full text-orange-700 font-black text-sm shadow-sm">
+                      <span className="flex items-center gap-1.5 bg-orange-50 border-2 border-orange-200 px-3 py-1 rounded-full text-orange-700 font-black text-xs sm:text-sm shadow-sm">
                         🔥 {streakCount} Day Streak
                       </span>
                     )}
@@ -960,21 +960,21 @@ await main()
                 )}
 
                 {level.unlockedAbility && (
-                    <p className="text-center text-slate-600 mb-6 text-lg">
+                    <p className="text-center text-slate-600 mb-6 text-base sm:text-lg">
                         You unlocked a new ability:<br/>
-                        <span className="font-bold text-indigo-600 text-xl">{level.unlockedAbility}</span>
+                        <span className="font-bold text-indigo-600 text-lg sm:text-xl">{level.unlockedAbility}</span>
                     </p>
                 )}
-                <div className="w-full flex gap-4">
-                    <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">
+                <div className="w-full flex gap-3 sm:gap-4">
+                    <button onClick={() => setShowModal(false)} className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm sm:text-base">
                         Stay Here
                     </button>
                     {currentLevelIndex < STAGE2_BLOCK_LEVELS.length - 1 ? (
-                        <button onClick={handleNextLevel} className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold rounded-xl shadow-md transition-all transform hover:scale-105">
+                        <button onClick={handleNextLevel} className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold rounded-xl shadow-md transition-all transform hover:scale-105 text-sm sm:text-base">
                             Next Level
                         </button>
                     ) : (
-                        <button onClick={handleNextLevel} className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-md transition-all transform hover:scale-105 text-center">
+                        <button onClick={handleNextLevel} className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-md transition-all transform hover:scale-105 text-center text-sm sm:text-base">
                             Go to Stage 3
                         </button>
                     )}
@@ -985,8 +985,8 @@ await main()
 
       {/* Badge Celebration Modal */}
       {showBadgeCelebration && newlyUnlockedBadges.length > 0 && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md">
-          <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-yellow-400 relative overflow-hidden text-center">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md p-3 sm:p-4">
+          <div className="bg-white rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 max-w-md w-full max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300 border-4 border-yellow-400 relative overflow-hidden text-center">
             {/* Glimmer background */}
             <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-orange-50 pointer-events-none" />
             <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-yellow-200/30 rounded-full blur-[60px]" />

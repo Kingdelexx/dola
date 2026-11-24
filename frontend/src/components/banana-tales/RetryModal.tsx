@@ -70,8 +70,8 @@ export const RetryModal: React.FC<RetryModalProps> = ({
   const config = getReasonConfig();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/65 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-[#FAF6EE] rounded-3xl p-6 md:p-8 border-4 border-[#D7CCC8] shadow-[0_20px_50px_rgba(38,50,56,0.35)] text-center text-[#263238] font-fredoka">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/65 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-[#FAF6EE] rounded-3xl p-5 sm:p-6 md:p-8 border-4 border-[#D7CCC8] shadow-[0_20px_50px_rgba(38,50,56,0.35)] text-center text-[#263238] font-fredoka">
         
         {/* Decorative Top Leaf/Hazard Badge */}
         <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider mb-3 shadow-xs border-b-2 ${config.badgeBg}`}>

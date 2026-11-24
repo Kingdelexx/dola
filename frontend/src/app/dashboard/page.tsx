@@ -121,7 +121,7 @@ export default function DashboardPage() {
   const isStage4Unlocked = (stage1Progress >= 80 && stage2Progress >= 11 && stage3Completed) || isAdminOrTeacher; // World 4 (App Studio) Locked
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-indigo-50 to-purple-100 text-slate-800 p-6 md:p-10 font-sans overflow-x-hidden" ref={containerRef}>
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-indigo-50 to-purple-100 text-slate-800 p-4 sm:p-6 md:p-10 font-sans overflow-x-hidden" ref={containerRef}>
       {/* Playful Background Elements */}
       <Star className="floating-star absolute top-20 right-[15%] text-yellow-400 w-12 h-12 opacity-60" />
       <Sparkles className="floating-star absolute bottom-32 left-[10%] text-pink-400 w-10 h-10 opacity-50" />
@@ -130,25 +130,25 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4 dash-element">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-10 gap-4 dash-element">
           <Link href="/" className="flex items-center bg-white px-5 py-2.5 rounded-full border-4 border-white shadow-[0_8px_0_rgba(0,0,0,0.05)] hover:translate-y-[-2px] transition-transform">
             <img src="/logo.png" alt="DolaCode Logo" className="w-[80px] h-auto object-contain" />
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
             {isPaidSubscriber && (
               <a
                 href="https://chat.whatsapp.com/JjgzmtZn7bJ2pwl4LdUCbO?s=cl&p=a&iam=2"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 px-4 py-2.5 rounded-full font-bold text-xs shadow-xs transition-all hover:scale-105"
+                className="flex items-center gap-1.5 sm:gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full font-bold text-xs shadow-xs transition-all hover:scale-105"
                 title="DolaCode Parents’ Community"
               >
-                <FaWhatsapp size={16} className="text-emerald-600" />
+                <FaWhatsapp size={16} className="text-emerald-600 shrink-0" />
                 <span>Parents’ Community</span>
               </a>
             )}
-            <button onClick={logout} className="flex items-center gap-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-500 border-2 border-slate-200 hover:border-red-200 px-6 py-3 rounded-full font-bold transition-all shadow-sm">
-              <LogOut size={20} /> Save &amp; Exit
+            <button onClick={logout} className="flex items-center gap-1.5 sm:gap-2 bg-white hover:bg-red-50 text-slate-600 hover:text-red-500 border-2 border-slate-200 hover:border-red-200 px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold transition-all shadow-sm text-xs sm:text-base">
+              <LogOut size={18} /> <span>Save &amp; Exit</span>
             </button>
           </div>
         </div>

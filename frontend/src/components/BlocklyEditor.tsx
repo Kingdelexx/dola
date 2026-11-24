@@ -964,7 +964,25 @@ export default function BlocklyEditor({
     };
     workspace.current.addChangeListener(onClickListener);
 
+    // Responsive resize handler for mobile and dynamic screen sizes
+    const handleResize = () => {
+      if (workspace.current) {
+        Blockly.svgResize(workspace.current);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && blocklyDiv.current) {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(blocklyDiv.current);
+    }
+
     return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) resizeObserver.disconnect();
       workspace.current?.removeChangeListener(onChange);
       workspace.current?.removeChangeListener(onClickListener);
     };
@@ -990,5 +1008,5 @@ export default function BlocklyEditor({
      
   }, [activeSpriteId]); // Only run when activeSpriteId changes
 
-  return <div ref={blocklyDiv} className="w-full h-[500px] border border-gray-300 rounded shadow-sm bg-white" />;
+  return <div ref={blocklyDiv} className="w-full h-[380px] sm:h-[450px] md:h-[500px] border border-gray-300 rounded shadow-sm bg-white" />;
 }

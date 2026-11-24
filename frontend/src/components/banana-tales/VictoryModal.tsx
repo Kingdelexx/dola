@@ -60,8 +60,8 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-[#FAF6EE] rounded-3xl p-6 md:p-8 border-4 border-[#D7CCC8] shadow-[0_20px_50px_rgba(38,50,56,0.3)] text-center text-[#263238] font-fredoka">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-[#FAF6EE] rounded-3xl p-5 sm:p-6 md:p-8 border-4 border-[#D7CCC8] shadow-[0_20px_50px_rgba(38,50,56,0.3)] text-center text-[#263238] font-fredoka">
         
         {/* Decorative Top Leaf Badge */}
         <div className="inline-flex items-center gap-2 bg-[#7CB342] text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3 shadow-sm border-b-2 border-[#558B2F]">

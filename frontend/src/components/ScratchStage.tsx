@@ -158,13 +158,13 @@ export default function ScratchStage({
   }, [engine, activeSpriteIdProp]);
 
   return (
-    <div className="w-full flex flex-col items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200 mt-4">
-      <div className="w-full flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
-        <h3 className="font-bold text-slate-600">Stage Display</h3>
+    <div className="w-full flex flex-col items-center bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mt-2 sm:mt-4">
+      <div className="w-full flex justify-between items-center mb-3 sm:mb-4 border-b border-slate-100 pb-2">
+        <h3 className="font-bold text-slate-600 text-sm sm:text-base">Stage Display</h3>
       </div>
       
       {/* 480x360 is the classic Scratch stage proportion */}
-      <div className="w-full max-w-[480px] mx-auto border-[4px] border-slate-200 rounded-lg overflow-hidden bg-white shadow-inner flex justify-center items-center aspect-[4/3]">
+      <div className="w-full max-w-[480px] mx-auto border-[3px] sm:border-[4px] border-slate-200 rounded-lg overflow-hidden bg-white shadow-inner flex justify-center items-center aspect-[4/3]">
         <canvas 
           ref={canvasRef} 
           width={480} 
