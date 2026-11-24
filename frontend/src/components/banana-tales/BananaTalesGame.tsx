@@ -252,13 +252,13 @@ export default function BananaTalesGame() {
                 </span>
               </div>
               <p className="text-[11px] font-medium text-[#8D6E63] hidden sm:block">
-                World 3 • 12-Level Python Curriculum (Stages 1–7 Guided, 8+ Pro Coder)
+                World 3 • 20-Level Python Curriculum (Stages 1–7 Guided, 8+ Pro Coder)
               </p>
             </div>
           </div>
         </div>
 
-        {/* Center: Level Selector Pills (Levels 1–12 with Pro Coder Stars) */}
+        {/* Center: Level Selector Pills (Levels 1–20 with Pro Coder Stars) */}
         <div className="flex items-center gap-1.5 bg-[#F5EFEB] p-1.5 rounded-2xl border-2 border-[#E0D7C6] max-w-[280px] sm:max-w-md md:max-w-xl overflow-x-auto scrollbar-none">
           {BANANA_LEVELS.map((lvl, idx) => {
             const isActive = idx === currentLevelIndex;

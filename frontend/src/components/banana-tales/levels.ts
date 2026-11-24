@@ -295,6 +295,226 @@ level12Grid[6][7] = 'bush';
 level12Grid[3][4] = 'bush';
 
 // -------------------------------------------------------------
+// Level 13: The Serpent's River (PRO CODER MODE - S-Curves)
+// Winding river bends. Teaches loop invariants and repeating S-turns. Optimal lines: 6.
+// -------------------------------------------------------------
+const level13Grid = createGrassGrid();
+for (let r = 0; r <= 3; r++) level13Grid[r][3] = 'water';
+for (let r = 2; r <= 5; r++) level13Grid[r][6] = 'water';
+
+level13Grid[1][1] = 'path';
+level13Grid[1][2] = 'path';
+level13Grid[1][4] = 'path';
+level13Grid[1][5] = 'path';
+level13Grid[2][5] = 'path';
+level13Grid[3][5] = 'path';
+level13Grid[3][7] = 'path';
+level13Grid[3][8] = 'path';
+level13Grid[4][8] = 'path';
+level13Grid[5][8] = 'path';
+level13Grid[5][7] = 'path';
+level13Grid[5][5] = 'path';
+
+level13Grid[0][1] = 'bush';
+level13Grid[0][5] = 'bush';
+level13Grid[2][2] = 'bush';
+level13Grid[4][6] = 'bush';
+level13Grid[6][8] = 'bush';
+level13Grid[6][4] = 'bush';
+level13Grid[0][3] = 'stone';
+level13Grid[5][3] = 'stone';
+
+// -------------------------------------------------------------
+// Level 14: Double Boulder Canyon (PRO CODER MODE - Hurdle Jumps)
+// Narrow canyon with 3 evenly-spaced boulders. Teaches hurdle rhythm loops. Optimal lines: 2.
+// -------------------------------------------------------------
+const level14Grid = createGrassGrid();
+for (let c = 1; c <= 8; c++) {
+  level14Grid[3][c] = 'path';
+  level14Grid[2][c] = 'bush';
+  level14Grid[4][c] = 'bush';
+}
+level14Grid[3][2] = 'stone'; // Boulder 1
+level14Grid[3][4] = 'stone'; // Boulder 2
+level14Grid[3][6] = 'stone'; // Boulder 3
+
+level14Grid[0][0] = 'bush';
+level14Grid[0][9] = 'bush';
+level14Grid[7][0] = 'bush';
+level14Grid[7][9] = 'bush';
+level14Grid[1][5] = 'stone';
+level14Grid[5][5] = 'stone';
+
+// -------------------------------------------------------------
+// Level 15: The Island Archipelago (PRO CODER MODE - Compass Steering)
+// 4 isolated islands separated by water. Teaches compass navigation and modular crossings. Optimal lines: 5.
+// -------------------------------------------------------------
+const level15Grid = createGrassGrid();
+for (let r = 0; r < 8; r++) {
+  level15Grid[r][3] = 'water';
+  level15Grid[r][4] = 'water';
+}
+for (let c = 0; c < 10; c++) {
+  level15Grid[3][c] = 'water';
+  level15Grid[4][c] = 'water';
+}
+// Island NW
+level15Grid[1][1] = 'path'; level15Grid[1][2] = 'path';
+level15Grid[2][1] = 'path'; level15Grid[2][2] = 'path';
+// Island NE
+level15Grid[1][5] = 'path'; level15Grid[1][6] = 'path';
+level15Grid[2][5] = 'path'; level15Grid[2][6] = 'path';
+// Island SE
+level15Grid[5][5] = 'path'; level15Grid[5][6] = 'path';
+level15Grid[6][5] = 'path'; level15Grid[6][6] = 'path';
+// Island SW
+level15Grid[5][1] = 'path'; level15Grid[5][2] = 'path';
+level15Grid[6][1] = 'path'; level15Grid[6][2] = 'path';
+
+level15Grid[0][2] = 'bush';
+level15Grid[0][5] = 'bush';
+level15Grid[7][2] = 'bush';
+level15Grid[7][5] = 'bush';
+
+// -------------------------------------------------------------
+// Level 16: The Stepping Pyramid (PRO CODER MODE - Symmetrical Stairs)
+// Ascend and descend an ancient jungle pyramid, then bridge the moat. Optimal lines: 7.
+// -------------------------------------------------------------
+const level16Grid = createGrassGrid();
+level16Grid[5][1] = 'path';
+level16Grid[5][2] = 'path';
+level16Grid[4][2] = 'path';
+level16Grid[4][3] = 'path';
+level16Grid[3][3] = 'path';
+level16Grid[3][4] = 'path'; // Peak!
+level16Grid[3][5] = 'path';
+level16Grid[4][5] = 'path';
+level16Grid[4][6] = 'path';
+level16Grid[5][6] = 'path';
+level16Grid[5][7] = 'path';
+level16Grid[5][8] = 'water'; // Moat
+level16Grid[5][9] = 'path'; // Altar
+
+level16Grid[6][2] = 'stone';
+level16Grid[6][3] = 'stone';
+level16Grid[6][4] = 'stone';
+level16Grid[6][5] = 'stone';
+level16Grid[6][6] = 'stone';
+level16Grid[2][4] = 'stone';
+level16Grid[1][1] = 'bush';
+level16Grid[1][7] = 'bush';
+level16Grid[6][9] = 'bush';
+level16Grid[4][8] = 'water';
+level16Grid[6][8] = 'water';
+
+// -------------------------------------------------------------
+// Level 17: The Temple Labyrinth (PRO CODER MODE - Pathfinding & Avoidance)
+// Navigate stone ruins avoiding dead ends and calculating exact distances. Optimal lines: 6.
+// -------------------------------------------------------------
+const level17Grid = createGrassGrid();
+for (let r = 1; r <= 6; r++) {
+  level17Grid[r][1] = 'path';
+  level17Grid[r][8] = 'path';
+}
+for (let c = 1; c <= 4; c++) level17Grid[1][c] = 'path';
+for (let r = 1; r <= 4; r++) level17Grid[r][4] = 'path';
+for (let c = 4; c <= 7; c++) level17Grid[4][c] = 'path';
+for (let r = 1; r <= 4; r++) level17Grid[r][7] = 'path';
+level17Grid[1][7] = 'path';
+level17Grid[1][8] = 'path';
+
+level17Grid[3][2] = 'stone';
+level17Grid[5][2] = 'stone';
+level17Grid[2][6] = 'stone';
+level17Grid[5][6] = 'stone';
+level17Grid[3][3] = 'bush';
+level17Grid[5][3] = 'bush';
+level17Grid[2][5] = 'bush';
+level17Grid[6][5] = 'bush';
+
+// -------------------------------------------------------------
+// Level 18: The Waterfall Gorge (PRO CODER MODE - Rock Jump & River Bridge Combo)
+// Jump over boulder onto the edge, bridge the gorge, and hurdle to safety. Optimal lines: 4.
+// -------------------------------------------------------------
+const level18Grid = createGrassGrid();
+for (let r = 0; r < 8; r++) {
+  level18Grid[r][4] = 'water';
+  level18Grid[r][5] = 'water';
+}
+level18Grid[3][1] = 'path';
+level18Grid[3][2] = 'stone'; // Boulder 1 to leap!
+level18Grid[3][3] = 'path';
+level18Grid[3][6] = 'path'; // Middle island
+level18Grid[3][7] = 'stone'; // Boulder 2 to leap!
+level18Grid[3][8] = 'path';
+
+level18Grid[2][1] = 'bush';
+level18Grid[4][1] = 'bush';
+level18Grid[2][3] = 'bush';
+level18Grid[4][3] = 'bush';
+level18Grid[2][6] = 'bush';
+level18Grid[4][6] = 'bush';
+level18Grid[2][8] = 'bush';
+level18Grid[4][8] = 'bush';
+
+// -------------------------------------------------------------
+// Level 19: The Great Jungle Circuit (PRO CODER MODE - Perimeter Loop)
+// Outer circuit with 180-degree rotational symmetry and hurdle jumps. Optimal lines: 5.
+// -------------------------------------------------------------
+const level19Grid = createGrassGrid();
+for (let c = 1; c <= 8; c++) {
+  level19Grid[1][c] = 'path';
+  level19Grid[6][c] = 'path';
+}
+for (let r = 1; r <= 6; r++) {
+  level19Grid[r][1] = 'path';
+  level19Grid[r][8] = 'path';
+}
+level19Grid[1][4] = 'stone'; // Top hurdle
+level19Grid[6][5] = 'stone'; // Bottom hurdle
+
+// Central jungle lagoon
+for (let r = 3; r <= 4; r++) {
+  for (let c = 3; c <= 6; c++) {
+    level19Grid[r][c] = 'water';
+  }
+}
+level19Grid[0][1] = 'bush';
+level19Grid[0][8] = 'bush';
+level19Grid[7][1] = 'bush';
+level19Grid[7][8] = 'bush';
+
+// -------------------------------------------------------------
+// Level 20: The Golden Temple Finale (MASTER GRAND FINALE)
+// The ultimate test: bridge wide river, leap sacred boulder, navigate terrace to the Golden Throne! Optimal lines: 6.
+// -------------------------------------------------------------
+const level20Grid = createGrassGrid();
+for (let r = 1; r <= 6; r++) level20Grid[r][3] = 'water';
+level20Grid[5][5] = 'water'; // Sacred pool
+
+level20Grid[1][1] = 'path';
+level20Grid[1][2] = 'path';
+level20Grid[2][2] = 'path'; // Outer terrace
+level20Grid[2][4] = 'path';
+level20Grid[2][5] = 'path';
+level20Grid[2][6] = 'stone'; // Sacred boulder
+level20Grid[2][7] = 'path'; // Temple courtyard
+level20Grid[3][7] = 'path';
+level20Grid[4][7] = 'path';
+level20Grid[5][7] = 'path';
+level20Grid[5][6] = 'path';
+level20Grid[5][4] = 'path'; // Golden Throne!
+
+level20Grid[0][2] = 'stone';
+level20Grid[0][7] = 'stone';
+level20Grid[6][3] = 'stone';
+level20Grid[6][7] = 'stone';
+level20Grid[1][5] = 'bush';
+level20Grid[3][5] = 'bush';
+level20Grid[0][0] = 'bush';
+level20Grid[7][9] = 'bush';
+
+// -------------------------------------------------------------
 // Complete Banana Tales Curriculum (12 Levels)
 // -------------------------------------------------------------
 export const BANANA_LEVELS: BananaLevel[] = [
@@ -538,5 +758,171 @@ for i in range(4):
       { id: 'b12-4', x: 2, y: 3 }
     ],
     hint: 'Use everything you learned! Step 1, bridge.extend(1), step 2, monkey.jump(), step 2 (banana 1), turn right, step 4 (banana 2), turn right, step 2, bridge.extend(1), step 3 (banana 3), turn right, step 2 (banana 4)!'
+  },
+  {
+    id: 13,
+    title: "Level 13: The Serpent's River",
+    subtitle: '⭐ Pro Coder Challenge (S-Curve Loops)',
+    optimalLines: 6,
+    starterCode: `# Level 13: The Serpent's River [PRO CODER MODE]
+# MISSION: Bridge the winding river bends and follow the S-curve
+# to harvest all 3 golden bananas!
+# (Type your own Python code below):
+
+`,
+    grid: level13Grid,
+    monkeyStart: { x: 2, y: 1, dir: 'right' },
+    bananas: [
+      { id: 'b13-1', x: 4, y: 1 },
+      { id: 'b13-2', x: 7, y: 3 },
+      { id: 'b13-3', x: 5, y: 5 }
+    ],
+    hint: 'Extend 1 bridge across River 1, step 3 to grab banana 1, turn down, step 2, turn right, extend 1 bridge, step 3 to banana 2, turn down, step 2, turn left, step 1, extend 1 bridge, and step 2 to banana 3!'
+  },
+  {
+    id: 14,
+    title: 'Level 14: Double Boulder Canyon',
+    subtitle: '⭐ Pro Coder Challenge (Hurdle Rhythm)',
+    optimalLines: 2,
+    starterCode: `# Level 14: Double Boulder Canyon [PRO CODER MODE]
+# MISSION: Leap over the triple boulder gauntlet in sequence!
+# HINT: Notice how evenly spaced the boulders are — a for-loop can hurdle them all!
+# (Type your own Python code below):
+
+`,
+    grid: level14Grid,
+    monkeyStart: { x: 1, y: 3, dir: 'right' },
+    bananas: [
+      { id: 'b14-1', x: 3, y: 3 },
+      { id: 'b14-2', x: 5, y: 3 },
+      { id: 'b14-3', x: 7, y: 3 }
+    ],
+    hint: 'Each boulder is cleared with monkey.jump()! Try writing a loop: for i in range(3): with monkey.jump() inside to clear all 3 boulders in just 2 lines of code!'
+  },
+  {
+    id: 15,
+    title: 'Level 15: The Island Archipelago',
+    subtitle: '⭐ Pro Coder Challenge (Compass Steering)',
+    optimalLines: 5,
+    starterCode: `# Level 15: The Island Archipelago [PRO CODER MODE]
+# MISSION: Cross 4 separate islands in a clockwise expedition!
+# Bridge 2 water tiles to each island and steer with compass precision.
+# (Type your own Python code below):
+
+`,
+    grid: level15Grid,
+    monkeyStart: { x: 2, y: 2, dir: 'right' },
+    bananas: [
+      { id: 'b15-1', x: 5, y: 2 },
+      { id: 'b15-2', x: 5, y: 5 },
+      { id: 'b15-3', x: 2, y: 5 }
+    ],
+    hint: 'Extend a 2-tile bridge with bridge.extend(2), step 3 to Island 1, turn down, extend 2 planks, step 3 to Island 2, turn left, extend 2 planks, and step 3 to Island 3!'
+  },
+  {
+    id: 16,
+    title: 'Level 16: The Stepping Pyramid',
+    subtitle: '⭐ Pro Coder Challenge (Symmetrical Stairs)',
+    optimalLines: 7,
+    starterCode: `# Level 16: The Stepping Pyramid [PRO CODER MODE]
+# MISSION: Ascend the ancient pyramid stairs, claim the peak banana,
+# descend the other side, bridge the sacred moat, and reach the altar!
+# (Type your own Python code below):
+
+`,
+    grid: level16Grid,
+    monkeyStart: { x: 1, y: 5, dir: 'right' },
+    bananas: [
+      { id: 'b16-1', x: 2, y: 4 },
+      { id: 'b16-2', x: 4, y: 3 },
+      { id: 'b16-3', x: 6, y: 5 },
+      { id: 'b16-4', x: 9, y: 5 }
+    ],
+    hint: 'Climb with: step 1, turn up, step 1, turn right, step 1, turn up, step 1, turn right, step 1 (peak!). Then descend: turn down, step 1, turn right, step 1, turn down, step 1, turn right, step 1. Finally, bridge.extend(1) and step 2 to the altar!'
+  },
+  {
+    id: 17,
+    title: 'Level 17: The Temple Labyrinth',
+    subtitle: '⭐ Pro Coder Challenge (Pathfinding & Planning)',
+    optimalLines: 6,
+    starterCode: `# Level 17: The Temple Labyrinth [PRO CODER MODE]
+# MISSION: Navigate the ancient stone ruins without hitting dead ends!
+# Count your tile steps before every turn to harvest all 4 bananas.
+# (Type your own Python code below):
+
+`,
+    grid: level17Grid,
+    monkeyStart: { x: 1, y: 6, dir: 'up' },
+    bananas: [
+      { id: 'b17-1', x: 1, y: 1 },
+      { id: 'b17-2', x: 4, y: 4 },
+      { id: 'b17-3', x: 7, y: 1 },
+      { id: 'b17-4', x: 8, y: 6 }
+    ],
+    hint: 'Step 5 up to banana 1, turn right, step 3, turn down, step 3 to banana 2, turn right, step 3, turn up, step 3 to banana 3, turn right, step 1, turn down, and step 5 to banana 4!'
+  },
+  {
+    id: 18,
+    title: 'Level 18: The Waterfall Gorge',
+    subtitle: '⭐ Pro Coder Challenge (Dual Element Combo)',
+    optimalLines: 4,
+    starterCode: `# Level 18: The Waterfall Gorge [PRO CODER MODE]
+# MISSION: Leap over the boulder right onto the riverbank,
+# bridge the rushing 2-tile waterfall, and hurdle to the final sanctuary!
+# (Type your own Python code below):
+
+`,
+    grid: level18Grid,
+    monkeyStart: { x: 1, y: 3, dir: 'right' },
+    bananas: [
+      { id: 'b18-1', x: 3, y: 3 },
+      { id: 'b18-2', x: 6, y: 3 },
+      { id: 'b18-3', x: 8, y: 3 }
+    ],
+    hint: 'Jump the boulder with monkey.jump(), extend a 2-tile bridge with bridge.extend(2), step 3 forward to the island, and jump the final boulder with monkey.jump()!'
+  },
+  {
+    id: 19,
+    title: 'Level 19: The Great Jungle Circuit',
+    subtitle: '⭐ Pro Coder Challenge (Perimeter Circuit)',
+    optimalLines: 5,
+    starterCode: `# Level 19: The Great Jungle Circuit [PRO CODER MODE]
+# MISSION: Run the complete jungle perimeter circuit!
+# Leap both straightaway boulders and collect bananas on all four corners.
+# (Type your own Python code below):
+
+`,
+    grid: level19Grid,
+    monkeyStart: { x: 1, y: 1, dir: 'right' },
+    bananas: [
+      { id: 'b19-1', x: 5, y: 1 },
+      { id: 'b19-2', x: 8, y: 4 },
+      { id: 'b19-3', x: 4, y: 6 },
+      { id: 'b19-4', x: 1, y: 3 }
+    ],
+    hint: 'Top straight: step 2, jump, step 3. Right: turn down, step 5. Bottom: turn left, step 2, jump, step 3. Left: turn up, step 5!'
+  },
+  {
+    id: 20,
+    title: 'Level 20: The Golden Temple Finale',
+    subtitle: '👑 Grand Master Challenge (The Sacred Throne)',
+    optimalLines: 6,
+    starterCode: `# Level 20: The Golden Temple Finale [GRAND MASTER CHALLENGE]
+# MISSION: Conquer the ultimate Banana Tales challenge!
+# Bridge the sacred river, jump the altar boulder, and navigate
+# through the inner courtyard to claim the Master Golden Throne!
+# (Type your own Python code below):
+
+`,
+    grid: level20Grid,
+    monkeyStart: { x: 1, y: 1, dir: 'right' },
+    bananas: [
+      { id: 'b20-1', x: 2, y: 2 },
+      { id: 'b20-2', x: 5, y: 2 },
+      { id: 'b20-3', x: 7, y: 2 },
+      { id: 'b20-4', x: 7, y: 5 },
+      { id: 'b20-5', x: 4, y: 5 }
+    ],
+    hint: 'Step 1, turn down, step 1 (banana 1), turn right, bridge.extend(1), step 3 (banana 2), monkey.jump() (banana 3), turn down, step 3 (banana 4), turn left, step 1, bridge.extend(1), step 2 to the Golden Throne (banana 5)!'
   }
 ];

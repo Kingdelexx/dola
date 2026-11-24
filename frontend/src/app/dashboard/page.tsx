@@ -415,7 +415,7 @@ export default function DashboardPage() {
                   </div>
                 )}
                 <p className="text-slate-500 font-semibold leading-relaxed text-xs flex-1">
-                  Storybook Python coding adventure inspired by Banana Tales! Code your monkey friend through 5 jungle levels, wooden bridges, and loops to collect golden bananas!
+                  Storybook Python coding adventure inspired by Banana Tales! Code your monkey friend through 20 jungle levels, wooden bridges, hurdles, and loops to collect golden bananas!
                 </p>
                 <div className="mt-4 bg-[#FF9800] text-white w-full py-2.5 rounded-xl font-black text-base shadow-[0_4px_0_#E65100] group-hover:bg-[#FFA726] transition-colors">Play Banana Tales</div>
               </Link>
