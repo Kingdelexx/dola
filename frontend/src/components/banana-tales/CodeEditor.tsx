@@ -28,8 +28,17 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
     insertSnippet: (snippet: string) => {
       if (!textareaRef.current) return;
       const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
+      const isFocused = typeof document !== 'undefined' && document.activeElement === textarea;
+
+      let start = textarea.selectionStart;
+      let end = textarea.selectionEnd;
+
+      // On mobile or when textarea is not currently focused, selectionStart is often 0 or undefined.
+      // In that case, append cleanly to the end of the existing code.
+      if (!isFocused || start === null || start === undefined || (start === 0 && end === 0 && value.trim().length > 0)) {
+        start = value.length;
+        end = value.length;
+      }
 
       const before = value.substring(0, start);
       const after = value.substring(end);
@@ -42,13 +51,18 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
       const updated = before + toInsert + after;
       onChange(updated);
 
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-          const newPos = start + toInsert.length;
-          textareaRef.current.setSelectionRange(newPos, newPos);
-        }
-      }, 10);
+      // Only re-focus if it was ALREADY focused before tapping (e.g. desktop keyboard workflow).
+      // On mobile touchscreens, avoiding auto-refocus prevents the virtual keyboard from abruptly
+      // popping up and shifting the entire viewport when the user taps helper chips.
+      if (isFocused) {
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+            const newPos = start + toInsert.length;
+            textareaRef.current.setSelectionRange(newPos, newPos);
+          }
+        }, 10);
+      }
     },
     focus: () => {
       textareaRef.current?.focus();
@@ -141,10 +155,13 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
   };
 
   return (
-    <div className="relative flex-1 flex h-full bg-[#FFFDF9] rounded-2xl border-2 border-[#D7CCC8] shadow-inner overflow-hidden font-jetbrains">
+    <div 
+      onClick={() => textareaRef.current?.focus()}
+      className="relative flex-1 flex h-full min-h-[220px] sm:min-h-[260px] md:min-h-0 bg-[#FFFDF9] rounded-2xl border-2 border-[#D7CCC8] shadow-inner overflow-hidden font-jetbrains cursor-text select-text"
+    >
       {/* Line Numbers Gutter */}
       <div 
-        className="w-12 py-3 bg-[#FAF6EE] border-r-2 border-[#E0D7C6] select-none text-right pr-2 text-xs font-bold text-[#8D6E63] shrink-0"
+        className="w-10 sm:w-12 py-3 bg-[#FAF6EE] border-r-2 border-[#E0D7C6] select-none text-right pr-2 text-xs font-bold text-[#8D6E63] shrink-0"
         aria-hidden="true"
       >
         {lines.map((_, idx) => {
@@ -169,7 +186,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
       </div>
 
       {/* Editor Body: Overlay Highlighter behind transparent Textarea */}
-      <div className="relative flex-1 h-full overflow-hidden">
+      <div className="relative flex-1 h-full overflow-hidden select-text">
         {/* Active Line Glow Row Layer */}
         <div 
           ref={activeLineBgRef}
@@ -201,17 +218,17 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           })}
         </div>
 
-        {/* Syntax Highlight Mirror */}
+        {/* Syntax Highlight Mirror (desktop view: rich Python colors) */}
         <pre
           ref={highlightRef}
           aria-hidden="true"
-          className="absolute inset-0 p-3 m-0 font-jetbrains text-sm leading-6 whitespace-pre overflow-hidden pointer-events-none text-[#263238] z-10"
+          className="hidden md:block absolute inset-0 p-3 m-0 font-jetbrains text-sm leading-6 whitespace-pre overflow-hidden pointer-events-none text-[#263238] z-10"
           dangerouslySetInnerHTML={{
             __html: lines.map(line => highlightPythonLine(line) || '&nbsp;').join('\n')
           }}
         />
 
-        {/* Real Interactive Textarea */}
+        {/* Real Interactive Textarea: Crisp visible text on mobile, transparent over highlighter on desktop */}
         <textarea
           ref={textareaRef}
           value={value}
@@ -224,7 +241,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           autoComplete="off"
           autoCorrect="off"
           wrap="off"
-          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-transparent caret-[#263238] focus:outline-none selection:bg-amber-200 selection:text-amber-950 z-20 whitespace-pre overflow-auto"
+          className="absolute inset-0 w-full h-full p-3 m-0 font-jetbrains text-sm leading-6 resize-none bg-transparent text-[#263238] md:text-transparent caret-[#263238] focus:outline-none selection:bg-amber-200 selection:text-amber-950 z-20 whitespace-pre overflow-auto select-text touch-manipulation cursor-text"
           placeholder="# Type your Python code here..."
         />
       </div>

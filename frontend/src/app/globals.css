@@ -123,6 +123,9 @@ img, svg, video, canvas {
   border-style: solid;
   transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.1s ease, border-bottom-width 0.1s ease;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 }
 
@@ -193,6 +196,9 @@ img, svg, video, canvas {
   padding: 0.35rem 0.8rem;
   transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 }
 .chip-command:hover {

@@ -79,7 +79,11 @@ export default function BananaTalesGame() {
 
   const handleInsertSnippet = (snippet: string) => {
     SoundFX.playFootstep();
-    editorRef.current?.insertSnippet(snippet);
+    if (editorRef.current) {
+      editorRef.current.insertSnippet(snippet);
+    } else {
+      setCode(prev => (prev ? (prev.endsWith('\n') ? prev + snippet : prev + '\n' + snippet) : snippet));
+    }
   };
 
   const handleToggleMute = () => {
@@ -208,12 +212,12 @@ export default function BananaTalesGame() {
   const currentLevelEarnedStars = levelStars[currentLevel.id] || 0;
 
   return (
-    <div className="flex flex-col min-h-screen md:h-screen w-full overflow-y-auto md:overflow-hidden bg-[#F5EFEB] text-[#263238] font-fredoka select-none">
+    <div className="flex flex-col min-h-screen md:h-screen w-full overflow-x-hidden overflow-y-auto md:overflow-hidden bg-[#F5EFEB] text-[#263238] font-fredoka pb-10 md:pb-0">
       
       {/* ==============================================================
           TOP BAR: Game Title, Level Selector Pills, 3-Star Score Indicator, Sound Mute
           ============================================================== */}
-      <header className="h-14 md:h-16 px-3 sm:px-4 md:px-6 bg-[#FAF6EE] border-b-2 border-[#D7CCC8] shadow-sm flex items-center justify-between shrink-0 z-20">
+      <header className="h-14 md:h-16 px-3 sm:px-4 md:px-6 bg-[#FAF6EE] border-b-2 border-[#D7CCC8] shadow-sm flex items-center justify-between shrink-0 z-20 select-none">
         
         {/* Left: Back to Dashboard & Game Title */}
         <div className="flex items-center gap-2 sm:gap-3">
@@ -354,7 +358,7 @@ export default function BananaTalesGame() {
       </header>
 
       {/* Mobile-Only Level Selector Strip */}
-      <div className="md:hidden flex items-center gap-1.5 px-3 py-2 bg-[#FAF6EE] border-b-2 border-[#D7CCC8] overflow-x-auto scrollbar-none shrink-0 z-10 shadow-inner">
+      <div className="md:hidden flex items-center gap-1.5 px-3 py-2 bg-[#FAF6EE] border-b-2 border-[#D7CCC8] overflow-x-auto scrollbar-none shrink-0 z-10 shadow-inner select-none">
         {BANANA_LEVELS.map((lvl, idx) => {
           const isActive = idx === currentLevelIndex;
           const stars = levelStars[lvl.id] || 0;
@@ -410,7 +414,7 @@ export default function BananaTalesGame() {
         {/* ============================================================
             LEFT PANEL: 60fps HTML5 Canvas Game Stage
             ============================================================ */}
-        <section className="w-full md:w-[55%] h-[320px] sm:h-[390px] md:h-full shrink-0 flex flex-col bg-[#FAF6EE] rounded-2xl sm:rounded-3xl border-2 border-[#D7CCC8] shadow-sm overflow-hidden">
+        <section className="w-full md:w-[55%] h-[320px] sm:h-[390px] md:h-full shrink-0 flex flex-col bg-[#FAF6EE] rounded-2xl sm:rounded-3xl border-2 border-[#D7CCC8] shadow-sm overflow-hidden select-none">
           
           {/* Canvas Sub-Header */}
           <div className="h-9 sm:h-11 px-3 sm:px-4 border-b-2 border-[#E0D7C6] bg-[#FAF6EE] flex items-center justify-between shrink-0">
@@ -448,10 +452,10 @@ export default function BananaTalesGame() {
         {/* ============================================================
             RIGHT PANEL: Python Code Editor & Command Reference
             ============================================================ */}
-        <section className="w-full md:w-[45%] min-h-[480px] md:min-h-0 md:h-full shrink-0 flex flex-col bg-[#FAF6EE] rounded-2xl sm:rounded-3xl border-2 border-[#D7CCC8] shadow-sm overflow-hidden">
+        <section className="w-full md:w-[45%] min-h-[460px] md:min-h-0 md:h-full shrink-0 flex flex-col bg-[#FAF6EE] rounded-2xl sm:rounded-3xl border-2 border-[#D7CCC8] shadow-sm overflow-visible md:overflow-hidden">
           
           {/* Code Editor Header */}
-          <div className="h-9 sm:h-11 px-3 sm:px-4 border-b-2 border-[#E0D7C6] bg-[#FAF6EE] flex items-center justify-between shrink-0">
+          <div className="h-9 sm:h-11 px-3 sm:px-4 border-b-2 border-[#E0D7C6] bg-[#FAF6EE] flex items-center justify-between shrink-0 select-none">
             <div className="flex items-center gap-2 truncate">
               <span className="text-xs font-bold uppercase tracking-wider text-[#5D4037]">
                 Python Code Editor
@@ -479,7 +483,7 @@ export default function BananaTalesGame() {
           </div>
 
           {/* Line-Numbered Editor Area with Real-Time Active Line Highlight */}
-          <div className="flex-1 p-2 sm:p-3 overflow-hidden flex flex-col min-h-0">
+          <div className="flex-1 min-h-[220px] sm:min-h-[260px] md:min-h-0 p-2 sm:p-3 flex flex-col">
             <CodeEditor
               ref={editorRef}
               value={code}
@@ -501,7 +505,7 @@ export default function BananaTalesGame() {
               KID-FRIENDLY "JUNGLE GUIDE" SPEECH BUBBLE BENEATH EDITOR
               ========================================================== */}
           {jungleGuideAdvice && (
-            <div className="mx-3 mb-2 p-3 bg-[#FFFDF9] rounded-2xl border-2 border-[#FFB74D] shadow-sm flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2">
+            <div className="mx-3 mb-2 p-3 bg-[#FFFDF9] rounded-2xl border-2 border-[#FFB74D] shadow-sm flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 select-none">
               {/* Cute Vector Monkey Guide Avatar */}
               <div className="w-10 h-10 rounded-2xl bg-[#FFE0B2] border-2 border-[#FF9800] flex items-center justify-center shrink-0 shadow-xs">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -527,8 +531,9 @@ export default function BananaTalesGame() {
                     </span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setJungleGuideAdvice(null)}
-                    className="text-[#8D6E63] hover:text-[#263238] text-xs font-bold"
+                    className="text-[#8D6E63] hover:text-[#263238] text-xs font-bold p-1 touch-manipulation cursor-pointer"
                   >
                     ✕
                   </button>
@@ -542,19 +547,23 @@ export default function BananaTalesGame() {
 
           {/* "Command Reference" Helper Bar at Bottom */}
           <div className="p-2.5 sm:p-3 bg-[#F5EFEB] border-t-2 border-[#E0D7C6] shrink-0">
-            <div className="text-[11px] font-bold text-[#8D6E63] uppercase tracking-wider mb-1.5 sm:mb-2 flex items-center justify-between">
-              <span>Command Reference (Click to insert at cursor)</span>
+            <div className="text-[11px] font-bold text-[#8D6E63] uppercase tracking-wider mb-1.5 sm:mb-2 flex items-center justify-between select-none">
+              <span>Command Reference (Click to insert)</span>
               <span className="text-[10px] text-[#7CB342] font-semibold hidden sm:inline">Skulpt Python 3</span>
             </div>
 
-            {/* Clickable Command Reference Chips */}
-            <div className="flex flex-wrap gap-1 sm:gap-1.5 max-h-20 sm:max-h-24 overflow-y-auto no-scrollbar pb-1">
+            {/* Clickable Command Reference Chips: Never overflow-clipped on mobile */}
+            <div className="flex flex-wrap gap-1.5 max-h-none md:max-h-28 overflow-visible md:overflow-y-auto no-scrollbar pb-1">
               {commandChips.map((chip, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleInsertSnippet(chip.snippet)}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleInsertSnippet(chip.snippet);
+                  }}
                   disabled={isRunning || isExecutingPython}
-                  className="chip-command text-xs py-1 px-2 sm:px-2.5"
+                  className="chip-command touch-manipulation min-h-[36px] text-xs sm:text-sm py-1.5 px-2.5 sm:px-3 active:scale-95 transition-all select-none cursor-pointer"
                   title={`Insert ${chip.snippet}`}
                 >
                   {chip.label}
@@ -564,13 +573,17 @@ export default function BananaTalesGame() {
 
             {/* Chunky RUN / RESET Physical Arcade Buttons */}
             <div className="mt-2.5 sm:mt-3 flex items-center gap-2.5 sm:gap-3 pt-2 border-t border-[#E0D7C6]">
-              {/* RUN BUTTON: Juicy Mango-Orange */}
+              {/* RUN BUTTON: Juicy Mango-Orange with high-priority touch response */}
               <button
-                onClick={handleRunCode}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleRunCode();
+                }}
                 disabled={isRunning || isExecutingPython}
-                className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl sm:rounded-2xl btn-arcade btn-arcade-mango text-xs sm:text-sm md:text-base font-bold flex items-center justify-center gap-2"
+                className="flex-1 py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl btn-arcade btn-arcade-mango touch-manipulation min-h-[48px] text-sm sm:text-base font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform select-none cursor-pointer shadow-md"
               >
-                <Play size={17} className={(isRunning || isExecutingPython) ? 'animate-spin' : 'fill-white'} />
+                <Play size={18} className={(isRunning || isExecutingPython) ? 'animate-spin' : 'fill-white'} />
                 <span>
                   {isExecutingPython ? 'COMPILING PYTHON...' : isRunning ? 'RUNNING...' : 'RUN CODE'}
                 </span>
@@ -578,11 +591,15 @@ export default function BananaTalesGame() {
 
               {/* RESET BUTTON: Tactile Warm Cream / Slate */}
               <button
-                onClick={handleReset}
-                className="py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl sm:rounded-2xl btn-arcade btn-arcade-parchment text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-[#5D4037]"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleReset();
+                }}
+                className="py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl sm:rounded-2xl btn-arcade btn-arcade-parchment touch-manipulation min-h-[48px] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-[#5D4037] active:scale-[0.98] transition-transform select-none cursor-pointer"
                 title="Reset Level"
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={17} />
                 <span>RESET</span>
               </button>
             </div>
