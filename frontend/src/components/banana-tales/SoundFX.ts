@@ -271,4 +271,80 @@ export class SoundFX {
       osc2.stop(startTime + note.dur + 0.05);
     });
   }
+
+  /**
+   * 6. Splash & bubbling plop when monkey falls into water.
+   * Synthesizes white noise splash transient followed by downward bubbling sine plop and defeat wah.
+   */
+  public static playWaterSplash(): void {
+    if (this.isMuted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const t = ctx.currentTime;
+
+    // 1. Water splash noise burst
+    try {
+      const bufferSize = Math.floor(ctx.sampleRate * 0.25);
+      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = ctx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+
+      const noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.setValueAtTime(1100, t);
+      noiseFilter.frequency.exponentialRampToValueAtTime(350, t + 0.22);
+      noiseFilter.Q.setValueAtTime(2.5, t);
+
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.001, t);
+      noiseGain.gain.linearRampToValueAtTime(0.35, t + 0.015);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+
+      whiteNoise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      whiteNoise.start(t);
+      whiteNoise.stop(t + 0.25);
+    } catch {
+      // Fallback if audio buffer fails
+    }
+
+    // 2. Water plop droplet (downward sine plunge)
+    const plop = ctx.createOscillator();
+    const plopGain = ctx.createGain();
+    plop.type = 'sine';
+    plop.frequency.setValueAtTime(480, t + 0.02);
+    plop.frequency.exponentialRampToValueAtTime(120, t + 0.28);
+
+    plopGain.gain.setValueAtTime(0.001, t + 0.02);
+    plopGain.gain.linearRampToValueAtTime(0.28, t + 0.04);
+    plopGain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+
+    plop.connect(plopGain);
+    plopGain.connect(ctx.destination);
+    plop.start(t + 0.02);
+    plop.stop(t + 0.3);
+
+    // 3. Followup cartoon sad wah-wah defeat note
+    const defeatOsc = ctx.createOscillator();
+    const defeatGain = ctx.createGain();
+    defeatOsc.type = 'triangle';
+    defeatOsc.frequency.setValueAtTime(240, t + 0.3);
+    defeatOsc.frequency.exponentialRampToValueAtTime(130, t + 0.65);
+
+    defeatGain.gain.setValueAtTime(0.001, t + 0.3);
+    defeatGain.gain.linearRampToValueAtTime(0.18, t + 0.35);
+    defeatGain.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+
+    defeatOsc.connect(defeatGain);
+    defeatGain.connect(ctx.destination);
+    defeatOsc.start(t + 0.3);
+    defeatOsc.stop(t + 0.72);
+  }
 }

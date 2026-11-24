@@ -506,10 +506,29 @@ export class SpriteRenderer {
     animTime: number,
     isWalking: boolean,
     isJumping: boolean,
-    speechBubble?: string | null
+    speechBubble?: string | null,
+    isDrowning: boolean = false,
+    drownProgress: number = 0
   ): void {
     const cx = x + size / 2;
     const cy = y + size / 2;
+
+    // Water ripple ring effect when drowning
+    if (isDrowning) {
+      const rippleRadius = size * 0.45 * (0.6 + drownProgress * 0.7);
+      ctx.strokeStyle = `rgba(179, 229, 252, ${Math.max(0, 1 - drownProgress)})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.ellipse(cx, y + size - 8, rippleRadius, rippleRadius * 0.4, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const rippleRadius2 = rippleRadius * 0.65;
+      ctx.strokeStyle = `rgba(224, 247, 250, ${Math.max(0, 0.8 - drownProgress)})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.ellipse(cx, y + size - 8, rippleRadius2, rippleRadius2 * 0.4, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
 
     // Walking / jumping vertical bob
     const walkBob = isWalking ? Math.abs(Math.sin(animTime * 14)) * 6 : 0;
@@ -527,8 +546,14 @@ export class SpriteRenderer {
     ctx.fill();
 
     ctx.save();
-    ctx.translate(cx, cy + totalBob);
+    const sinkOffset = isDrowning ? drownProgress * size * 0.45 : 0;
+    const sinkScale = isDrowning ? Math.max(0.1, 1 - drownProgress * 0.55) : 1;
+    ctx.translate(cx, cy + totalBob + sinkOffset);
     ctx.scale(1, breathScale);
+
+    if (isDrowning) {
+      ctx.globalAlpha = Math.max(0, 1 - drownProgress * 0.85);
+    }
 
     // Directional orientation handling
     const isFacingLeft = dir === 'left';
@@ -536,7 +561,7 @@ export class SpriteRenderer {
     const isFacingDown = dir === 'down';
     const flipX = isFacingLeft ? -1 : 1;
 
-    ctx.scale(flipX, 1);
+    ctx.scale(flipX * sinkScale, sinkScale);
 
     // 1. Monkey Tail (animated curly spring tail behind body)
     const tailWiggle = Math.sin(animTime * 6) * 4;
@@ -634,40 +659,73 @@ export class SpriteRenderer {
       ctx.ellipse(faceShiftX, -5, 10, 8, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Big Expressive Dark Eyes
+      // Eye Spacing
       const eyeSpacing = isFacingDown ? 6 : 5;
-      const eyeRadius = 3.5;
 
-      ctx.fillStyle = '#263238';
-      // Left eye
-      ctx.beginPath();
-      ctx.arc(faceShiftX - eyeSpacing, -11, eyeRadius, 0, Math.PI * 2);
-      ctx.fill();
-      // Right eye
-      ctx.beginPath();
-      ctx.arc(faceShiftX + eyeSpacing, -11, eyeRadius, 0, Math.PI * 2);
-      ctx.fill();
+      if (isDrowning && drownProgress > 0.15) {
+        // Dizzy X_X eyes when drowning/sunk in water
+        ctx.strokeStyle = '#263238';
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = 'round';
+        // Left X eye
+        ctx.beginPath();
+        ctx.moveTo(faceShiftX - eyeSpacing - 3, -14);
+        ctx.lineTo(faceShiftX - eyeSpacing + 3, -8);
+        ctx.moveTo(faceShiftX - eyeSpacing + 3, -14);
+        ctx.lineTo(faceShiftX - eyeSpacing - 3, -8);
+        ctx.stroke();
+        // Right X eye
+        ctx.beginPath();
+        ctx.moveTo(faceShiftX + eyeSpacing - 3, -14);
+        ctx.lineTo(faceShiftX + eyeSpacing + 3, -8);
+        ctx.moveTo(faceShiftX + eyeSpacing + 3, -14);
+        ctx.lineTo(faceShiftX - eyeSpacing - 3, -8);
+        ctx.stroke();
 
-      // Glossy Eye Highlights
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.arc(faceShiftX - eyeSpacing - 1, -12, 1.3, 0, Math.PI * 2);
-      ctx.arc(faceShiftX + eyeSpacing - 1, -12, 1.3, 0, Math.PI * 2);
-      ctx.fill();
+        // Dizzy wavy mouth
+        ctx.strokeStyle = '#4E342E';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(faceShiftX - 4, -4);
+        ctx.lineTo(faceShiftX - 1, -2);
+        ctx.lineTo(faceShiftX + 2, -5);
+        ctx.lineTo(faceShiftX + 4, -3);
+        ctx.stroke();
+      } else {
+        // Big Expressive Dark Eyes
+        const eyeRadius = 3.5;
 
-      // Snout Nostrils & Cheerful Mouth
-      ctx.fillStyle = '#5D4037';
-      ctx.beginPath();
-      ctx.arc(faceShiftX - 2, -6, 1.1, 0, Math.PI * 2);
-      ctx.arc(faceShiftX + 2, -6, 1.1, 0, Math.PI * 2);
-      ctx.fill();
+        ctx.fillStyle = '#263238';
+        // Left eye
+        ctx.beginPath();
+        ctx.arc(faceShiftX - eyeSpacing, -11, eyeRadius, 0, Math.PI * 2);
+        ctx.fill();
+        // Right eye
+        ctx.beginPath();
+        ctx.arc(faceShiftX + eyeSpacing, -11, eyeRadius, 0, Math.PI * 2);
+        ctx.fill();
 
-      // Smile
-      ctx.strokeStyle = '#4E342E';
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.arc(faceShiftX, -4, 4, 0.2, Math.PI - 0.2);
-      ctx.stroke();
+        // Glossy Eye Highlights
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(faceShiftX - eyeSpacing - 1, -12, 1.3, 0, Math.PI * 2);
+        ctx.arc(faceShiftX + eyeSpacing - 1, -12, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Snout Nostrils & Cheerful Mouth
+        ctx.fillStyle = '#5D4037';
+        ctx.beginPath();
+        ctx.arc(faceShiftX - 2, -6, 1.1, 0, Math.PI * 2);
+        ctx.arc(faceShiftX + 2, -6, 1.1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Smile
+        ctx.strokeStyle = '#4E342E';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(faceShiftX, -4, 4, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+      }
     } else {
       // Facing up: back of head hair tuft
       ctx.fillStyle = '#5D4037';
@@ -776,6 +834,31 @@ export class SpriteRenderer {
         ctx.strokeStyle = '#3E2723';
         ctx.lineWidth = 1;
         ctx.strokeRect(-p.size, -p.size * 0.4, p.size * 2, p.size * 0.8);
+      } else if (p.type === 'water') {
+        // Water splash droplet
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        // Droplet specular glint
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(-p.size * 0.35, -p.size * 0.35, p.size * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'bubble') {
+        // Floating air bubble
+        ctx.strokeStyle = '#81D4FA';
+        ctx.lineWidth = 1.5;
+        ctx.fillStyle = 'rgba(224, 247, 250, 0.35)';
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        // Bubble specular highlight
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(-p.size * 0.35, -p.size * 0.35, p.size * 0.28, 0, Math.PI * 2);
+        ctx.fill();
       } else {
         // Fluttering Green Jungle Leaf
         ctx.fillStyle = p.color;

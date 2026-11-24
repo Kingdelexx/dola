@@ -36,7 +36,7 @@ export interface Particle {
   alpha: number;
   rotation: number;
   rotSpeed: number;
-  type: 'sparkle' | 'leaf' | 'wood';
+  type: 'sparkle' | 'leaf' | 'wood' | 'water' | 'bubble';
   lifetime: number;
   maxLife: number;
 }

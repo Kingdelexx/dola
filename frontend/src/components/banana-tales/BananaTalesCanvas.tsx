@@ -9,7 +9,8 @@ interface BananaTalesCanvasProps {
   level: BananaLevel;
   actionQueue: GameAction[];
   isRunning: boolean;
-  onExecutionComplete: (success: boolean, bananasCollected: number) => void;
+  resetNonce?: number;
+  onExecutionComplete: (success: boolean, bananasCollected: number, failureReason?: 'water' | 'bush' | 'rock' | 'incomplete') => void;
   onActiveLineChange?: (line: number | null) => void;
   onReset: () => void;
 }
@@ -18,6 +19,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
   level,
   actionQueue,
   isRunning,
+  resetNonce = 0,
   onExecutionComplete,
   onActiveLineChange,
   onReset
@@ -37,7 +39,10 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
   const [bananas, setBananas] = useState<BananaItem[]>([]);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
 
-  // Dynamic grid state (allows bridge.extend() to construct wooden planks in real time)
+  // Synchronous grid ref (used during execution so bridge.extend updates are immediately visible to subsequent steps)
+  const gridRef = useRef<TileType[][]>(level.grid.map(row => [...row]));
+
+  // Dynamic grid state (drives 60fps canvas re-renders)
   const [dynamicGrid, setDynamicGrid] = useState<TileType[][]>(() => 
     level.grid.map(row => [...row])
   );
@@ -55,6 +60,10 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     moveDuration: 360, // ms per tile
     moveStartTime: 0,
     isJumping: false,
+    isDrowning: false,
+    drownProgress: 0,
+    drownStartTime: 0,
+    drownDuration: 850,
     particles: [] as Particle[],
     cameraShakeTimer: 0,
     cameraShakeIntensity: 0,
@@ -68,6 +77,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     setMonkeyGridPos({ x: level.monkeyStart.x, y: level.monkeyStart.y });
     setMonkeyDir(level.monkeyStart.dir);
     setSpeechBubble(null);
+    gridRef.current = level.grid.map(row => [...row]);
     setDynamicGrid(level.grid.map(row => [...row]));
 
     const st = animStateRef.current;
@@ -79,13 +89,16 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     st.targetY = st.visualY;
     st.isMoving = false;
     st.isJumping = false;
+    st.isDrowning = false;
+    st.drownProgress = 0;
+    st.drownStartTime = 0;
     st.moveProgress = 1;
     st.particles = [];
     st.cameraShakeTimer = 0;
     st.redFlashAlpha = 0;
 
     onActiveLineChange?.(null);
-  }, [level]);
+  }, [level, resetNonce]);
 
   // Spawn Particle Burst when banana is collected
   const spawnBananaParticles = useCallback((gx: number, gy: number) => {
@@ -169,6 +182,54 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
     SoundFX.playBridgeThud();
   }, [CELL_SIZE]);
 
+  // Spawn Water Splash droplets & bubbles when landing on water
+  const spawnWaterSplash = useCallback((gx: number, gy: number) => {
+    const cx = (gx + 0.5) * CELL_SIZE;
+    const cy = (gy + 0.5) * CELL_SIZE;
+    const newParticles: Particle[] = [];
+
+    // 24 Blue & White Splash Droplets
+    for (let i = 0; i < 24; i++) {
+      const angle = (Math.PI / 4) + Math.random() * (Math.PI / 2) + Math.PI; // upward arc
+      const speed = 2 + Math.random() * 4.5;
+      newParticles.push({
+        x: cx + (Math.random() - 0.5) * 16,
+        y: cy + 10,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2.5,
+        size: 3 + Math.random() * 4,
+        color: Math.random() > 0.4 ? '#4FC3F7' : (Math.random() > 0.5 ? '#E0F7FA' : '#0288D1'),
+        alpha: 0.95,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.2,
+        type: 'water',
+        lifetime: 0,
+        maxLife: 35 + Math.random() * 20
+      });
+    }
+
+    // 10 Rising Air Bubbles
+    for (let i = 0; i < 10; i++) {
+      newParticles.push({
+        x: cx + (Math.random() - 0.5) * 20,
+        y: cy + 12 + Math.random() * 8,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: -0.8 - Math.random() * 1.2,
+        size: 2.5 + Math.random() * 3.5,
+        color: '#E0F7FA',
+        alpha: 0.85,
+        rotation: 0,
+        rotSpeed: 0,
+        type: 'bubble',
+        lifetime: 0,
+        maxLife: 45 + Math.random() * 25
+      });
+    }
+
+    animStateRef.current.particles.push(...newParticles);
+    SoundFX.playWaterSplash();
+  }, [CELL_SIZE]);
+
   // Trigger Hazard Hit (Water, Rock, or Bush collision)
   const triggerHazardCollision = useCallback((reason: 'water' | 'bush' | 'rock') => {
     const st = animStateRef.current;
@@ -233,8 +294,10 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           const allCollected = bananas.every(b => b.collected) || collectedCount >= level.bananas.length;
           if (allCollected) {
             SoundFX.playFanfare();
+            onExecutionComplete(true, collectedCount);
+          } else {
+            onExecutionComplete(false, collectedCount, 'incomplete');
           }
-          onExecutionComplete(allCollected, collectedCount);
         }
         return;
       }
@@ -287,21 +350,19 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           bx += dx;
           by += dy;
           if (bx >= 0 && bx < COLS && by >= 0 && by < ROWS) {
-            if (dynamicGrid[by][bx] === 'water') {
+            if (gridRef.current[by][bx] === 'water') {
               const bridgeType: TileType = (dx !== 0) ? 'bridge_h' : 'bridge_v';
-              setDynamicGrid(prev => {
-                const next = prev.map(r => [...r]);
-                next[by][bx] = bridgeType;
-                return next;
-              });
+              gridRef.current[by][bx] = bridgeType;
               spawnWoodParticles(bx, by);
               builtAny = true;
+              setDynamicGrid(gridRef.current.map(r => [...r]));
+              await new Promise(r => setTimeout(r, 120));
             }
           }
         }
 
         setSpeechBubble(builtAny ? 'Bridge extended!' : 'Planks ready!');
-        await new Promise(r => setTimeout(r, 450));
+        await new Promise(r => setTimeout(r, 350));
         setSpeechBubble(null);
         if (!isCancelled) executeNextAction();
         return;
@@ -326,7 +387,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         if (
           immediateX >= 0 && immediateX < COLS &&
           immediateY >= 0 && immediateY < ROWS &&
-          dynamicGrid[immediateY][immediateX] === 'stone'
+          gridRef.current[immediateY][immediateX] === 'stone'
         ) {
           targetX = currentX + dx * 2;
           targetY = currentY + dy * 2;
@@ -336,27 +397,38 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         if (targetX < 0 || targetX >= COLS || targetY < 0 || targetY >= ROWS) {
           triggerHazardCollision('bush');
           onActiveLineChange?.(null);
-          onExecutionComplete(false, collectedCount);
+          onExecutionComplete(false, collectedCount, 'bush');
           return;
         }
 
         // Check landing tile
-        const landingTile = dynamicGrid[targetY][targetX];
+        const landingTile = gridRef.current[targetY][targetX];
         if (landingTile === 'water') {
           await animateMove(currentX, currentY, targetX, targetY, true);
           currentX = targetX;
           currentY = targetY;
           setMonkeyGridPos({ x: targetX, y: targetY });
-          triggerHazardCollision('water');
+
+          spawnWaterSplash(targetX, targetY);
+          setSpeechBubble("Splash! Monkeys can't swim! 🌊");
+          const st = animStateRef.current;
+          st.cameraShakeTimer = 25;
+          st.cameraShakeIntensity = 6;
+          st.isDrowning = true;
+          st.drownStartTime = performance.now();
+          st.drownDuration = 850;
+
+          await new Promise(r => setTimeout(r, 900));
+          setSpeechBubble(null);
           onActiveLineChange?.(null);
-          onExecutionComplete(false, collectedCount);
+          onExecutionComplete(false, collectedCount, 'water');
           return;
         }
 
         if (landingTile === 'bush' || landingTile === 'stone') {
           triggerHazardCollision(landingTile === 'stone' ? 'rock' : 'bush');
           onActiveLineChange?.(null);
-          onExecutionComplete(false, collectedCount);
+          onExecutionComplete(false, collectedCount, landingTile === 'stone' ? 'rock' : 'bush');
           return;
         }
 
@@ -404,12 +476,12 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           if (nextX < 0 || nextX >= COLS || nextY < 0 || nextY >= ROWS) {
             triggerHazardCollision('bush');
             onActiveLineChange?.(null);
-            onExecutionComplete(false, collectedCount);
+            onExecutionComplete(false, collectedCount, 'bush');
             return;
           }
 
-          // Check target tile in dynamic grid
-          const targetTile = dynamicGrid[nextY][nextX];
+          // Check target tile in dynamic grid ref
+          const targetTile = gridRef.current[nextY][nextX];
 
           // Water hazard
           if (targetTile === 'water') {
@@ -417,9 +489,20 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
             currentX = nextX;
             currentY = nextY;
             setMonkeyGridPos({ x: nextX, y: nextY });
-            triggerHazardCollision('water');
+
+            spawnWaterSplash(nextX, nextY);
+            setSpeechBubble("Splash! Monkeys can't swim! 🌊");
+            const st = animStateRef.current;
+            st.cameraShakeTimer = 25;
+            st.cameraShakeIntensity = 6;
+            st.isDrowning = true;
+            st.drownStartTime = performance.now();
+            st.drownDuration = 850;
+
+            await new Promise(r => setTimeout(r, 900));
+            setSpeechBubble(null);
             onActiveLineChange?.(null);
-            onExecutionComplete(false, collectedCount);
+            onExecutionComplete(false, collectedCount, 'water');
             return;
           }
 
@@ -427,7 +510,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           if (targetTile === 'stone') {
             triggerHazardCollision('rock');
             onActiveLineChange?.(null);
-            onExecutionComplete(false, collectedCount);
+            onExecutionComplete(false, collectedCount, 'rock');
             return;
           }
 
@@ -435,7 +518,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
           if (targetTile === 'bush') {
             triggerHazardCollision('bush');
             onActiveLineChange?.(null);
-            onExecutionComplete(false, collectedCount);
+            onExecutionComplete(false, collectedCount, 'bush');
             return;
           }
 
@@ -505,7 +588,7 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
       isCancelled = true;
       onActiveLineChange?.(null);
     };
-  }, [isRunning, actionQueue, dynamicGrid]);
+  }, [isRunning, actionQueue]);
 
   // 60fps HTML5 Canvas Render Loop
   useEffect(() => {
@@ -558,12 +641,27 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         p.lifetime++;
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.12; // gravity
+        if (p.type === 'water') {
+          p.vy += 0.22; // gravity for water splash
+        } else if (p.type === 'bubble') {
+          p.vy -= 0.04; // float up for bubble
+          p.vx += Math.sin(p.lifetime * 0.2) * 0.15;
+        } else {
+          p.vy += 0.12; // gravity
+        }
         p.rotation += p.rotSpeed;
-        p.alpha = 1 - p.lifetime / p.maxLife;
+        p.alpha = Math.max(0, 1 - p.lifetime / p.maxLife);
         if (p.lifetime >= p.maxLife) {
           st.particles.splice(i, 1);
         }
+      }
+
+      // Update drowning sink progress
+      if (st.isDrowning) {
+        const elapsed = now - st.drownStartTime;
+        st.drownProgress = Math.min(1, elapsed / st.drownDuration);
+      } else {
+        st.drownProgress = 0;
       }
 
       // High-DPI Resolution handling
@@ -635,7 +733,9 @@ export const BananaTalesCanvas: React.FC<BananaTalesCanvasProps> = ({
         st.animTime,
         st.isMoving,
         st.isJumping,
-        speechBubble
+        speechBubble,
+        st.isDrowning,
+        st.drownProgress
       );
 
       // 5. Draw Particles

@@ -10,6 +10,7 @@ import { countCodeLines } from './interpreter';
 import { BananaTalesCanvas } from './BananaTalesCanvas';
 import { CodeEditor, CodeEditorHandle } from './CodeEditor';
 import { VictoryModal } from './VictoryModal';
+import { RetryModal } from './RetryModal';
 import { SoundFX } from './SoundFX';
 
 export default function BananaTalesGame() {
@@ -34,6 +35,11 @@ export default function BananaTalesGame() {
 
   // Victory modal & level progress state
   const [isVictoryModalOpen, setIsVictoryModalOpen] = useState(false);
+  const [retryModalState, setRetryModalState] = useState<{
+    isOpen: boolean;
+    reason: 'water' | 'bush' | 'rock' | 'incomplete';
+  } | null>(null);
+  const [resetNonce, setResetNonce] = useState(0);
   const [levelStars, setLevelStars] = useState<Record<number, number>>(() =>
     Object.fromEntries(BANANA_LEVELS.map((lvl) => [lvl.id, 0]))
   );
@@ -91,6 +97,7 @@ export default function BananaTalesGame() {
     setErrorLine(null);
     setJungleGuideAdvice(null);
     setActiveLine(null);
+    setRetryModalState(null);
     setIsExecutingPython(true);
 
     try {
@@ -115,6 +122,9 @@ export default function BananaTalesGame() {
 
       SoundFX.playFootstep();
 
+      // Reset grid/monkey state cleanly right before playback
+      setResetNonce(prev => prev + 1);
+
       // Queue actions for 60fps playback
       setActionQueue(parseResult.actions);
       setIsRunning(true);
@@ -138,11 +148,17 @@ export default function BananaTalesGame() {
     setJungleGuideAdvice(null);
     setActiveLine(null);
     setIsVictoryModalOpen(false);
+    setRetryModalState(null);
+    setResetNonce(prev => prev + 1);
     SoundFX.playFootstep();
   };
 
   // Handle Level Completion from Canvas
-  const handleExecutionComplete = (success: boolean, collectedCount: number) => {
+  const handleExecutionComplete = (
+    success: boolean, 
+    collectedCount: number, 
+    failureReason?: 'water' | 'bush' | 'rock' | 'incomplete'
+  ) => {
     setIsRunning(false);
     setActiveLine(null);
     setBananasCollected(collectedCount);
@@ -166,6 +182,15 @@ export default function BananaTalesGame() {
       setTimeout(() => {
         setIsVictoryModalOpen(true);
       }, 500);
+    } else {
+      // Trigger defeat/retry modal when monkey fails to clear the level or drowns/hits hazard
+      const reason = failureReason || (collectedCount < currentLevel.bananas.length ? 'incomplete' : 'bush');
+      setTimeout(() => {
+        setRetryModalState({
+          isOpen: true,
+          reason
+        });
+      }, 350);
     }
   };
 
@@ -378,6 +403,7 @@ export default function BananaTalesGame() {
               level={currentLevel}
               actionQueue={actionQueue}
               isRunning={isRunning}
+              resetNonce={resetNonce}
               onExecutionComplete={handleExecutionComplete}
               onActiveLineChange={setActiveLine}
               onReset={handleReset}
@@ -547,6 +573,17 @@ export default function BananaTalesGame() {
         onNextLevel={handleNextLevel}
         onReplay={handleReplay}
         hasNextLevel={currentLevelIndex < BANANA_LEVELS.length - 1}
+      />
+
+      {/* ==============================================================
+          RETRY / DEFEAT MODAL ON WATER SINK OR HAZARD COLLISION
+          ============================================================== */}
+      <RetryModal
+        isOpen={Boolean(retryModalState?.isOpen)}
+        reason={retryModalState?.reason || 'water'}
+        levelTitle={currentLevel.title}
+        hint={currentLevel.hint}
+        onRetry={handleReset}
       />
 
     </div>

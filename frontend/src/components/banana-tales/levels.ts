@@ -456,7 +456,7 @@ for i in range(4):
       { id: 'b8-1', x: 6, y: 3 },
       { id: 'b8-2', x: 7, y: 5 }
     ],
-    hint: 'First build 3 bridge planks with bridge.extend(3), step forward 5 tiles to reach banana 1, turn right, and step 2 down for banana 2!'
+    hint: 'Build 3 bridge planks with bridge.extend(3), step forward 5 tiles with monkey.step(5) to grab banana 1 and reach the corner, turn right with monkey.turn("right"), and step 2 down with monkey.step(2)!'
   },
   {
     id: 9,
